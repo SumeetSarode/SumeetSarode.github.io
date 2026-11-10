@@ -1,15 +1,19 @@
 name: CI
 
 on:
-  push:
+  # Pull requests, and pushes to any branch except main. Pushes to main are
+  # checked by the Deploy workflow, which calls this one first.
   pull_request:
+  push:
+    branches-ignore: [main]
+  workflow_call:
 
 permissions:
   contents: read
 
 jobs:
-  # The photo tool and unit tests must work on every operating system the
-  # owner might use: macOS, Windows, and Linux.
+  # The Photo Studio tool and unit tests must work on every operating system
+  # the owner might use: macOS, Windows, and Linux.
   test:
     strategy:
       fail-fast: false
@@ -25,7 +29,7 @@ jobs:
       - run: npm ci
       - run: npm test
 
-  # Type, lint, format, and build checks only need to run once.
+  # Type, lint, format, build, and built-site checks only need to run once.
   quality:
     runs-on: ubuntu-latest
     steps:
@@ -39,3 +43,25 @@ jobs:
       - run: npm run lint
       - run: npm run format
       - run: npm run build
+      - run: npm run check:dist
+
+  # Real browsers against the real production build: structure, accessibility
+  # (axe, WCAG 2.2 AA, both themes), responsive layout, and keyboard use.
+  browser:
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, webkit]
+    runs-on: ubuntu-latest
+    # WebKit (Safari's engine) has not been run by the author yet. Until its first
+    # clean run, a WebKit-only failure is reported but does not block publishing.
+    continue-on-error: ${{ matrix.browser == 'webkit' }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - run: npx playwright test --project=${{ matrix.browser }}
