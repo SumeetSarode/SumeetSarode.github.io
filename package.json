@@ -16,7 +16,10 @@
     "format:write": "prettier --write .",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "photo": "node tools/photo-studio/main.mjs"
+    "photo": "node tools/photo-studio/main.mjs",
+    "check:dist": "node scripts/check-dist.mjs",
+    "resume": "python3 scripts/build_public_resume.py",
+    "og-image": "node scripts/make-og-image.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.12",

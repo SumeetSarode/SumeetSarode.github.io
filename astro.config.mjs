@@ -4,10 +4,6 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://sumeetsarode.github.io',
   trailingSlash: 'always',
-  integrations: [
-    sitemap({
-      // The style guide is a temporary design page; never list it.
-      filter: (page) => !page.includes('/styleguide'),
-    }),
-  ],
+  // The sitemap automatically leaves out 404.html.
+  integrations: [sitemap()],
 });

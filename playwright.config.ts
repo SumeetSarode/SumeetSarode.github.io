@@ -2,6 +2,11 @@ import { defineConfig, devices } from '@playwright/test';
 
 const PORT = 4321;
 
+// On a computer where Playwright's own browsers can't be downloaded, set
+// PW_CHANNEL=chrome to use the installed Chrome, and SKIP_WEBKIT=1 to skip Safari's engine.
+// GitHub's CI uses neither, so it runs both real engines.
+const channel = process.env['PW_CHANNEL'];
+
 export default defineConfig({
   testDir: 'tests/e2e',
   fullyParallel: true,
@@ -15,7 +20,9 @@ export default defineConfig({
     timeout: 180_000,
   },
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+    { name: 'chromium', use: { ...devices['Desktop Chrome'], ...(channel ? { channel } : {}) } },
+    ...(process.env['SKIP_WEBKIT']
+      ? []
+      : [{ name: 'webkit', use: { ...devices['Desktop Safari'] } }]),
   ],
 });
