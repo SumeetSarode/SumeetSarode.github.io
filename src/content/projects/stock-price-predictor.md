@@ -1,0 +1,100 @@
+---
+title: Stock Price Predictor
+tagline: 'Trust, but verify: putting an LLM in a loop where being wrong costs money.'
+summary: A multi-agent system that predicts NSE stock moves and shows its reasoning. Every model answer must pass four deterministic checks before it is saved.
+metaDescription: 'Case study: a multi-agent LLM system for NSE stock predictions with four deterministic guardrail tiers, honest backtesting, and calibration.'
+order: 1
+repoUrl: https://github.com/SumeetSarode/stock-price-predictor
+status: Version 1 shipped. Runs locally as a CLI and a web app.
+tags:
+  - Python 3.13
+  - Google ADK
+  - LiteLLM
+  - Pydantic v2
+  - FastAPI
+  - HTMX
+  - pandas-ta
+  - TA-Lib
+checkedOn: 2026-11-10
+disclaimer: Educational project. Not financial advice.
+facts:
+  - value: '4'
+    label: guardrail tiers check every prediction
+  - value: '4'
+    label: horizons, from daily to monthly
+  - value: '1,744'
+    label: unit tests
+diagram:
+  caption: 'How a prediction is made, from your request to a saved, gradable answer.'
+  layers:
+    - name: You ask
+      items:
+        - 'Command line (typer and rich)'
+        - 'Local web app (FastAPI and HTMX)'
+    - name: Orchestrator
+      items:
+        - 'Fans out across all four horizons in parallel'
+        - 'Every fetch honors an "as of" date'
+    - name: Four agents (Google ADK)
+      items:
+        - 'Price agent'
+        - 'Technical agent (trend, momentum, volatility, levels)'
+        - 'News-impact agent'
+        - 'Synthesizer with a structured output schema'
+    - name: Deterministic guardrails (one retry on failure, then a hard error)
+      items:
+        - 'Tier 1: grounding'
+        - 'Tier 2: citations'
+        - 'Tier 3: consistency'
+        - 'Tier 4: calibration'
+    - name: Saved and graded
+      items:
+        - 'One JSON file per prediction'
+        - 'Graded against real prices'
+        - 'Calibration report with Brier skill score'
+---
+
+## The problem
+
+A language model can write a convincing stock prediction and still be wrong in ways nobody notices.
+
+Schema validation guarantees the answer has the right shape and that the price levels add up. It can't tell you whether the target has anything to do with the real chart, whether the evidence the model cites was ever in its input, or whether it called the stock bullish against a pile of bearish signals. When a wrong answer costs money, "it looks right" isn't good enough.
+
+I wanted a system that explains itself, refuses to ship an answer it can't back up, and measures whether it is any good.
+
+## How it works
+
+The system analyzes NSE (Indian market) stocks and produces predictions for four horizons: daily, weekly, biweekly, and monthly. Each one carries a direction, an entry zone, a target, a stop-loss, a confidence, and written reasoning.
+
+Four agents built on Google ADK do the analysis. A price agent and a technical agent (with four tools covering trend, momentum, volatility, and levels) read the market. A news-impact agent reads the news. A synthesizer combines them into a structured prediction.
+
+One rule keeps the design honest: **pure functions for math, agents only for synthesis.** Indicators, grading, and guardrails are plain deterministic code. Only the final write-up calls a model. Calls go through LiteLLM, with a fallback chain across free-tier providers (Groq, Gemini, and OpenRouter) and an optional local Ollama model as a last resort.
+
+## Decision 1: don't trust the model, check it
+
+Every prediction passes four checks before it is saved:
+
+1. **Grounding.** Every number must trace back to a real input value, such as the current price, an ATR-based stop distance, or a real swing level.
+2. **Citations.** Any evidence the model cites must appear in what it was actually given. It can't invent a signal.
+3. **Consistency.** The call's direction must match the majority of the technical signals, or be backed by the news.
+4. **Calibration.** Confidence can't exceed a cap for the horizon, so the model can't claim near-certainty on a monthly call.
+
+If a check fails, the model gets **one retry** with the reasons it failed. A second failure becomes an error. **No partial predictions are saved.** Two failures in a row usually mean the inputs genuinely conflict, and more retries only burn tokens. It is better to fail loudly and let the caller decide.
+
+## Decision 2: make backtests honest
+
+A backtest is only useful if the system can't peek at the future. So every data fetch supports an "as of" date. News, filings, and articles published after that date are filtered out when they are fetched. For historical article text, the system reads Wayback Machine snapshots, and it never falls back to the live page.
+
+The second trap is survivorship bias. Backtesting today's index members over past years flatters the results, because the losers have already dropped out. The `--index NIFTY50` option rebuilds the real index membership for each date being replayed, so a 2024 test uses the 2024 constituents.
+
+## Decision 3: measure whether it works
+
+Saved predictions are graded later against what the price actually did. Grading has six outcomes. The awkward case where the stop and the target are both hit in the same bar gets its own outcome, instead of being rounded to a win. The calibration report shows three hit-rate variants, plus a Brier score and a Brier skill score. A nightly scheduler resolves pending predictions.
+
+The principle I kept coming back to was **honest over convenient.**
+
+## What it is not
+
+It is not financial advice, and it isn't hosted anywhere. It runs on your own machine.
+
+I'm not quoting a hit rate on this page. Calibration is something you measure on your own predictions over time, and a headline number without its methodology would be exactly the kind of unchecked claim this project exists to avoid.

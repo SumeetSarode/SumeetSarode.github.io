@@ -41,3 +41,13 @@ export const publications: readonly Publication[] = [
 ];
 
 export const publicationYear = (publication: Publication): string => publication.date.slice(0, 4);
+
+/** The grey line under a title: venue and year, then any detail, then co-authors. */
+export const publicationMeta = (publication: Publication): string => {
+  const parts = [
+    `${publication.venue}, ${publicationYear(publication)}`,
+    publication.detail,
+    publication.coAuthors && `With ${publication.coAuthors.join(', ')}`,
+  ];
+  return `${parts.filter(Boolean).join('. ')}.`;
+};
