@@ -1,0 +1,51 @@
+---
+interface Props {
+  title: string;
+  /** Employer or organization, when it is not already the surrounding heading. */
+  organization?: string;
+  dates: string;
+  bullets: readonly string[];
+}
+
+const { title, organization, dates, bullets } = Astro.props;
+---
+
+<article class="role">
+  <h4>
+    {title}
+    {organization && <span class="org">, {organization}</span>}
+  </h4>
+  <p class="dates muted">{dates}</p>
+  <ul>
+    {bullets.map((bullet) => (
+      <li>{bullet}</li>
+    ))}
+  </ul>
+</article>
+
+<style>
+  .role {
+    padding-block: var(--space-4);
+  }
+  h4 {
+    margin: 0;
+    font-size: var(--step-0);
+    font-family: var(--font-body);
+    font-weight: 600;
+  }
+  .org {
+    font-weight: 400;
+  }
+  .dates {
+    margin: 0 0 var(--space-3);
+    font-size: var(--step-small);
+  }
+  ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    max-width: var(--measure);
+  }
+  li {
+    margin-bottom: var(--space-2);
+  }
+</style>

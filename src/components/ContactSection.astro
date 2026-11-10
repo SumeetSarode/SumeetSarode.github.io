@@ -1,0 +1,38 @@
+---
+import { site } from '../config/site';
+import Button from './Button.astro';
+import Section from './Section.astro';
+---
+
+<Section id="contact" title="Get in touch">
+  <p class="prose">
+    I'm always glad to talk about production AI systems, agent reliability, or the projects above.
+    Email is the quickest way to reach me.
+  </p>
+  <ul class="actions">
+    <li>
+      <Button href={`mailto:${site.email}`}>{site.email}</Button>
+    </li>
+    <li>
+      <Button href={site.links.linkedin} variant="secondary">
+        LinkedIn
+      </Button>
+    </li>
+    <li>
+      <Button href={site.links.github} variant="secondary">
+        GitHub
+      </Button>
+    </li>
+  </ul>
+</Section>
+
+<style>
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

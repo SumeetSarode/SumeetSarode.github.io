@@ -1,0 +1,214 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArchitectureDiagram from '../../components/ArchitectureDiagram.astro';
+import Button from '../../components/Button.astro';
+import Tag from '../../components/Tag.astro';
+import { site } from '../../config/site';
+
+export async function getStaticPaths() {
+  const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+  return projects.map((project, index) => ({
+    params: { slug: project.id },
+    // The last case study links back to the first, so every page has a "next".
+    props: { project, next: projects[(index + 1) % projects.length]! },
+  }));
+}
+
+const { project, next } = Astro.props;
+const { data } = project;
+const { Content } = await render(project);
+const checked = data.checkedOn.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  timeZone: 'UTC',
+});
+
+const title = `${data.title} \u2014 Case Study | ${site.name}`;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: data.title,
+  description: data.metaDescription,
+  dateModified: data.checkedOn.toISOString().slice(0, 10),
+  author: { '@type': 'Person', name: site.name, url: site.url },
+};
+---
+
+<BaseLayout {title} description={data.metaDescription} type="article" {jsonLd}>
+  <article class="container case">
+    <p class="back">
+      <a href="/#work">&larr; All work</a>
+    </p>
+
+    <header>
+      <h1>{data.title}</h1>
+      <p class="tagline">{data.tagline}</p>
+      <ul class="tags" aria-label="Technologies">
+        {data.tags.map((tag) => (
+          <li>
+            <Tag>{tag}</Tag>
+          </li>
+        ))}
+      </ul>
+      <p class="status">{data.status}</p>
+      {data.disclaimer && (
+        <p class="disclaimer" role="note">
+          <strong>Note:</strong> {data.disclaimer}
+        </p>
+      )}
+      <p>
+        <Button href={data.repoUrl} variant="secondary">
+          View the code on GitHub
+        </Button>
+      </p>
+    </header>
+
+    <ul class="facts" aria-label="Key facts">
+      {data.facts.map((fact) => (
+        <li>
+          <strong>{fact.value}</strong>
+          <span>{fact.label}</span>
+        </li>
+      ))}
+    </ul>
+
+    <ArchitectureDiagram caption={data.diagram.caption} layers={data.diagram.layers} />
+
+    <div class="prose body">
+      <Content />
+    </div>
+
+    {data.attribution && (
+      <aside class="attribution" aria-labelledby="credit-title">
+        <h2 id="credit-title">Credit</h2>
+        <p>{data.attribution}</p>
+      </aside>
+    )}
+
+    <p class="checked muted">
+      Facts checked against the project's repository on{' '}
+      <time datetime={data.checkedOn.toISOString().slice(0, 10)}>{checked}</time>.
+    </p>
+
+    <nav class="next" aria-label="More case studies">
+      <p class="muted">Next case study</p>
+      <a href={`/projects/${next.id}/`}>{next.data.title} &rarr;</a>
+    </nav>
+  </article>
+</BaseLayout>
+
+<style>
+  .case {
+    padding-block: var(--space-6) var(--space-7);
+  }
+  .back {
+    margin-bottom: var(--space-5);
+    font-size: var(--step-small);
+  }
+  header {
+    max-width: var(--measure);
+  }
+  .tagline {
+    font-family: var(--font-heading);
+    font-size: var(--step-1);
+    line-height: 1.35;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+  .status {
+    color: var(--text-muted);
+    font-size: var(--step-small);
+  }
+  .disclaimer {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    background: var(--surface);
+    font-size: var(--step-small);
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: var(--space-4);
+    margin: var(--space-6) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .facts li {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-4);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .facts strong {
+    font-family: var(--font-heading);
+    font-size: var(--step-3);
+    font-weight: 600;
+    line-height: 1.1;
+  }
+  .facts span {
+    color: var(--text-muted);
+    font-size: var(--step-small);
+  }
+  .body {
+    margin-top: var(--space-6);
+  }
+  .body :global(h2) {
+    margin-top: var(--space-6);
+  }
+  .body :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .body :global(li) {
+    margin-bottom: var(--space-2);
+  }
+  .body :global(code) {
+    padding: 0.1em 0.35em;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.25rem;
+  }
+  .attribution {
+    max-width: var(--measure);
+    margin-top: var(--space-6);
+    padding: var(--space-4) var(--space-5);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .attribution h2 {
+    font-size: var(--step-1);
+  }
+  .attribution p {
+    margin: 0;
+  }
+  .checked {
+    margin-top: var(--space-6);
+    font-size: var(--step-small);
+  }
+  .next {
+    margin-top: var(--space-5);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border);
+  }
+  .next p {
+    margin: 0 0 var(--space-1);
+    font-size: var(--step-small);
+  }
+  .next a {
+    font-family: var(--font-heading);
+    font-size: var(--step-1);
+    font-weight: 600;
+  }
+</style>

@@ -1,10 +1,28 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Section from '../components/Section.astro';
+import Hero from '../components/Hero.astro';
+import WorkSection from '../components/WorkSection.astro';
+import ExperienceSection from '../components/ExperienceSection.astro';
+import ResearchSection from '../components/ResearchSection.astro';
+import ContactSection from '../components/ContactSection.astro';
+import { site } from '../config/site';
+
+// Search engines read this. Name, title, and public profiles only:
+// no phone number and no address, by design.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle: 'Principal Data Scientist',
+  url: site.url,
+  sameAs: [site.links.github, site.links.linkedin],
+};
 ---
 
-<BaseLayout title="Sumeet Sarode">
-  <Section id="work" title="Skeleton">
-    <p>Placeholder page for the Phase 1 scaffold.</p>
-  </Section>
+<BaseLayout title={`${site.name} \u2014 Principal Data Scientist & Agentic AI Architect`} {jsonLd}>
+  <Hero />
+  <WorkSection />
+  <ExperienceSection />
+  <ResearchSection />
+  <ContactSection />
 </BaseLayout>

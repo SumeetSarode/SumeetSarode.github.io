@@ -1,0 +1,101 @@
+---
+import { Picture } from 'astro:assets';
+import profile from '../assets/profile/profile.jpg';
+import photo from '../config/profile-photo.json';
+import { site } from '../config/site';
+import Button from './Button.astro';
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container layout">
+    <Picture
+      class="portrait"
+      src={profile}
+      alt={photo.alt}
+      widths={[176, 352]}
+      sizes="176px"
+      formats={['avif', 'webp']}
+      fallbackFormat="jpg"
+      width={176}
+      height={176}
+      loading="eager"
+      fetchpriority="high"
+    />
+    <div class="copy">
+      <h1 id="hero-title">{site.name}</h1>
+      <p class="role">{site.title}</p>
+      <p class="intro">{site.heroIntro}</p>
+      <ul class="actions">
+        <li>
+          <Button href={site.resumePath} download>
+            Résumé (PDF)
+          </Button>
+        </li>
+        <li>
+          <Button href={site.links.github} variant="secondary">
+            GitHub
+          </Button>
+        </li>
+        <li>
+          <Button href={site.links.linkedin} variant="secondary">
+            LinkedIn
+          </Button>
+        </li>
+        <li>
+          <Button href={`mailto:${site.email}`} variant="secondary">
+            Email
+          </Button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: var(--space-7) var(--space-6);
+  }
+  .layout {
+    display: grid;
+    gap: var(--space-5);
+    align-items: center;
+    justify-items: start;
+  }
+  .hero :global(.portrait) {
+    width: 8rem;
+    height: 8rem;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--border);
+  }
+  .role {
+    font-family: var(--font-heading);
+    font-size: var(--step-1);
+    color: var(--text-muted);
+    margin-bottom: var(--space-4);
+  }
+  .intro {
+    max-width: var(--measure);
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin: var(--space-5) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 48rem) {
+    .layout {
+      grid-template-columns: auto 1fr;
+      gap: var(--space-6);
+      justify-items: stretch;
+    }
+    .hero :global(.portrait) {
+      width: 11rem;
+      height: 11rem;
+    }
+  }
+</style>

@@ -1,0 +1,109 @@
+---
+import Tag from './Tag.astro';
+
+interface Props {
+  title: string;
+  tagline: string;
+  summary: string;
+  tags: readonly string[];
+  href: string;
+  /** The lead project gets a larger, more prominent card. */
+  featured?: boolean;
+}
+
+const { title, tagline, summary, tags, href, featured = false } = Astro.props;
+---
+
+<article class:list={['project-card', { featured }]}>
+  <h3>
+    <a class="stretched" {href}>
+      {title}
+    </a>
+  </h3>
+  <p class="tagline">{tagline}</p>
+  <p class="summary">{summary}</p>
+  <ul class="tags" aria-label="Technologies">
+    {tags.slice(0, 5).map((tag) => (
+      <li>
+        <Tag>{tag}</Tag>
+      </li>
+    ))}
+  </ul>
+  <p class="cta" aria-hidden="true">
+    Read the case study &rarr;
+  </p>
+</article>
+
+<style>
+  .project-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: var(--space-5);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: border-color 0.2s;
+  }
+  .project-card:hover,
+  .project-card:focus-within {
+    border-color: var(--accent);
+  }
+  h3 {
+    margin-bottom: var(--space-2);
+  }
+  /* One link per card: its ::after covers the whole card, so the card is one big target. */
+  .stretched {
+    color: var(--text);
+    text-decoration: none;
+  }
+  .stretched::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+  }
+  .stretched:focus-visible {
+    outline: none;
+  }
+  .stretched:focus-visible::after {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 3px;
+  }
+  .tagline {
+    font-family: var(--font-heading);
+    font-size: var(--step-1);
+    line-height: 1.3;
+    margin-bottom: var(--space-3);
+  }
+  .summary {
+    color: var(--text-muted);
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: auto 0 var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+  .cta {
+    margin: 0;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: var(--step-small);
+  }
+  @media (min-width: 56rem) {
+    .featured {
+      padding: var(--space-6);
+    }
+    .featured .tagline {
+      font-size: var(--step-2);
+      max-width: var(--measure);
+    }
+    .featured .summary {
+      max-width: var(--measure);
+    }
+  }
+</style>
