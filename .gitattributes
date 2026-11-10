@@ -1,0 +1,14 @@
+# Normalise line endings so a Windows checkout (autocrlf) cannot corrupt scripts.
+* text=auto eol=lf
+
+# Windows scripts must stay CRLF; the macOS launcher must stay LF.
+*.vbs text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+Photo[[:space:]]Studio.app/** text eol=lf
+
+# Binary files: never touch.
+*.icns binary
+*.jpg binary
+*.png binary
+*.woff2 binary

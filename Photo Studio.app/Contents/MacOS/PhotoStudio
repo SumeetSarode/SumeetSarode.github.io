@@ -1,0 +1,51 @@
+#!/bin/bash
+# Photo Studio launcher (macOS). Double-click "Photo Studio.app" to use it.
+# It starts the local photo editor in the background and opens it in your
+# browser. The editor stops by itself when you close the browser tab.
+
+PORT="${PHOTO_PORT:-4322}"
+LOG="$HOME/Library/Logs/PhotoStudio.log"
+
+alert() {
+  /usr/bin/osascript -e "display dialog \"$1\" with title \"Photo Studio\" buttons {\"OK\"} default button \"OK\" with icon caution" >/dev/null 2>&1
+}
+
+# The app sits next to package.json, so the project is the folder holding it.
+APP_DIR="$(cd -P "$(dirname "$0")/../.." && pwd)"
+ROOT="$(dirname "$APP_DIR")"
+
+# Apps started from Finder get a bare PATH, so look for Node in the usual places.
+find_node() {
+  for candidate in /opt/homebrew/bin/node /usr/local/bin/node; do
+    if [ -x "$candidate" ]; then echo "$candidate"; return; fi
+  done
+  # Version managers (nvm, fnm, ...) only set up Node in the login shell.
+  /bin/zsh -lic 'command -v node' 2>/dev/null | tail -n 1
+}
+
+NODE_BIN="$(find_node)"
+if [ ! -x "$NODE_BIN" ]; then
+  alert "Photo Studio needs Node.js, which is not installed on this Mac. Install it from nodejs.org, then open Photo Studio again."
+  exit 1
+fi
+export PATH="$(dirname "$NODE_BIN"):$PATH"
+cd "$ROOT" || exit 1
+
+# First run on a new computer: download the project's tools once.
+if [ ! -d node_modules ]; then
+  /usr/bin/osascript -e 'display notification "Setting up for the first time. This takes about a minute." with title "Photo Studio"' >/dev/null 2>&1
+  if ! npm install --no-audit --no-fund >>"$LOG" 2>&1; then
+    alert "First-time setup failed. Check your internet connection and try again. Details: $LOG"
+    exit 1
+  fi
+fi
+
+nohup "$NODE_BIN" tools/photo-studio/main.mjs >>"$LOG" 2>&1 &
+
+# Wait until the editor answers (the server itself opens the browser).
+for _ in $(seq 1 60); do
+  if /usr/bin/curl -fs --max-time 1 "http://127.0.0.1:${PORT}/api/state" >/dev/null 2>&1; then exit 0; fi
+  sleep 0.25
+done
+alert "Photo Studio could not start. Details are in: $LOG"
+exit 1
