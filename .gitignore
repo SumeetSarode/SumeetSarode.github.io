@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.astro/
+.env*
+*.heic
+*.HEIC
+*.heif
+*.HEIF
+tools/photo-studio/.tmp/
+playwright-report/
+test-results/
+.DS_Store

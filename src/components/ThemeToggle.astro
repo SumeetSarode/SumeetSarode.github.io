@@ -1,0 +1,90 @@
+---
+import { toggleLabel } from '../lib/theme';
+---
+
+<button type="button" class="theme-toggle" data-theme-toggle aria-label={toggleLabel('light')}>
+  <svg
+    class="icon-moon"
+    viewBox="0 0 24 24"
+    width="22"
+    height="22"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" fill="currentColor" />
+  </svg>
+  <svg
+    class="icon-sun"
+    viewBox="0 0 24 24"
+    width="22"
+    height="22"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <circle cx="12" cy="12" r="4.5" fill="currentColor" />
+    <g stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" />
+    </g>
+  </svg>
+</button>
+
+<script>
+  import { THEME_STORAGE_KEY, isTheme, oppositeTheme, toggleLabel, type Theme } from '../lib/theme';
+
+  const root = document.documentElement;
+  const button = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+
+  const current = (): Theme => (isTheme(root.dataset['theme']) ? root.dataset['theme'] : 'light');
+  const syncLabel = () => button?.setAttribute('aria-label', toggleLabel(current()));
+  const hasStoredChoice = () => {
+    try {
+      return isTheme(localStorage.getItem(THEME_STORAGE_KEY));
+    } catch {
+      return false;
+    }
+  };
+
+  syncLabel();
+
+  button?.addEventListener('click', () => {
+    const next = oppositeTheme(current());
+    root.dataset['theme'] = next;
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, next);
+    } catch {
+      // Storage is blocked (privacy mode): the choice lasts for this page only.
+    }
+    syncLabel();
+  });
+
+  // With no explicit choice, keep following the system setting live.
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+    if (hasStoredChoice()) return;
+    root.dataset['theme'] = event.matches ? 'dark' : 'light';
+    syncLabel();
+  });
+</script>
+
+<style>
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    color: var(--text);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .theme-toggle:hover {
+    color: var(--accent);
+  }
+  :global(:root[data-theme='dark']) .icon-moon,
+  :global(:root:not([data-theme='dark'])) .icon-sun {
+    display: none;
+  }
+</style>

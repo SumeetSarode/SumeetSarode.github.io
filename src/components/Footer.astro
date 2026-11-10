@@ -1,0 +1,25 @@
+---
+import { site } from '../config/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <p>
+      &copy; {year} {site.name}. Built with <a href="https://astro.build">Astro</a>.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-block: var(--space-6);
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: var(--step-small);
+  }
+  p {
+    margin: 0;
+  }
+</style>

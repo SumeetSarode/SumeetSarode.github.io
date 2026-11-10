@@ -1,0 +1,93 @@
+---
+import { site } from '../config/site';
+import ThemeToggle from './ThemeToggle.astro';
+
+const nav = [
+  { href: '/#work', label: 'Work' },
+  { href: '/#experience', label: 'Experience' },
+  { href: '/#research', label: 'Research' },
+  { href: '/#contact', label: 'Contact' },
+];
+---
+
+<header class="site-header">
+  <div class="container bar">
+    <a class="monogram" href="/" aria-label={`${site.name}, home`}>
+      SS
+    </a>
+    <nav aria-label="Primary">
+      <ul>
+        {nav.map((item) => (
+          <li>
+            <a href={item.href}>{item.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <ThemeToggle />
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-4);
+    padding-block: var(--space-2);
+  }
+  .monogram {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: var(--step-1);
+    color: var(--text);
+    text-decoration: none;
+  }
+  nav {
+    order: 3;
+    width: 100%;
+  }
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--text);
+    text-decoration: none;
+    font-size: var(--step-small);
+    font-weight: 500;
+  }
+  nav a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+  @media (min-width: 40rem) {
+    nav {
+      order: 0;
+      width: auto;
+      margin-left: auto;
+    }
+    ul {
+      gap: 0 var(--space-5);
+    }
+  }
+</style>
