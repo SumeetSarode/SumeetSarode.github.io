@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Photo Studio (local only)</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/studio.css" />
+  </head>
+  <body>
+    <header class="top">
+      <div class="top-row">
+        <h1>Photo Studio</h1>
+        <button type="button" id="quit">Quit Photo Studio</button>
+      </div>
+      <p>
+        Runs only on this computer. Pick a photo, frame your head and shoulders, then review and
+        confirm. Your portfolio photo changes only after confirmation. Location and camera data are
+        removed automatically.
+      </p>
+    </header>
+
+    <main>
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+      <section id="picker" aria-labelledby="picker-title">
+        <h2 id="picker-title">1. Choose a photo</h2>
+        <label class="dropzone" id="dropzone" for="file">
+          <span class="dropzone-title">Drop a photo here, or press to choose one</span>
+          <span class="dropzone-hint">JPEG, PNG, WebP, or iPhone HEIC. Up to 40 MB.</span>
+          <input id="file" type="file" accept="image/*,.heic,.heif" />
+        </label>
+      </section>
+
+      <section id="editor" aria-labelledby="editor-title" hidden>
+        <h2 id="editor-title">2. Frame it</h2>
+        <div class="workspace">
+          <div class="stage-column">
+            <div
+              id="stage"
+              class="stage"
+              tabindex="0"
+              role="group"
+              aria-label="Crop area"
+              aria-describedby="stage-help"
+            >
+              <canvas id="stage-canvas" width="520" height="520"></canvas>
+              <div class="guide" aria-hidden="true"><span class="eye-line"></span></div>
+            </div>
+            <p id="stage-help" class="hint">
+              Drag the photo to reposition. With the crop area focused: arrow keys move it (hold
+              Shift for bigger steps), + and - zoom, [ and ] rotate. Eyes should sit on the dashed
+              line.
+            </p>
+            <div class="previews" role="group" aria-label="Previews on light and dark backgrounds">
+              <div class="swatch light">
+                <canvas
+                  id="p-light-160"
+                  width="160"
+                  height="160"
+                  aria-label="160 pixel preview on light"
+                ></canvas>
+                <canvas
+                  id="p-light-64"
+                  width="64"
+                  height="64"
+                  aria-label="64 pixel preview on light"
+                ></canvas>
+              </div>
+              <div class="swatch dark">
+                <canvas
+                  id="p-dark-160"
+                  width="160"
+                  height="160"
+                  aria-label="160 pixel preview on dark"
+                ></canvas>
+                <canvas
+                  id="p-dark-64"
+                  width="64"
+                  height="64"
+                  aria-label="64 pixel preview on dark"
+                ></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls">
+            <div class="field">
+              <label for="zoom">Zoom</label>
+              <input id="zoom" type="range" min="1" max="4" step="0.01" value="1" />
+            </div>
+
+            <div class="field">
+              <span id="rotate-label" class="label">Rotate</span>
+              <div class="row" role="group" aria-labelledby="rotate-label">
+                <button type="button" id="rotate-left">Rotate -90&deg;</button>
+                <button type="button" id="rotate-right">Rotate +90&deg;</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="fine">Fine rotation (-45&deg; to 45&deg;)</label>
+              <input id="fine" type="range" min="-45" max="45" step="0.5" value="0" />
+            </div>
+
+            <form id="values-form" class="numbers-form">
+              <fieldset class="numbers">
+                <legend>Exact values (pixels of the original photo)</legend>
+                <label>Centre X <input id="num-cx" type="number" step="1" /></label>
+                <label>Centre Y <input id="num-cy" type="number" step="1" /></label>
+                <label>Size <input id="num-size" type="number" step="1" /></label>
+                <label>Rotation (&deg;) <input id="num-rotation" type="number" step="0.5" /></label>
+                <button type="submit" id="apply-values">Apply values</button>
+              </fieldset>
+            </form>
+
+            <details>
+              <summary>Filters and adjustments</summary>
+              <div class="controls">
+                <label for="brightness"
+                  >Brightness <output id="brightness-value">100%</output></label
+                >
+                <input id="brightness" type="range" min="0" max="200" value="100" />
+                <label for="contrast">Contrast <output id="contrast-value">100%</output></label>
+                <input id="contrast" type="range" min="0" max="200" value="100" />
+                <label for="saturation"
+                  >Saturation <output id="saturation-value">100%</output></label
+                >
+                <input id="saturation" type="range" min="0" max="200" value="100" />
+                <label><input id="grayscale" type="checkbox" /> Black and white</label>
+                <button id="reset-filters" type="button">Reset filters</button>
+              </div>
+            </details>
+
+            <div class="field">
+              <label for="alt">Alt text (read aloud by screen readers)</label>
+              <input id="alt" type="text" maxlength="200" />
+            </div>
+
+            <div class="row actions">
+              <button type="button" id="save" class="primary">Review photo</button>
+              <button type="button" id="reset">Reset</button>
+              <button type="button" id="cancel">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="closed" aria-labelledby="closed-title" hidden>
+        <h2 id="closed-title">Photo Studio has closed</h2>
+        <p>You can close this tab. Open the Photo Studio app again whenever you need it.</p>
+      </section>
+    </main>
+
+    <dialog id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-help">
+      <h2 id="confirm-title">Use this photo on your portfolio?</h2>
+      <canvas
+        id="confirm-preview"
+        width="320"
+        height="320"
+        aria-label="New profile photo preview"
+      ></canvas>
+      <p id="confirm-help">
+        Confirming replaces your local portfolio photo. The live website changes after you commit
+        and push.
+      </p>
+      <p id="confirm-error" role="alert"></p>
+      <div class="row">
+        <button id="confirm-save" type="button" class="primary">Confirm and update photo</button>
+        <button id="back-to-edit" type="button">Back to editing</button>
+      </div>
+    </dialog>
+
+    <script type="module" src="/studio.js"></script>
+  </body>
+</html>
