@@ -1,0 +1,50 @@
+# Certifications: shown on the Education page; the newest two also appear on the home page.
+#
+# One entry per certificate. To add one, copy an entry and change the words.
+#
+#   name     The title exactly as it appears on the certificate.          required
+#   issuer   Who issued it, for example Udacity.                          required
+#   date     The month it was issued, written like 2020-06.               optional
+#   url      A public page that proves it, starting with https://.        optional
+#            Only add a link after opening it and checking that it shows
+#            this certificate. Never guess one.
+#
+# Order doesn't matter: the site shows the newest first and undated ones last.
+
+- name: Deep Learning Nanodegree
+  issuer: Udacity
+  date: 2020-06
+  url: https://confirm.udacity.com/EU3T6K3D
+
+- name: Deep Learning Specialization
+  issuer: DeepLearning.AI
+  date: 2020-06
+  url: https://coursera.org/share/7ffdcad290c62a9b4aefff9f414861a5
+
+# LinkedIn calls this "Deep Learning with PyTorch"; the certificate itself uses this name.
+- name: Introduction to Machine Learning with PyTorch Nanodegree
+  issuer: Udacity
+  date: 2020-05
+  url: https://confirm.udacity.com/UGNRKTN
+
+# LinkedIn links to a PDF whose contents couldn't be checked, so there is no link yet.
+- name: AWS Machine Learning Fundamentals
+  issuer: Udacity
+  date: 2020-05
+
+- name: Introduction to Programming Using Python
+  issuer: Microsoft
+  date: 2019-01
+
+# DataCamp's pages were behind a bot check, so these have no confirmed date or link yet.
+- name: Big Data Fundamentals with PySpark
+  issuer: DataCamp
+
+- name: Advanced Deep Learning with Keras
+  issuer: DataCamp
+
+- name: Introduction to TensorFlow in Python
+  issuer: DataCamp
+
+- name: Feature Engineering using NLP
+  issuer: DataCamp

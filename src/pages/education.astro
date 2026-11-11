@@ -4,6 +4,7 @@ import PageHero from '../components/PageHero.astro';
 import Icon from '../components/Icon.astro';
 import Tag from '../components/Tag.astro';
 import { certifications, degrees } from '../data/education';
+import { formatMonth } from '../lib/months';
 ---
 
 <BaseLayout
@@ -65,7 +66,7 @@ import { certifications, degrees } from '../data/education';
             <h3>{cert.name}</h3>
             <p class="cert-meta">
               {cert.issuer}
-              {cert.date && <span class="dates"> · {cert.date}</span>}
+              {cert.date && <span class="dates"> · {formatMonth(cert.date)}</span>}
             </p>
             {cert.url && (
               <a
