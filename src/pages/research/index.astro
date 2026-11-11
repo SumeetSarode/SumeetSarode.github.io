@@ -2,14 +2,16 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Emblem from '../../components/Emblem.astro';
 import PageHero from '../../components/PageHero.astro';
+import { countPhrase } from '../../lib/count';
 import { publications, publicationYear, shortVenue } from '../../data/publications';
 
-const newestFirst = [...publications].sort((a, b) => b.date.localeCompare(a.date));
+const papers = countPhrase(publications.length, 'paper');
+const researchPublications = countPhrase(publications.length, 'research publication');
 ---
 
 <BaseLayout
   title="Research | Sumeet Sarode"
-  description="Four research publications by Sumeet Sarode, covering machine learning, IoT-based automation, irrigation control, and accessible language learning."
+  description={`${researchPublications} by Sumeet Sarode, covering machine learning, IoT-based automation, irrigation control, and accessible language learning.`}
 >
   <PageHero
     eyebrow="03 / Research"
@@ -17,7 +19,7 @@ const newestFirst = [...publications].sort((a, b) => b.date.localeCompare(a.date
     lead="Published work across machine learning, connected systems, and assistive technology. Open a publication for the problem, the approach, and the full record."
   >
     <ul class="venues" aria-label="Publication venues">
-      {newestFirst.map((paper) => (
+      {publications.map((paper) => (
         <li>
           {shortVenue(paper)} · {publicationYear(paper)}
         </li>
@@ -30,11 +32,11 @@ const newestFirst = [...publications].sort((a, b) => b.date.localeCompare(a.date
       <div class="section-head">
         <div>
           <p class="eyebrow">Publications</p>
-          <h2 id="publications-title">Four papers, newest first</h2>
+          <h2 id="publications-title">{papers}, newest first</h2>
         </div>
       </div>
       <div class="publications">
-        {newestFirst.map((paper) => (
+        {publications.map((paper) => (
           <article class="paper">
             <div class="paper-visual">
               <Emblem {...paper.emblem} size="lg" />

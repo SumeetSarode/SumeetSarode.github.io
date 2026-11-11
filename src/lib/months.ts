@@ -16,9 +16,9 @@ export function formatRange(start: string, end?: string): string {
 }
 
 /**
- * Newest first; entries without a month go last. The sort is stable, so entries from
+ * Newest first; entries without a date go last. Works for months (2020-06) and days (2019-08-17). The sort is stable, so entries from
  * the same month keep the order they have in the file.
  */
-export function newestFirst<T>(items: readonly T[], monthOf: (item: T) => string | undefined): T[] {
-  return [...items].sort((a, b) => (monthOf(b) ?? '').localeCompare(monthOf(a) ?? ''));
+export function newestFirst<T>(items: readonly T[], dateOf: (item: T) => string | undefined): T[] {
+  return [...items].sort((a, b) => (dateOf(b) ?? '').localeCompare(dateOf(a) ?? ''));
 }

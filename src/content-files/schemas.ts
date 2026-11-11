@@ -3,7 +3,7 @@
  * against these, so anything one accepts, the other accepts too.
  */
 import { z } from 'zod';
-import { httpsUrl, month, text } from './fields';
+import { day, emblem, httpsUrl, month, slug, text, uniqueSlugs } from './fields';
 
 /** content/education.yaml: degrees. */
 export const degreeSchema = z
@@ -29,3 +29,25 @@ export const certificationSchema = z.strictObject({
   url: httpsUrl.optional(),
 });
 export const certificationsFile = z.array(certificationSchema).min(1);
+
+/** content/research.yaml: research papers. Each one gets its own page. */
+export const publicationSchema = z.strictObject({
+  title: text,
+  slug,
+  venue: text,
+  date: day,
+  topic: text,
+  emblem,
+  summary: text,
+  context: text,
+  approach: text,
+  scope: text,
+  detail: text.optional(),
+  issue: text.optional(),
+  doi: text.optional(),
+  url: httpsUrl.optional(),
+  codeUrl: httpsUrl.optional(),
+  coAuthors: z.array(text).optional(),
+  sources: z.array(z.strictObject({ label: text, url: httpsUrl })).optional(),
+});
+export const researchFile = z.array(publicationSchema).min(1).superRefine(uniqueSlugs);

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { ContentError, parseContent } from '../../src/content-files/load';
-import { certificationsFile, educationFile } from '../../src/content-files/schemas';
+import { certificationsFile, educationFile, researchFile } from '../../src/content-files/schemas';
+import { countPhrase } from '../../src/lib/count';
 import { formatMonth, formatRange, newestFirst } from '../../src/lib/months';
 
 const errorFor = (text: string): string => {
@@ -90,5 +91,43 @@ describe('education.yaml', () => {
     expect(() => parseContent('education.yaml', yaml, educationFile)).toThrow(
       /line 4, #1 › end: end must not be before start/,
     );
+  });
+});
+
+describe('research.yaml', () => {
+  const paper = (slug: string, icon = 'cpu') =>
+    `- title: T\n  slug: ${slug}\n  venue: V\n  date: 2019-08-17\n  topic: X\n` +
+    `  emblem: { main: ${icon}, badge: wifi, tone: cyan }\n` +
+    '  summary: S\n  context: C\n  approach: A\n  scope: O\n';
+
+  it('accepts a complete paper', () => {
+    expect(parseContent('research.yaml', paper('a-b'), researchFile)).toHaveLength(1);
+  });
+
+  it('refuses two papers with the same slug, since their pages would collide', () => {
+    expect(() =>
+      parseContent('research.yaml', paper('same') + paper('same'), researchFile),
+    ).toThrow(/#2 › slug: "same" is already used/);
+  });
+
+  it('refuses a slug that would make a messy web address', () => {
+    expect(() => parseContent('research.yaml', paper('Smart Irrigation'), researchFile)).toThrow(
+      /slug: must be lowercase words joined by hyphens/,
+    );
+  });
+
+  it('refuses an icon name that does not exist', () => {
+    expect(() => parseContent('research.yaml', paper('a', 'rocketship'), researchFile)).toThrow(
+      /emblem › main/,
+    );
+  });
+});
+
+describe('countPhrase', () => {
+  it('spells out small numbers and handles one and none', () => {
+    expect(countPhrase(4, 'paper')).toBe('Four papers');
+    expect(countPhrase(1, 'paper')).toBe('One paper');
+    expect(countPhrase(0, 'paper')).toBe('No papers');
+    expect(countPhrase(12, 'paper')).toBe('12 papers');
   });
 });

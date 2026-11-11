@@ -57,7 +57,7 @@ previews, and the saved picture all follow. Nothing else needs touching.
 | Your name, title, email, links, the intro under your name, the social-sharing description          | `src/config/site.ts`                                  |
 | Jobs and their bullet points                                                                       | `src/data/experience.ts`                              |
 | Capabilities: the stack's layers (top = today's focus), one-line summaries, and the "Runs on" base | `src/data/skills.ts`                                  |
-| Publications                                                                                       | `src/data/publications.ts`                            |
+| Research papers                                                                                    | `content/research.yaml`                               |
 | Degrees                                                                                            | `content/education.yaml`                              |
 | Certifications (the guide at the top of the file lists every field)                                | `content/certifications.yaml`                         |
 | The short "More on GitHub" list                                                                    | `src/data/more-projects.ts`                           |
@@ -93,7 +93,7 @@ punctuation around them.
 4. Run `npm run build`. If you left something out or a line is too long, the error tells you exactly which
    field to fix. It also appears on the Projects page automatically.
 
-Research papers (`src/data/publications.ts`) get an `emblem` the same way: a big symbol, a small badge, and a colour.
+Research papers (`content/research.yaml`) get an `emblem` the same way: a big symbol, a small badge, and a colour.
 Copy the one from an existing paper and change the names.
 
 To use a symbol that is not in the list yet, add its name to `src/lib/icon-names.ts` and import it in
