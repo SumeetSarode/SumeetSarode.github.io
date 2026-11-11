@@ -9,27 +9,17 @@ interface Props {
   summary: string;
   tags: readonly string[];
   href: string;
-  /** 1-based position, shown on the cover; it also decides which side the cover sits on. */
+  /** 1-based position; it only decides which side the cover sits on, so cards alternate. */
   position: number;
   emblem: EmblemSpec;
-  fact: { value: string; label: string };
 }
 
-const { title, tagline, summary, tags, href, position, emblem, fact } = Astro.props;
+const { title, tagline, summary, tags, href, position, emblem } = Astro.props;
 ---
 
 <article class:list={['project-card', `tone-${emblem.tone}`, { reverse: position % 2 === 0 }]}>
   <div class="cover ink-vars">
-    <div class="cover-top">
-      <span class="number" aria-hidden="true">
-        {String(position).padStart(2, '0')}
-      </span>
-      <Emblem {...emblem} size="lg" />
-    </div>
-    <span class="fact">
-      <strong>{fact.value}</strong>
-      <span>{fact.label}</span>
-    </span>
+    <Emblem {...emblem} size="xl" />
   </div>
   <div class="content">
     <h3>
@@ -84,10 +74,8 @@ const { title, tagline, summary, tags, href, position, emblem, fact } = Astro.pr
   .cover {
     position: relative;
     isolation: isolate;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: var(--space-6);
+    display: grid;
+    place-items: center;
     min-height: 15rem;
     padding: clamp(1.5rem, 3vw, 2.25rem);
     overflow: hidden;
@@ -109,34 +97,6 @@ const { title, tagline, summary, tags, href, position, emblem, fact } = Astro.pr
         transparent 0 38px,
         rgb(255 255 255 / 6%) 39px 40px
       );
-  }
-  .cover-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: var(--space-4);
-  }
-  .number {
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text-muted);
-  }
-  .fact {
-    display: grid;
-    gap: var(--space-2);
-  }
-  .fact strong {
-    font-size: clamp(3rem, 2.2rem + 3vw, 4.75rem);
-    font-weight: 750;
-    letter-spacing: -0.05em;
-    line-height: 1;
-    color: var(--text);
-  }
-  .fact span {
-    max-width: 16rem;
-    font-size: 0.9375rem;
-    color: var(--text-muted);
   }
 
   .content {

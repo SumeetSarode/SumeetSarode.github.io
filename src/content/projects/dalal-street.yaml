@@ -22,14 +22,6 @@ emblem:
   badge: life-buoy
   tone: violet
 
-facts:
-  - value: '2,300+'
-    label: NSE stocks searchable
-  - value: '268'
-    label: hermetic unit tests, no network needed
-  - value: '5'
-    label: ready-made screener presets
-
 challenge:
   statement: >-
     I wanted a research terminal for Indian stocks that doesn't need a broker account, a

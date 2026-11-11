@@ -37,7 +37,6 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
               href={`/projects/${project.id}/`}
               position={index + 1}
               emblem={project.data.emblem}
-              fact={project.data.facts[0]!}
             />
           </li>
         ))}

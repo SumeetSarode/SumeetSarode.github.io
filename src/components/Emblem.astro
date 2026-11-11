@@ -3,13 +3,13 @@ import Icon from './Icon.astro';
 import type { EmblemSpec } from '../lib/emblem';
 
 interface Props extends EmblemSpec {
-  /** `lg` for page headers, `md` for cards, `sm` for compact lists. */
-  size?: 'sm' | 'md' | 'lg';
+  /** `xl` for project covers, `lg` for page headers, `md` for cards, `sm` for compact lists. */
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
 const { main, badge, tone, size = 'md' } = Astro.props;
 // [symbol size, badge size] in pixels
-const pixels = { sm: [22, 12], md: [36, 16], lg: [64, 26] }[size];
+const pixels = { sm: [22, 12], md: [36, 16], lg: [64, 26], xl: [104, 38] }[size];
 ---
 
 <!-- Purely decorative: the project's title is always printed beside it. -->
@@ -58,6 +58,16 @@ const pixels = { sm: [22, 12], md: [36, 16], lg: [64, 26] }[size];
     height: 8rem;
     border-radius: 2rem;
   }
+  /* Shrinks a little on small screens so the cover never feels crammed. */
+  .xl {
+    width: clamp(8.5rem, 6rem + 6vw, 12rem);
+    height: clamp(8.5rem, 6rem + 6vw, 12rem);
+    border-radius: 2.75rem;
+  }
+  .xl :global(svg:first-child) {
+    width: 55%;
+    height: 55%;
+  }
   .tone-violet {
     --tone: var(--glow-violet);
   }
@@ -84,5 +94,16 @@ const pixels = { sm: [22, 12], md: [36, 16], lg: [64, 26] }[size];
     width: 3rem;
     height: 3rem;
     border-width: 4px;
+  }
+  .xl .badge {
+    right: -0.9rem;
+    bottom: -0.9rem;
+    width: 4.25rem;
+    height: 4.25rem;
+    border-width: 5px;
+  }
+  .xl .badge :global(svg) {
+    width: 55%;
+    height: 55%;
   }
 </style>
