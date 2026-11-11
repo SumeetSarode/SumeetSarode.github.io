@@ -9,6 +9,7 @@ const frame = JSON.parse(readFileSync('src/config/photo-frame.json', 'utf8')) as
   ratioHeight: number;
 };
 import { publications } from '../../src/data/publications';
+import { projectPaths } from './pages';
 
 test('home is a concise overview, with Experience before Projects', async ({ page }) => {
   await page.goto('/');
@@ -298,5 +299,12 @@ test('the menu fits on one row on phones, so the sticky header stays short', asy
       .getByRole('link')
       .evaluateAll((links) => links.map((link) => Math.round(link.getBoundingClientRect().top)));
     expect(new Set(tops).size, `menu wrapped at ${width}px`).toBe(1);
+  }
+});
+
+test('project pages open without a row of big numbers', async ({ page }) => {
+  for (const path of projectPaths) {
+    await page.goto(path);
+    await expect(page.locator('.facts')).toHaveCount(0);
   }
 });
