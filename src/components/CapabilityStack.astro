@@ -38,21 +38,25 @@ const count = skillLayers.length;
   </ol>
   <div class="foundation">
     <p class="foundation-label">Runs on</p>
-    {foundations.map((group) => (
-      <div class="foundation-group">
-        <span class="foundation-name">
-          <Icon name={group.icon} size={16} />
-          {group.name}
-        </span>
-        <ul class="tags" aria-label={group.name}>
-          {group.skills.map((skill) => (
-            <li>
-              <Tag>{skill}</Tag>
-            </li>
-          ))}
-        </ul>
-      </div>
-    ))}
+    <div class="foundation-groups">
+      {foundations.map((group) => (
+        <div class="foundation-group">
+          <span class="layer-icon" aria-hidden="true">
+            <Icon name={group.icon} size={22} />
+          </span>
+          <div>
+            <h3>{group.name}</h3>
+            <ul class="tags" aria-label={group.name}>
+              {group.skills.map((skill) => (
+                <li>
+                  <Tag>{skill}</Tag>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ))}
+    </div>
   </div>
 </div>
 
@@ -126,35 +130,42 @@ const count = skillLayers.length;
     list-style: none;
   }
 
-  /* The base everything stands on: one wide, quiet strip. */
+  /* The base everything stands on: a solid, full-width slab, as visible as the layers above. */
   .foundation {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3) var(--space-6);
-    align-items: center;
-    padding: var(--space-4) clamp(1.1rem, 3vw, 2rem);
-    border: 1px dashed var(--border);
+    display: grid;
+    gap: var(--space-4);
+    padding: clamp(1.1rem, 2.5vw, 1.6rem) clamp(1.1rem, 3vw, 2rem);
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
     border-radius: var(--radius);
+    background: color-mix(in srgb, var(--accent) 9%, var(--surface));
+    box-shadow: var(--shadow-card);
   }
   .foundation-label {
     margin: 0;
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--text-muted);
+    color: var(--accent);
+  }
+  .foundation-groups {
+    display: grid;
+    gap: var(--space-5);
   }
   .foundation-group {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2) var(--space-3);
-    align-items: center;
+    gap: var(--space-4);
+    align-items: flex-start;
   }
-  .foundation-name {
-    display: inline-flex;
-    gap: var(--space-1);
-    align-items: center;
-    font-weight: 650;
+  .foundation-group .tags {
+    margin-top: var(--space-2);
+  }
+  @media (min-width: 48rem) {
+    .foundation-groups {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-6);
+    }
   }
 
   /* Wide screens: the pyramid. Name and summary on the left, tools on the right. */

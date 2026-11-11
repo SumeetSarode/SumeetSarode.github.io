@@ -3,9 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
 import Icon from '../components/Icon.astro';
 import Tag from '../components/Tag.astro';
-import { certificationsByIssuer, degrees } from '../data/education';
-
-const issuers = certificationsByIssuer();
+import { certifications, degrees } from '../data/education';
 ---
 
 <BaseLayout
@@ -58,40 +56,32 @@ const issuers = certificationsByIssuer();
           <h2 id="certifications-title">Always learning</h2>
         </div>
       </div>
-      <div class="issuers">
-        {issuers.map((group) => (
-          <article class="panel issuer">
-            <h3>
-              <span class="issuer-icon" aria-hidden="true">
-                <Icon name="award" size={20} />
-              </span>
-              {group.issuer}
-            </h3>
-            <ul class="certs">
-              {group.items.map((cert) => (
-                <li>
-                  <span class="cert-name">{cert.name}</span>
-                  <span class="cert-meta">
-                    {cert.date && <span class="dates">{cert.date}</span>}
-                    {cert.url && (
-                      <a
-                        class="route-link verify"
-                        href={cert.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Verify<span class="visually-hidden"> {cert.name}</span>
-                        <span aria-hidden="true"> ↗</span>
-                        <span class="visually-hidden"> (opens in a new tab)</span>
-                      </a>
-                    )}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </article>
+      <ul class="certs">
+        {certifications.map((cert) => (
+          <li class="panel cert">
+            <span class="cert-icon" aria-hidden="true">
+              <Icon name="award" size={20} />
+            </span>
+            <h3>{cert.name}</h3>
+            <p class="cert-meta">
+              {cert.issuer}
+              {cert.date && <span class="dates"> · {cert.date}</span>}
+            </p>
+            {cert.url && (
+              <a
+                class="route-link verify"
+                href={cert.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Verify<span class="visually-hidden"> {cert.name}</span>
+                <span aria-hidden="true"> ↗</span>
+                <span class="visually-hidden"> (opens in a new tab)</span>
+              </a>
+            )}
+          </li>
         ))}
-      </div>
+      </ul>
       <a class="route-link next" href="/contact/">
         Next: Contact <span aria-hidden="true">→</span>
       </a>
@@ -100,8 +90,7 @@ const issuers = certificationsByIssuer();
 </BaseLayout>
 
 <style>
-  .degrees,
-  .issuers {
+  .degrees {
     display: grid;
     gap: var(--space-4);
   }
@@ -109,7 +98,7 @@ const issuers = certificationsByIssuer();
     position: relative;
   }
   .degree-icon,
-  .issuer-icon {
+  .cert-icon {
     display: grid;
     place-items: center;
     border-radius: var(--radius-small);
@@ -121,10 +110,10 @@ const issuers = certificationsByIssuer();
     height: 3.25rem;
     margin-bottom: var(--space-4);
   }
-  .issuer-icon {
-    flex: none;
+  .cert-icon {
     width: 2.25rem;
     height: 2.25rem;
+    margin-bottom: var(--space-3);
   }
   .dates {
     margin: 0 0 var(--space-2);
@@ -153,40 +142,36 @@ const issuers = certificationsByIssuer();
     border-block: 1px solid var(--border);
     background: color-mix(in srgb, var(--surface) 45%, var(--bg));
   }
-  .issuer h3 {
-    display: flex;
-    gap: var(--space-3);
-    align-items: center;
-    margin-bottom: var(--space-4);
-    font-size: 1.2rem;
-  }
   .certs {
     display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+    gap: var(--space-4);
     margin: 0;
     padding: 0;
     list-style: none;
   }
-  .certs li {
+  .cert {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-1) var(--space-4);
-    align-items: baseline;
-    justify-content: space-between;
-    padding: var(--space-3) 0;
-    border-top: 1px solid var(--border);
+    flex-direction: column;
   }
-  .cert-name {
-    font-weight: 600;
+  .cert h3 {
+    margin-bottom: var(--space-2);
+    font-size: 1.05rem;
+    line-height: 1.35;
   }
   .cert-meta {
-    display: inline-flex;
-    gap: var(--space-4);
-    align-items: baseline;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.875rem;
   }
   .cert-meta .dates {
-    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
   }
   .verify {
+    align-self: flex-start;
+    margin-top: auto;
+    padding-top: var(--space-3);
     font-size: 0.875rem;
   }
   .next {
@@ -194,8 +179,7 @@ const issuers = certificationsByIssuer();
   }
 
   @media (min-width: 48rem) {
-    .degrees,
-    .issuers {
+    .degrees {
       grid-template-columns: repeat(2, 1fr);
     }
   }

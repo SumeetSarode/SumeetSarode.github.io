@@ -42,13 +42,19 @@ export const degrees: readonly Degree[] = [
   },
 ];
 
-/** Grouped by issuer, newest first within each group, so the page reads as a story. */
+/** One list, newest first; entries without a date go last. */
 export const certifications: readonly Certification[] = [
   {
     name: 'Deep Learning Nanodegree',
     issuer: 'Udacity',
     date: 'Jun 2020',
     url: 'https://confirm.udacity.com/EU3T6K3D',
+  },
+  {
+    name: 'Deep Learning Specialization',
+    issuer: 'DeepLearning.AI',
+    date: 'Jun 2020',
+    url: 'https://coursera.org/share/7ffdcad290c62a9b4aefff9f414861a5',
   },
   {
     // LinkedIn calls this "Deep Learning with PyTorch"; the certificate itself says this.
@@ -59,12 +65,6 @@ export const certifications: readonly Certification[] = [
   },
   // The link on LinkedIn opens a PDF, but its contents could not be checked, so no link yet.
   { name: 'AWS Machine Learning Fundamentals', issuer: 'Udacity', date: 'May 2020' },
-  {
-    name: 'Deep Learning Specialization',
-    issuer: 'DeepLearning.AI',
-    date: 'Jun 2020',
-    url: 'https://coursera.org/share/7ffdcad290c62a9b4aefff9f414861a5',
-  },
   { name: 'Introduction to Programming Using Python', issuer: 'Microsoft', date: 'Jan 2019' },
   // DataCamp pages were behind a bot check, so these have no confirmed link or date yet.
   { name: 'Big Data Fundamentals with PySpark', issuer: 'DataCamp' },
@@ -72,14 +72,3 @@ export const certifications: readonly Certification[] = [
   { name: 'Introduction to TensorFlow in Python', issuer: 'DataCamp' },
   { name: 'Feature Engineering using NLP', issuer: 'DataCamp' },
 ];
-
-/** Certifications grouped by issuer, keeping the order above. */
-export function certificationsByIssuer(
-  list: readonly Certification[] = certifications,
-): { issuer: string; items: Certification[] }[] {
-  const groups = new Map<string, Certification[]>();
-  for (const item of list) {
-    groups.set(item.issuer, [...(groups.get(item.issuer) ?? []), item]);
-  }
-  return [...groups].map(([issuer, items]) => ({ issuer, items }));
-}

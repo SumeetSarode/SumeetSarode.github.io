@@ -6,7 +6,7 @@ import ChapterCard from '../components/ChapterCard.astro';
 import Emblem from '../components/Emblem.astro';
 import Icon from '../components/Icon.astro';
 import { site } from '../config/site';
-import { certificationsByIssuer, degrees } from '../data/education';
+import { certifications, degrees } from '../data/education';
 import { employers, highlights, signatureHeadline } from '../data/experience';
 import { publications, shortVenue } from '../data/publications';
 
@@ -83,7 +83,9 @@ const jsonLd = {
                   <Emblem {...project.data.emblem} size="md" />
                   <span class="mini-text">
                     <span class="mini-title">{project.data.title}</span>
-                    <span class="mini-meta">{project.data.tagline}</span>
+                    <span class="mini-meta">
+                      {project.data.facts[0]!.value} {project.data.facts[0]!.label}
+                    </span>
                   </span>
                 </span>
               ))}
@@ -131,17 +133,20 @@ const jsonLd = {
             tone="indigo"
           >
             <span class="education-preview">
-              <span class="degree-list" role="list" aria-label="Degrees">
+              <span class="preview-list" role="list" aria-label="Degrees">
                 {degrees.map((item) => (
-                  <span class="degree-line" role="listitem">
+                  <span class="preview-line" role="listitem">
                     <Icon name="graduation-cap" size={18} />
                     {item.degree}
                   </span>
                 ))}
               </span>
-              <span class="chips" role="list" aria-label="Certification issuers">
-                {certificationsByIssuer().map((group) => (
-                  <span role="listitem">{group.issuer}</span>
+              <span class="preview-list" role="list" aria-label="Recent certifications">
+                {certifications.slice(0, 2).map((cert) => (
+                  <span class="preview-line" role="listitem">
+                    <Icon name="award" size={18} />
+                    {cert.name}
+                  </span>
                 ))}
               </span>
             </span>
@@ -306,18 +311,18 @@ const jsonLd = {
     display: grid;
     gap: var(--space-4);
   }
-  .degree-list {
+  .preview-list {
     display: grid;
     gap: var(--space-2);
   }
-  .degree-line {
+  .preview-line {
     display: flex;
     gap: var(--space-2);
     align-items: center;
     font-weight: 650;
     color: var(--text);
   }
-  .degree-line :global(svg) {
+  .preview-line :global(svg) {
     flex: none;
     color: var(--accent);
   }
