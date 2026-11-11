@@ -99,6 +99,6 @@ test.describe('works without JavaScript', () => {
     await page.goto('/projects/');
     await expect(page.locator('#work article')).toHaveCount(3);
     await page.goto('/projects/stock-price-predictor/');
-    await expect(page.locator('figure.diagram li.layer')).toHaveCount(5);
+    await expect(page.locator('figure.flow li.step')).toHaveCount(5);
   });
 });

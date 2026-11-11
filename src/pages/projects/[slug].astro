@@ -1,9 +1,12 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ArchitectureDiagram from '../../components/ArchitectureDiagram.astro';
 import Button from '../../components/Button.astro';
+import FlowDiagram from '../../components/FlowDiagram.astro';
+import HighlightCards from '../../components/HighlightCards.astro';
 import PageHero from '../../components/PageHero.astro';
+import ProjectEmblem from '../../components/ProjectEmblem.astro';
+import Rich from '../../components/Rich.astro';
 import Tag from '../../components/Tag.astro';
 import { site } from '../../config/site';
 
@@ -18,7 +21,6 @@ export async function getStaticPaths() {
 
 const { project, next } = Astro.props;
 const { data } = project;
-const { Content } = await render(project);
 const checked = data.checkedOn.toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'long',
@@ -43,6 +45,9 @@ const jsonLd = {
     title={data.title}
     lead={data.tagline}
   >
+    <div slot="visual">
+      <ProjectEmblem {...data.emblem} size="lg" />
+    </div>
     <a slot="before" class="route-link back" href="/projects/">
       <span aria-hidden="true">←</span> All projects
     </a>
@@ -74,11 +79,61 @@ const jsonLd = {
       ))}
     </ul>
 
-    <ArchitectureDiagram caption={data.diagram.caption} layers={data.diagram.layers} />
+    <section class="block" aria-labelledby="challenge-title">
+      <p class="eyebrow">The challenge</p>
+      <h2 id="challenge-title" class="statement">
+        <Rich text={data.challenge.statement} />
+      </h2>
+      <div class="measure">
+        {data.challenge.paragraphs.map((paragraph) => (
+          <p>
+            <Rich text={paragraph} />
+          </p>
+        ))}
+      </div>
+    </section>
 
-    <div class="prose body">
-      <Content />
-    </div>
+    <section class="block" aria-labelledby="how-title">
+      <p class="eyebrow">The build</p>
+      <h2 id="how-title">How it works</h2>
+      <div class="measure">
+        {data.how.intro.map((paragraph) => (
+          <p>
+            <Rich text={paragraph} />
+          </p>
+        ))}
+      </div>
+      {data.how.list && (
+        <div class="list-block">
+          {data.how.listTitle && <h3>{data.how.listTitle}</h3>}
+          <ul class="checks">
+            {data.how.list.map((entry) => (
+              <li>
+                {entry.label && <strong>{entry.label}</strong>} <Rich text={entry.text} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <FlowDiagram caption={data.how.flow.caption} steps={data.how.flow.steps} />
+    </section>
+
+    <section class="block" aria-labelledby="highlights-title">
+      <p class="eyebrow">The thinking</p>
+      <h2 id="highlights-title">What makes it tick</h2>
+      <HighlightCards highlights={data.highlights} />
+    </section>
+
+    <section class="block limits" aria-labelledby="limits-title">
+      <h2 id="limits-title">What it is not</h2>
+      <div class="measure">
+        {data.limits.map((paragraph) => (
+          <p>
+            <Rich text={paragraph} />
+          </p>
+        ))}
+      </div>
+    </section>
 
     {data.attribution && (
       <aside class="attribution" aria-labelledby="credit-title">
@@ -93,8 +148,17 @@ const jsonLd = {
     </p>
 
     <nav class="next" aria-label="More case studies">
-      <p class="muted">Next case study</p>
-      <a href={`/projects/${next.id}/`}>{next.data.title} &rarr;</a>
+      <a href={`/projects/${next.id}/`}>
+        <ProjectEmblem {...next.data.emblem} />
+        <span class="next-text">
+          <span class="next-kicker">Next case study</span>
+          <span class="next-title">{next.data.title}</span>
+          <span class="next-summary">{next.data.summary}</span>
+        </span>
+        <span class="next-arrow" aria-hidden="true">
+          →
+        </span>
+      </a>
     </nav>
   </article>
 </BaseLayout>
@@ -162,24 +226,60 @@ const jsonLd = {
     color: var(--text-muted);
     font-size: var(--step-small);
   }
-  .body {
-    margin-top: var(--space-6);
+
+  /* Each part of the story is its own block with room around it. */
+  .block {
+    margin-top: clamp(3rem, 7vw, 5.5rem);
   }
-  .body :global(h2) {
-    margin-top: var(--space-6);
-    font-size: clamp(1.6rem, 1.3rem + 1vw, 2.1rem);
+  .block h2 {
+    font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem);
   }
-  .body :global(h2:first-child) {
-    margin-top: 0;
+  /* The challenge, as one big sentence. */
+  .statement {
+    max-width: 26ch;
+    font-size: clamp(1.9rem, 1.2rem + 2.8vw, 3.5rem) !important;
+    line-height: 1.1;
   }
-  .body :global(li) {
-    margin-bottom: var(--space-2);
+  .measure {
+    max-width: 46rem;
   }
-  .body :global(code) {
+  .measure :global(code),
+  .checks :global(code) {
     padding: 0.1em 0.35em;
-    background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 0.25rem;
+    background: var(--surface);
+    font-size: 0.9em;
+  }
+  .list-block {
+    margin-top: var(--space-5);
+  }
+  .list-block h3 {
+    margin-bottom: var(--space-3);
+    font-size: 1.25rem;
+  }
+  .checks {
+    display: grid;
+    gap: var(--space-2) var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .checks li {
+    padding: var(--space-3) var(--space-4);
+    border-left: 3px solid var(--accent);
+    background: var(--surface);
+    border-radius: 0 var(--radius-small) var(--radius-small) 0;
+  }
+  .limits .measure {
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--text-muted);
+    border-radius: var(--radius-small);
+    background: var(--surface);
+  }
+  .limits .measure :global(p:last-child) {
+    margin-bottom: 0;
   }
   .attribution {
     max-width: var(--measure);
@@ -199,18 +299,66 @@ const jsonLd = {
     margin-top: var(--space-6);
     font-size: var(--step-small);
   }
+
+  /* The next case study is a whole card, with its emblem. */
   .next {
     margin-top: var(--space-5);
     padding-top: var(--space-5);
     border-top: 1px solid var(--border);
   }
-  .next p {
-    margin: 0 0 var(--space-1);
-    font-size: var(--step-small);
-  }
   .next a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    padding: var(--space-5);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+    color: inherit;
+    text-decoration: none;
+  }
+  .next a:hover .next-title {
+    text-decoration: underline;
+  }
+  .next-text {
+    display: grid;
+    flex: 1;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+  .next-kicker {
+    font-size: var(--step-small);
+    color: var(--text-muted);
+  }
+  .next-title {
     font-family: var(--font-heading);
     font-size: var(--step-1);
-    font-weight: 600;
+    font-weight: 650;
+  }
+  .next-summary {
+    max-width: 52rem;
+    font-size: var(--step-small);
+    color: var(--text-muted);
+  }
+  .next-arrow {
+    font-size: 1.5rem;
+    color: var(--accent);
+  }
+
+  @media (max-width: 39.99rem) {
+    /* On a phone the emblem sits above the text, so the title gets the full width. */
+    .next a {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .next-arrow {
+      display: none;
+    }
+  }
+  @media (min-width: 48rem) {
+    .checks {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 </style>

@@ -1,0 +1,158 @@
+---
+import Icon from './Icon.astro';
+import type { IconName } from '../lib/icon-names';
+
+type Item = string | { label?: string | undefined; chain: readonly string[] };
+
+interface Props {
+  caption: string;
+  steps: readonly { icon: IconName; title: string; items: readonly Item[] }[];
+}
+
+const { caption, steps } = Astro.props;
+---
+
+<!--
+  Plain HTML, so screen readers get a real ordered list, both themes work for free, and no
+  JavaScript is needed. Steps stack on a phone and run left to right on a wide screen.
+-->
+<figure class="flow" style={`--steps: ${steps.length}`}>
+  <figcaption>{caption}</figcaption>
+  <ol class="steps">
+    {steps.map((step) => (
+      <li class="step">
+        <span class="step-icon">
+          <Icon name={step.icon} size={26} />
+        </span>
+        <p class="step-title">{step.title}</p>
+        <ul class="items">
+          {step.items.map((item) =>
+            typeof item === 'string' ? (
+              <li>{item}</li>
+            ) : (
+              <li class="chain">
+                {item.label && <span class="chain-label">{item.label}</span>}
+                <span class="chain-nodes">
+                  {item.chain.map((node, index) => (
+                    <>
+                      {index > 0 && (
+                        <span class="chain-arrow" aria-hidden="true">
+                          →
+                        </span>
+                      )}
+                      {index > 0 && <span class="visually-hidden">, then </span>}
+                      <span class="chain-node">{node}</span>
+                    </>
+                  ))}
+                </span>
+              </li>
+            ),
+          )}
+        </ul>
+      </li>
+    ))}
+  </ol>
+</figure>
+
+<style>
+  .flow {
+    margin: var(--space-6) 0;
+  }
+  figcaption {
+    margin-bottom: var(--space-5);
+    color: var(--text-muted);
+    font-size: var(--step-small);
+  }
+  .steps {
+    display: grid;
+    gap: var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .step {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+    padding: var(--space-5);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+  }
+  .step-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.9rem;
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    color: var(--accent);
+  }
+  .step-title {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: 1.0625rem;
+    font-weight: 650;
+    line-height: 1.3;
+  }
+  .items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .items li {
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--bg);
+    font-size: var(--step-small);
+    line-height: 1.45;
+  }
+  .chain-label {
+    display: block;
+    margin-bottom: 0.2rem;
+    font-weight: 650;
+  }
+  .chain-nodes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.4rem;
+  }
+  .chain-arrow {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  /* The connector between steps: a small arrow in the gap, pointing the way the flow goes. */
+  .step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: calc(-1 * var(--space-6) + 0.35rem);
+    left: 2.25rem;
+    border-inline: 0.55rem solid transparent;
+    border-top: 0.8rem solid var(--accent);
+  }
+
+  @media (min-width: 75rem) {
+    .steps {
+      grid-template-columns: repeat(var(--steps), minmax(0, 1fr));
+    }
+    .step:not(:last-child)::after {
+      top: 2.1rem;
+      right: calc(-1 * var(--space-6) + 0.35rem);
+      bottom: auto;
+      left: auto;
+      border-block: 0.55rem solid transparent;
+      border-inline: 0.8rem solid var(--accent);
+      border-right-width: 0;
+      border-top-width: 0.55rem;
+    }
+  }
+</style>

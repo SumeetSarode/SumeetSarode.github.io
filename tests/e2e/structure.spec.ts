@@ -140,13 +140,35 @@ test.describe('case studies', () => {
         'href',
         /^https:\/\/github\.com\/SumeetSarode\//,
       );
-      await expect(page.locator('figure.diagram li.layer')).not.toHaveCount(0);
-      expect(await page.locator('figure.diagram li.layer').count()).toBeGreaterThanOrEqual(3);
+      await expect(page.locator('figure.flow li.step')).not.toHaveCount(0);
+      expect(await page.locator('figure.flow li.step').count()).toBeGreaterThanOrEqual(3);
       await expect(
         page.getByText(/Facts checked against the project's repository on/),
       ).toBeVisible();
       await expect(page.getByRole('navigation', { name: 'More case studies' })).toBeVisible();
       await expect(page.getByRole('heading', { name: 'What it is not' })).toBeVisible();
+    });
+
+    test(`${path} has named highlights, an emblem and a flow of icons`, async ({ page }) => {
+      await page.goto(path);
+      // Interesting names, never "Decision 1".
+      const headings = await page.getByRole('heading').allInnerTexts();
+      expect(headings.filter((text) => /^decision\s*\d/i.test(text))).toEqual([]);
+      const cards = page.locator('ul.cards > li');
+      await expect(cards).toHaveCount(3);
+      for (const card of await cards.all()) {
+        await expect(card.locator('h3')).not.toBeEmpty();
+        await expect(card.locator('svg')).toHaveCount(1); // its icon
+      }
+      // Every flow step has an icon too, and the header carries the project's emblem.
+      const steps = page.locator('figure.flow li.step');
+      for (const step of await steps.all()) {
+        await expect(step.locator('.step-icon svg')).toHaveCount(1);
+      }
+      const emblem = page.locator('header .emblem');
+      await expect(emblem).toBeVisible();
+      await expect(emblem).toHaveAttribute('aria-hidden', 'true');
+      await expect(emblem.locator('svg')).toHaveCount(2); // the symbol and its badge
     });
   }
 

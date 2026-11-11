@@ -1,0 +1,118 @@
+title: Nuclei Segmentation with Mask R-CNN
+tagline: Fine-tuning a proven segmentation model to find every cell nucleus in a microscope image.
+summary: Instance segmentation of cell nuclei with Mask R-CNN. Start from pretrained nucleus weights, fine-tune the head layers for five epochs, then run detection on microscopy images.
+metaDescription: 'Case study: fine-tuning Mask R-CNN to segment cell nuclei in microscopy images with transfer learning and the Kaggle 2018 Data Science Bowl data.'
+order: 3
+repoUrl: https://github.com/SumeetSarode/Nuclei-Detection-in-Microscopic-Cell-Images
+status: Research and learning project. Not used in production.
+tags:
+  - Python
+  - TensorFlow
+  - Keras
+  - Mask R-CNN
+  - Transfer learning
+checkedOn: 2026-11-10
+attribution: "The Mask R-CNN implementation is Matterport's open-source Keras and TensorFlow version (MIT license). The nucleus training and detection module follows the sample written by Waleed Abdulla for the Kaggle 2018 Data Science Bowl. My work here is applying and fine-tuning that model, not inventing it."
+
+# A microscope, with a segmentation frame for the outlines drawn around each nucleus.
+emblem:
+  main: microscope
+  badge: scan
+  tone: cyan
+
+facts:
+  - value: '2018'
+    label: Kaggle Data Science Bowl dataset
+  - value: '5'
+    label: epochs fine-tuning the head layers
+
+challenge:
+  statement: >-
+    To count and measure cells in a microscope image, you first have to find each nucleus on its
+    own.
+  paragraphs:
+    - >-
+      That is **instance segmentation**: not just "there are nuclei in this picture", but one
+      separate outline per nucleus, even when they touch. Outlining them by hand doesn't scale
+      past a few images.
+
+how:
+  intro:
+    - >-
+      Mask R-CNN is a model that, for every object it finds, predicts a bounding box, a class, and
+      a pixel-level mask. I used Matterport's Keras and TensorFlow implementation and started
+      from weights that had already been trained on nuclei, so I didn't have to learn the basics
+      from scratch. This is transfer learning.
+  listTitle: The work, step by step
+  list:
+    - label: Load the pretrained weights
+      text: into the model.
+    - label: Fine-tune only the head layers
+      text: >-
+        for five epochs on the Kaggle 2018 Data Science Bowl nuclei data, with a training set and
+        a separate validation set.
+    - label: Run detection
+      text: on test images and on other microscopy images, which gives an outline for each nucleus.
+    - label: Write the results
+      text: as overlay images and as run-length-encoded masks in the format Kaggle expects.
+  flow:
+    caption: From a microscope image to one outline per nucleus.
+    steps:
+      - icon: microscope
+        title: Input
+        items:
+          - Microscopy images (Kaggle training and test sets, plus other microscopy images)
+      - icon: package
+        title: Starting point
+        items:
+          - Matterport's Mask R-CNN
+          - Weights already trained on nuclei
+      - icon: sliders-horizontal
+        title: Fine-tuning
+        items:
+          - Train the head layers only
+          - Five epochs on the Kaggle data
+          - Separate training and validation sets
+      - icon: scan-search
+        title: Detection
+        items:
+          - 'For each nucleus: a box, a class, a pixel mask, and a score'
+      - icon: shapes
+        title: Output
+        items:
+          - Overlay images with each nucleus outlined
+          - Run-length-encoded results in Kaggle's submission format
+
+highlights:
+  - icon: package
+    title: Standing on proven weights
+    summary: Start from weights already trained on nuclei, then adapt them.
+    paragraphs:
+      - >-
+        Starting from pretrained nucleus weights meant I didn't have to learn the basics from
+        scratch. It is the standard transfer-learning trade-off: reuse what already works and
+        change only what needs to change.
+  - icon: sliders-horizontal
+    title: Why only the head layers
+    summary: Train the final stages and keep the general visual features.
+    paragraphs:
+      - >-
+        Training only the head layers is cheaper than training the whole network, and it keeps
+        the general visual features the pretrained weights already learned. The final stages,
+        which decide what counts as a nucleus, are the part that adapts to the task.
+  - icon: shapes
+    title: From pixels to outlines
+    summary: One separate mask per nucleus, not one blob for the whole picture.
+    paragraphs:
+      - >-
+        Detection gives each nucleus its own box, class, pixel mask, and score. The results are
+        written as overlay images for people to look at, and as run-length-encoded masks in the
+        format Kaggle expects.
+
+limits:
+  - >-
+    It's a research and learning project, not something running in production. I haven't recorded
+    an accuracy score such as mAP for this run, so I'm not quoting one.
+  - >-
+    The repository includes result overlays for microscopy images from other sources. Those images
+    belong to their original owners, so this page doesn't reproduce them.

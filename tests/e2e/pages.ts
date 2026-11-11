@@ -6,8 +6,8 @@ const projectsDir = fileURLToPath(new URL('../../src/content/projects/', import.
 
 /** One slug per case study file, so a new case study is tested automatically. */
 export const projectSlugs = readdirSync(projectsDir)
-  .filter((name) => name.endsWith('.md'))
-  .map((name) => name.replace(/\.md$/, ''));
+  .filter((name) => name.endsWith('.yaml'))
+  .map((name) => name.replace(/\.yaml$/, ''));
 
 export const projectPaths = projectSlugs.map((slug) => `/projects/${slug}/`);
 

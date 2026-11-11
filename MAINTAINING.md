@@ -61,7 +61,7 @@ previews, and the saved picture all follow. Nothing else needs touching.
 | Education and the certification                                                           | `src/data/education.ts`                               |
 | The short "More on GitHub" list                                                           | `src/data/more-projects.ts`                           |
 | The photo's description for screen readers                                                | `src/config/profile-photo.json` (or use Photo Studio) |
-| A case study                                                                              | `src/content/projects/<name>.md`                      |
+| A case study                                                                              | `src/content/projects/<name>.yaml`                    |
 
 Open a file in any text editor, change the words between the quotes, and save. Don't change the
 punctuation around them.
@@ -75,12 +75,25 @@ punctuation around them.
 
 ## 3. Add a project
 
-1. In `src/content/projects/`, copy an existing `.md` file and rename it (for example `my-new-project.md`).
-2. Change everything between the two `---` lines at the top (title, summary, links, diagram, and so on)
-   and the writing underneath.
+1. In `src/content/projects/`, copy an existing `.yaml` file and rename it (for example `my-new-project.yaml`).
+2. Change the words in it. Each part of the file is one part of the page:
+   - `emblem`: the project's picture. `main` is a big symbol for what it is, `badge` is a small one for what
+     makes it special, and `tone` is its colour (`indigo`, `violet`, or `cyan`). The allowed symbol names are
+     listed in `src/lib/icon-names.ts`.
+   - `challenge`: the problem, as one big sentence plus a few lines.
+   - `how`: the explanation, a list if you want one, and `flow`, the boxes of the diagram (each with a symbol).
+   - `highlights`: exactly three things worth knowing, each with a symbol, a punchy name (never "Decision 1"),
+     and a one-line summary.
+   - `limits`: what the project is not, and which numbers you are not claiming.
+
+   Tip: put `**double stars**` around words to make them bold, and `` `backticks` `` around code.
+
 3. Set `order` to where it should appear (`1` is first).
 4. Run `npm run build`. If you left something out or a line is too long, the error tells you exactly which
-   field to fix. It also appears on the home page automatically.
+   field to fix. It also appears on the Projects page automatically.
+
+To use a symbol that is not in the list yet, add its name to `src/lib/icon-names.ts` and import it in
+`src/lib/icons.ts` (copy the pattern there). Browse the free symbols at lucide.dev.
 
 Set `checkedOn` to today's date after you compare the page with the project's repository. The page shows
 that date to visitors.

@@ -1,0 +1,114 @@
+---
+import Icon from './Icon.astro';
+import Rich from './Rich.astro';
+import type { IconName } from '../lib/icon-names';
+
+interface Props {
+  highlights: readonly {
+    icon: IconName;
+    title: string;
+    summary: string;
+    points?: readonly { label: string; text: string }[] | undefined;
+    paragraphs: readonly string[];
+  }[];
+}
+
+const { highlights } = Astro.props;
+---
+
+<ul class="cards">
+  {highlights.map((highlight) => (
+    <li class="card">
+      <span class="card-icon">
+        <Icon name={highlight.icon} size={28} />
+      </span>
+      <h3>{highlight.title}</h3>
+      <p class="summary">
+        <Rich text={highlight.summary} />
+      </p>
+      {highlight.points && (
+        <ol class="points">
+          {highlight.points.map((point) => (
+            <li>
+              <strong>{point.label}</strong> <Rich text={point.text} />
+            </li>
+          ))}
+        </ol>
+      )}
+      {highlight.paragraphs.map((paragraph) => (
+        <p class="detail">
+          <Rich text={paragraph} />
+        </p>
+      ))}
+    </li>
+  ))}
+</ul>
+
+<style>
+  .cards {
+    display: grid;
+    gap: var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--accent);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+  }
+  .card-icon {
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    color: var(--accent);
+  }
+  h3 {
+    margin: var(--space-2) 0 0;
+    font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+    line-height: 1.2;
+  }
+  .summary {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+  .detail {
+    margin: 0;
+    color: var(--text-muted);
+  }
+  .points {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding-left: 1.25rem;
+    color: var(--text-muted);
+  }
+  .points strong {
+    color: var(--text);
+  }
+  .detail :global(code),
+  .points :global(code) {
+    padding: 0.1em 0.35em;
+    border: 1px solid var(--border);
+    border-radius: 0.25rem;
+    background: var(--bg);
+    font-size: 0.9em;
+  }
+
+  @media (min-width: 64rem) {
+    .cards {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: start;
+    }
+  }
+</style>
