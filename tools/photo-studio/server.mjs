@@ -12,6 +12,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateCrop } from './crop-math.mjs';
 import { validateFilters } from './filters.mjs';
+import { loadFrame } from './frame.mjs';
 import { decodeToMaster, renderProfile, writeFileAtomic } from './process.mjs';
 import {
   MAX_JSON_BYTES,
@@ -128,8 +129,9 @@ export function createStudioServer({ projectRoot, lifecycle }) {
     const input = await readJson(req);
     const upload = isValidUploadId(input.id) ? uploads.get(input.id) : undefined;
     if (!upload) throw new HttpError(404, 'Unknown photo. Choose it again.');
+    const frame = await loadFrame(root);
     const crop = { cx: input.cx, cy: input.cy, size: input.size, rotation: input.rotation };
-    const problem = validateCrop(crop, upload.width, upload.height);
+    const problem = validateCrop(crop, upload.width, upload.height, frame.aspect);
     if (problem) throw new HttpError(400, problem);
     let alt = null;
     if (input.alt !== undefined) {
@@ -148,6 +150,7 @@ export function createStudioServer({ projectRoot, lifecycle }) {
       upload.width,
       upload.height,
       filters,
+      frame,
     );
     await mkdir(dirname(outputPhoto), { recursive: true });
     await writeFileAtomic(outputPhoto, image);
@@ -181,7 +184,7 @@ export function createStudioServer({ projectRoot, lifecycle }) {
       });
     }
     if (req.method === 'GET' && pathname === '/api/state')
-      return send(res, 200, { alt: await currentAlt() });
+      return send(res, 200, { alt: await currentAlt(), frame: await loadFrame(root) });
     if (req.method === 'GET' && pathname.startsWith('/api/image/')) {
       const id = pathname.slice('/api/image/'.length);
       const upload = isValidUploadId(id) ? uploads.get(id) : undefined;

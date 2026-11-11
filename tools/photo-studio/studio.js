@@ -23,6 +23,38 @@ const inputs = {
   alt: $('alt'),
 };
 const previewIds = ['p-light-160', 'p-light-64', 'p-dark-160', 'p-dark-64'];
+const frameCanvases = [stageCanvas, ...previewIds.map($), $('confirm-preview')];
+
+/** The page's photo frame. The page decides the shape; this editor follows it. */
+let frame = { aspect: 1, ratioWidth: 1, ratioHeight: 1, outputWidth: 0, outputHeight: 0 };
+let savedAlt = '';
+
+/** Makes every canvas, and the crop guide, the same shape as the page's frame. */
+function applyFrame(next) {
+  frame = next;
+  document.documentElement.style.setProperty(
+    '--frame-ratio',
+    `${frame.ratioWidth} / ${frame.ratioHeight}`,
+  );
+  // The page's frame has gently rounded corners; show the same shape here.
+  document.documentElement.style.setProperty(
+    '--frame-radius',
+    `8% / ${(8 / frame.aspect).toFixed(2)}%`,
+  );
+  for (const canvas of frameCanvases) canvas.height = Math.round(canvas.width * frame.aspect);
+  $('frame-note').textContent =
+    `Your portfolio shows this photo in a ${frame.ratioWidth}:${frame.ratioHeight} frame. ` +
+    `The saved picture is ${frame.outputWidth} x ${frame.outputHeight} pixels.`;
+}
+
+try {
+  const state = await fetch('/api/state').then((response) => response.json());
+  savedAlt = state.alt ?? '';
+  applyFrame(state.frame);
+} catch {
+  status.textContent = 'Photo Studio could not read the photo frame. Open the app again.';
+  status.classList.add('error');
+}
 
 /** @type {{ id: string, image: HTMLImageElement, width: number, height: number, crop: object } | null} */
 let photo = null;
@@ -61,7 +93,7 @@ function render() {
 
 function syncControls() {
   const { crop, width, height } = photo;
-  const maxSize = maxCropSize(width, height, crop.rotation);
+  const maxSize = maxCropSize(width, height, crop.rotation, frame.aspect);
   inputs.zoom.max = String(Math.max(1.01, maxSize / MIN_CROP_SIZE));
   inputs.zoom.value = String(maxSize / crop.size);
   inputs.fine.value = String(crop.rotation - Math.round(crop.rotation / 90) * 90);
@@ -73,7 +105,7 @@ function syncControls() {
 
 /** Every change goes through here, so the crop is always valid. */
 function update(changes) {
-  photo.crop = clampCrop({ ...photo.crop, ...changes }, photo.width, photo.height);
+  photo.crop = clampCrop({ ...photo.crop, ...changes }, photo.width, photo.height, frame.aspect);
   syncControls();
   render();
 }
@@ -136,7 +168,9 @@ stage.addEventListener('keydown', (event) => {
 
 inputs.zoom.addEventListener('input', () => {
   update({
-    size: maxCropSize(photo.width, photo.height, photo.crop.rotation) / Number(inputs.zoom.value),
+    size:
+      maxCropSize(photo.width, photo.height, photo.crop.rotation, frame.aspect) /
+      Number(inputs.zoom.value),
   });
 });
 inputs.fine.addEventListener('input', () => {
@@ -324,9 +358,4 @@ dropzone.addEventListener('drop', (event) => {
   if (file) openFile(file);
 });
 
-fetch('/api/state')
-  .then((response) => response.json())
-  .then((state) => {
-    inputs.alt.value = state.alt ?? '';
-  })
-  .catch(() => {});
+inputs.alt.value = savedAlt;

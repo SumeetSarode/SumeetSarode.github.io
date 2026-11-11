@@ -14,7 +14,6 @@ import { applyFilters, validateFilters } from './filters.mjs';
 
 const run = promisify(execFile);
 
-export const PROFILE_SIZE = 1200;
 export const PROFILE_QUALITY = 85;
 const MASTER_QUALITY = 95;
 
@@ -53,26 +52,28 @@ export async function decodeToMaster(buffer, type) {
 }
 
 /**
- * Renders the final profile picture: rotate, crop, resize, sRGB, no metadata.
+ * Renders the final profile picture: rotate, crop, resize to the page's frame, sRGB, no metadata.
  * sharp drops EXIF/GPS/XMP/ICC unless asked to keep them, and we never ask.
+ * @param frame the page's photo frame, from frame.mjs (the page decides the shape)
  */
-export async function renderProfile(master, crop, srcWidth, srcHeight, adjustments) {
+export async function renderProfile(master, crop, srcWidth, srcHeight, adjustments, frame) {
   const filters = validateFilters(adjustments);
+  const { outputWidth, outputHeight, aspect } = frame;
   const rotated = await sharp(master)
     .rotate(crop.rotation, { background: '#ffffff' })
     .raw()
     .toBuffer({ resolveWithObject: true });
   const { width, height, channels } = rotated.info;
-  const region = extractRegion(crop, srcWidth, srcHeight, width, height);
+  const region = extractRegion(crop, srcWidth, srcHeight, width, height, aspect);
   const resized = await sharp(rotated.data, { raw: { width, height, channels } })
     .extract(region)
-    .resize(PROFILE_SIZE, PROFILE_SIZE, { fit: 'fill' })
+    .resize(outputWidth, outputHeight, { fit: 'fill' })
     .toColourspace('srgb')
     .raw()
     .toBuffer({ resolveWithObject: true });
   applyFilters(resized.data, resized.info.channels, filters);
   return sharp(resized.data, {
-    raw: { width: PROFILE_SIZE, height: PROFILE_SIZE, channels: resized.info.channels },
+    raw: { width: outputWidth, height: outputHeight, channels: resized.info.channels },
   })
     .jpeg({ quality: PROFILE_QUALITY, mozjpeg: true })
     .toBuffer();

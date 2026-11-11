@@ -131,3 +131,55 @@ describe('extractRegion', () => {
     expect(region.top).toBeGreaterThanOrEqual(0);
   });
 });
+
+describe('tall frames (aspect = height / width)', () => {
+  const TALL = 5 / 4; // the page's 4:5 portrait
+
+  it('cropCorners are as tall as size * aspect', () => {
+    const corners = cropCorners({ cx: 500, cy: 500, size: 200, rotation: 0 }, TALL);
+    expect(corners.map((p) => [p.x, p.y])).toEqual([
+      [400, 375],
+      [600, 375],
+      [600, 625],
+      [400, 625],
+    ]);
+  });
+
+  it('maxCropSize is limited by whichever side runs out first', () => {
+    // Wide photo: the height runs out first (1000 / 1.25 = 800 wide).
+    expect(maxCropSize(2000, 1000, 0, TALL)).toBeCloseTo(800);
+    // Tall photo: the width runs out first.
+    expect(maxCropSize(1000, 4000, 0, TALL)).toBeCloseTo(1000);
+  });
+
+  it('clampCrop always yields a crop that validates (randomised)', () => {
+    let seed = 42;
+    const random = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    for (let i = 0; i < 300; i += 1) {
+      const clamped = clampCrop(
+        {
+          cx: random() * W * 1.5 - W * 0.25,
+          cy: random() * H * 1.5 - H * 0.25,
+          size: 100 + random() * W * 2,
+          rotation: random() * 720 - 360,
+        },
+        W,
+        H,
+        TALL,
+      );
+      expect(validateCrop(clamped, W, H, TALL)).toBeNull();
+    }
+  });
+
+  it('validateCrop rejects a window that is tall enough to leave the photo', () => {
+    // Fits as a square, but its 1.25x height reaches past the top edge.
+    const crop = { cx: 500, cy: 450, size: 800, rotation: 0 };
+    expect(validateCrop(crop, 2000, 2000, 1)).toBeNull();
+    expect(validateCrop(crop, 2000, 2000, TALL)).toMatch(/outside/);
+  });
+
+  it('extractRegion keeps the frame shape', () => {
+    const region = extractRegion({ cx: 1500, cy: 2000, size: 1000, rotation: 0 }, W, H, W, H, TALL);
+    expect(region).toEqual({ left: 1000, top: 1375, width: 1000, height: 1250 });
+  });
+});

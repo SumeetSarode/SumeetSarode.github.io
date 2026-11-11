@@ -6,6 +6,7 @@ import {
   validateFilters,
 } from '../../tools/photo-studio/filters.mjs';
 import { renderProfile } from '../../tools/photo-studio/process.mjs';
+import { parseFrame } from '../../tools/photo-studio/frame.mjs';
 
 describe('photo filters', () => {
   it('keeps pixels unchanged with the defaults', () => {
@@ -50,6 +51,7 @@ describe('photo filters', () => {
       600,
       600,
       { ...DEFAULT_FILTERS, grayscale: true },
+      parseFrame({ ratioWidth: 1, ratioHeight: 1, outputWidth: 600 }),
     );
     const { data } = await sharp(result).raw().toBuffer({ resolveWithObject: true });
     expect(Math.abs(data[0]! - data[1]!)).toBeLessThan(3);

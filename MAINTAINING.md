@@ -21,7 +21,8 @@ You don't need a terminal for this.
 
 2. **Choose a photo.** JPEG, PNG, WebP, and iPhone HEIC photos all work.
 3. **Frame it.** Drag to move, zoom, and rotate. The brightness, contrast, saturation, and black-and-white
-   controls are optional. The round previews show how it will look on a light and a dark background.
+   controls are optional. The previews are the exact shape your website uses, shown on a light and a dark
+   background.
 4. **Write the description.** The "Alt text (read aloud by screen readers)" box is what blind and
    low-vision visitors hear instead of seeing the photo. Describe what's in the picture in a sentence.
 5. Click **Review photo**, look at it, then click **Confirm and update photo**. "Back to editing" or the
@@ -35,6 +36,11 @@ You don't need a terminal for this.
 Your original photo is never changed and is never added to the site. While the editor is open it keeps
 temporary working copies in `tools/photo-studio/.tmp`, and deletes them when it closes. The finished
 picture has all hidden data (location, camera, and so on) removed.
+
+**The page decides the photo's shape; Photo Studio follows it.** The shape (today a tall 4:5 portrait,
+saved at 960 x 1200 pixels) lives in one file, `src/config/photo-frame.json`. The website and Photo
+Studio both read it, so if you ever redesign the frame, change those numbers and the editor, its
+previews, and the saved picture all follow. Nothing else needs touching.
 
 **If your computer refuses to open the app**
 

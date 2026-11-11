@@ -8,9 +8,13 @@ import type { AddressInfo } from 'node:net';
 import sharp from 'sharp';
 import { createStudioServer } from '../../tools/photo-studio/server.mjs';
 import { decodeToMaster, renderProfile } from '../../tools/photo-studio/process.mjs';
+import { parseFrame } from '../../tools/photo-studio/frame.mjs';
 
 const W = 2000;
 const H = 1000;
+
+/** The shape the page uses today: a tall 4:5 portrait, saved 960 x 1200. */
+const frame = parseFrame({ ratioWidth: 4, ratioHeight: 5, outputWidth: 960 });
 
 /** A grey photo with a red block and a blue block, plus planted GPS/camera metadata. */
 async function makePhoto(): Promise<Buffer> {
@@ -48,10 +52,17 @@ describe('renderProfile', () => {
     expect(meta.exif).toBeDefined();
   });
 
-  it('outputs exactly 1200x1200 sRGB with no metadata at all', async () => {
-    const out = await renderProfile(photo, { cx: 1550, cy: 350, size: 400, rotation: 0 }, W, H);
+  it('outputs exactly the page frame (960x1200) in sRGB with no metadata at all', async () => {
+    const out = await renderProfile(
+      photo,
+      { cx: 1550, cy: 350, size: 400, rotation: 0 },
+      W,
+      H,
+      undefined,
+      frame,
+    );
     const meta = await sharp(out).metadata();
-    expect([meta.width, meta.height]).toEqual([1200, 1200]);
+    expect([meta.width, meta.height]).toEqual([960, 1200]);
     expect(meta.space).toBe('srgb');
     expect(meta.exif).toBeUndefined();
     expect(meta.icc).toBeUndefined();
@@ -59,26 +70,44 @@ describe('renderProfile', () => {
     expect(out.toString('latin1')).not.toContain('planted-secret');
   });
 
+  it('follows whatever frame the page asks for (the page decides, not the tool)', async () => {
+    const crop = { cx: 1550, cy: 350, size: 400, rotation: 0 };
+    for (const raw of [
+      { ratioWidth: 1, ratioHeight: 1, outputWidth: 800 },
+      { ratioWidth: 16, ratioHeight: 9, outputWidth: 1280 },
+      { ratioWidth: 3, ratioHeight: 4, outputWidth: 900 },
+    ]) {
+      const wanted = parseFrame(raw);
+      const out = await renderProfile(photo, crop, W, H, undefined, wanted);
+      const meta = await sharp(out).metadata();
+      expect([meta.width, meta.height]).toEqual([wanted.outputWidth, wanted.outputHeight]);
+    }
+  });
+
   it('centres the crop on the requested point (rotation 0)', async () => {
-    const out = await renderProfile(photo, { cx: 1550, cy: 350, size: 400, rotation: 0 }, W, H);
-    near(await pixel(out, 600, 600), [255, 0, 0]); // red at centre
-    near(await pixel(out, 300, 600), [0, 0, 255]); // blue 100 source px left = 300 output px left
+    const crop = { cx: 1550, cy: 350, size: 400, rotation: 0 };
+    const out = await renderProfile(photo, crop, W, H, undefined, frame);
+    near(await pixel(out, 480, 600), [255, 0, 0]); // red at centre
+    near(await pixel(out, 240, 600), [0, 0, 255]); // blue 100 source px left = 240 output px left
   });
 
   it('rotates clockwise by 90 degrees', async () => {
-    const out = await renderProfile(photo, { cx: 1550, cy: 350, size: 400, rotation: 90 }, W, H);
-    near(await pixel(out, 600, 600), [255, 0, 0]);
-    near(await pixel(out, 600, 300), [0, 0, 255]); // "left of centre" became "above centre"
+    const crop = { cx: 1550, cy: 350, size: 400, rotation: 90 };
+    const out = await renderProfile(photo, crop, W, H, undefined, frame);
+    near(await pixel(out, 480, 600), [255, 0, 0]);
+    near(await pixel(out, 480, 360), [0, 0, 255]); // "left of centre" became "above centre"
   });
 
   it('handles a fine rotation without empty corners', async () => {
-    const out = await renderProfile(photo, { cx: 1550, cy: 350, size: 400, rotation: 30 }, W, H);
-    near(await pixel(out, 600, 600), [255, 0, 0]);
+    // A smaller window: a tall window turned 30 degrees would reach outside this photo.
+    const crop = { cx: 1550, cy: 350, size: 300, rotation: 30 };
+    const out = await renderProfile(photo, crop, W, H, undefined, frame);
+    near(await pixel(out, 480, 600), [255, 0, 0]);
     for (const [x, y] of [
       [2, 2],
-      [1197, 2],
+      [957, 2],
       [2, 1197],
-      [1197, 1197],
+      [957, 1197],
     ] as const) {
       expect(await pixel(out, x, y)).not.toEqual([255, 255, 255]); // no white fill showing
     }
@@ -139,6 +168,10 @@ describe('Photo Studio server', () => {
     root = await mkdtemp(join(tmpdir(), 'studio-test-'));
     await mkdir(join(root, 'src/config'), { recursive: true });
     await writeFile(join(root, 'src/config/profile-photo.json'), '{\n  "alt": "old alt"\n}\n');
+    await writeFile(
+      join(root, 'src/config/photo-frame.json'),
+      JSON.stringify({ ratioWidth: 4, ratioHeight: 5, outputWidth: 960 }),
+    );
     server = createStudioServer({ projectRoot: root });
     await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
     port = (server.address() as AddressInfo).port;
@@ -220,7 +253,7 @@ describe('Photo Studio server', () => {
 
     const output = await readFile(join(root, 'src/assets/profile/profile.jpg'));
     const meta = await sharp(output).metadata();
-    expect([meta.width, meta.height, meta.exif]).toEqual([1200, 1200, undefined]);
+    expect([meta.width, meta.height, meta.exif]).toEqual([960, 1200, undefined]);
     expect(JSON.parse(await readFile(join(root, 'src/config/profile-photo.json'), 'utf8'))).toEqual(
       { alt: 'New alt text' },
     );

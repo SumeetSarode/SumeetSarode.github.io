@@ -98,7 +98,7 @@ h2 {
 .stage {
   position: relative;
   width: min(100%, 520px);
-  aspect-ratio: 1;
+  aspect-ratio: var(--frame-ratio, 1);
   overflow: hidden;
   border-radius: 0.5rem;
   background: #888;
@@ -116,7 +116,7 @@ h2 {
 .guide {
   position: absolute;
   inset: 0;
-  border-radius: 50%;
+  border-radius: var(--frame-radius, 0);
   box-shadow: 0 0 0 999px rgb(0 0 0 / 55%);
   outline: 2px solid #fff;
   pointer-events: none;
@@ -229,7 +229,7 @@ button:disabled {
   background: #0f1115;
 }
 .swatch canvas {
-  border-radius: 50%;
+  border-radius: var(--frame-radius, 0);
   background: #888;
 }
 
@@ -268,7 +268,7 @@ dialog::backdrop {
   max-width: 100%;
   height: auto;
   margin: 1rem auto;
-  border-radius: 50%;
+  border-radius: var(--frame-radius, 0);
 }
 
 .top-row {
