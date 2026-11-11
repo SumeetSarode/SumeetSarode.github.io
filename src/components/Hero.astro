@@ -2,8 +2,13 @@
 import { Picture } from 'astro:assets';
 import profile from '../assets/profile/profile.jpg';
 import photo from '../config/profile-photo.json';
+import frame from '../config/photo-frame.json';
 import { site } from '../config/site';
 import Button from './Button.astro';
+
+// The page decides the photo's shape; Photo Studio follows this same setting.
+const frameRatio = `${frame.ratioWidth} / ${frame.ratioHeight}`;
+const frameHeight = Math.round((frame.outputWidth * frame.ratioHeight) / frame.ratioWidth);
 ---
 
 <section class="ink hero" aria-labelledby="hero-title">
@@ -33,17 +38,17 @@ import Button from './Button.astro';
       </ul>
     </div>
 
-    <div class="portrait-wrap rise rise-3">
+    <div class="portrait-wrap rise rise-3" style={`--frame-ratio: ${frameRatio}`}>
       <div class="frame">
         <Picture
           src={profile}
           alt={photo.alt}
-          widths={[360, 720]}
-          sizes="(min-width: 64rem) 360px, (min-width: 40rem) 320px, 70vw"
+          widths={[480, 960]}
+          sizes="(min-width: 64rem) 480px, (min-width: 40rem) 360px, 70vw"
           formats={['avif', 'webp']}
           fallbackFormat="jpg"
-          width={360}
-          height={360}
+          width={frame.outputWidth}
+          height={frameHeight}
           loading="eager"
           fetchpriority="high"
         />
@@ -155,7 +160,7 @@ import Button from './Button.astro';
     display: block;
     width: 100%;
     height: auto;
-    aspect-ratio: 1;
+    aspect-ratio: var(--frame-ratio);
     object-fit: cover;
     border-radius: calc(2rem - 4px);
   }
