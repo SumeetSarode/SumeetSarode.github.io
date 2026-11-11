@@ -1,18 +1,13 @@
 ---
 import Icon from './Icon.astro';
-import type { IconName } from '../lib/icon-names';
+import type { EmblemSpec } from '../lib/emblem';
 
-interface Props {
-  /** What the project is (the big symbol). */
-  main: IconName;
-  /** What makes it special (the small badge in the corner). */
-  badge: IconName;
-  tone?: 'indigo' | 'violet' | 'cyan';
+interface Props extends EmblemSpec {
   /** `lg` for page headers, `md` for cards, `sm` for compact lists. */
   size?: 'sm' | 'md' | 'lg';
 }
 
-const { main, badge, tone = 'indigo', size = 'md' } = Astro.props;
+const { main, badge, tone, size = 'md' } = Astro.props;
 // [symbol size, badge size] in pixels
 const pixels = { sm: [22, 12], md: [36, 16], lg: [64, 26] }[size];
 ---

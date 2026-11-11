@@ -2,11 +2,15 @@
  * Publications, verified against the owner's LinkedIn on 2026-11-10.
  * Only add a `url` after confirming it opens the right paper; never guess one.
  */
+import type { EmblemSpec } from '../lib/emblem';
+
 export interface Publication {
   slug: string;
   title: string;
   venue: string;
   topic: string;
+  /** The paper's picture: a big symbol for the subject, a small badge for the angle. */
+  emblem: EmblemSpec;
   summary: string;
   context: string;
   approach: string;
@@ -28,6 +32,7 @@ export const publications: readonly Publication[] = [
   {
     slug: 'stock-price-prediction',
     topic: 'Machine learning / Financial forecasting',
+    emblem: { main: 'trending-up', badge: 'brain-circuit', tone: 'violet' },
     summary:
       'Combining LSTM-based stock-price forecasting with sentiment analysis of business news.',
     context:
@@ -58,6 +63,7 @@ export const publications: readonly Publication[] = [
   {
     slug: 'smart-irrigation',
     topic: 'IoT / Resource-aware automation',
+    emblem: { main: 'sprout', badge: 'cpu', tone: 'cyan' },
     summary:
       'An IoT irrigation system that switches the water pump on and off from live soil-moisture readings.',
     context:
@@ -76,6 +82,7 @@ export const publications: readonly Publication[] = [
   {
     slug: 'car-automation-iot',
     topic: 'IoT / Connected systems',
+    emblem: { main: 'car', badge: 'wifi', tone: 'indigo' },
     summary: 'Exploring vehicle monitoring and control through IoT, Raspberry Pi, and Arduino.',
     context:
       'Connected vehicle systems bring sensing, monitoring, and control into the same workflow. This publication examines that idea through an IoT approach.',
@@ -93,6 +100,7 @@ export const publications: readonly Publication[] = [
   {
     slug: 'accessible-language-learning',
     topic: 'Assistive technology / Speech translation',
+    emblem: { main: 'languages', badge: 'accessibility', tone: 'violet' },
     summary:
       'A language-learning device concept for blind people, using speech translation with Python and Raspberry Pi.',
     context:

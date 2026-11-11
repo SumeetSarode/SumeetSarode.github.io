@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Emblem from '../../components/Emblem.astro';
 import PageHero from '../../components/PageHero.astro';
 import Button from '../../components/Button.astro';
 import {
@@ -40,6 +41,9 @@ const story = [
     title={paper.title}
     lead={paper.summary}
   >
+    <div slot="visual">
+      <Emblem {...paper.emblem} size="lg" />
+    </div>
     <a slot="before" class="route-link back" href="/research/">
       <span aria-hidden="true">←</span> All research
     </a>

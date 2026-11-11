@@ -4,11 +4,15 @@
  * TypeScript refuses to compile if the two lists ever disagree.
  */
 export const iconNames = [
+  'accessibility',
   'brain-circuit',
+  'car',
   'chart-candlestick',
+  'cpu',
   'database',
   'eye-off',
   'landmark',
+  'languages',
   'layers',
   'life-buoy',
   'microscope',
@@ -23,8 +27,11 @@ export const iconNames = [
   'shield-check',
   'sliders-horizontal',
   'split',
+  'sprout',
   'target',
   'terminal',
+  'trending-up',
+  'wifi',
   'workflow',
 ] as const;
 

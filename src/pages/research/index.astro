@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Emblem from '../../components/Emblem.astro';
 import PageHero from '../../components/PageHero.astro';
 import { publications, publicationYear, shortVenue } from '../../data/publications';
 
@@ -35,25 +36,30 @@ const newestFirst = [...publications].sort((a, b) => b.date.localeCompare(a.date
       <div class="publications">
         {newestFirst.map((paper) => (
           <article class="paper">
-            <div class="paper-meta">
-              <span class="venue-badge">{shortVenue(paper)}</span>
-              <span class="year">{publicationYear(paper)}</span>
+            <div class="paper-visual">
+              <Emblem {...paper.emblem} size="lg" />
             </div>
-            <p class="topic">{paper.topic}</p>
-            <h3>
-              <a href={`/research/${paper.slug}/`}>{paper.title}</a>
-            </h3>
-            <p class="summary">{paper.summary}</p>
-            <div class="paper-actions">
-              <a class="route-link" href={`/research/${paper.slug}/`}>
-                Explore the research <span aria-hidden="true">→</span>
-              </a>
-              {paper.url && (
-                <a class="route-link" href={paper.url} target="_blank" rel="noopener noreferrer">
-                  Read the paper <span aria-hidden="true">↗</span>
-                  <span class="visually-hidden"> (opens in a new tab)</span>
+            <div class="paper-body">
+              <div class="paper-meta">
+                <span class="venue-badge">{shortVenue(paper)}</span>
+                <span class="year">{publicationYear(paper)}</span>
+              </div>
+              <p class="topic">{paper.topic}</p>
+              <h3>
+                <a href={`/research/${paper.slug}/`}>{paper.title}</a>
+              </h3>
+              <p class="summary">{paper.summary}</p>
+              <div class="paper-actions">
+                <a class="route-link" href={`/research/${paper.slug}/`}>
+                  Explore the research <span aria-hidden="true">→</span>
                 </a>
-              )}
+                {paper.url && (
+                  <a class="route-link" href={paper.url} target="_blank" rel="noopener noreferrer">
+                    Read the paper <span aria-hidden="true">↗</span>
+                    <span class="visually-hidden"> (opens in a new tab)</span>
+                  </a>
+                )}
+              </div>
             </div>
           </article>
         ))}
@@ -87,8 +93,8 @@ const newestFirst = [...publications].sort((a, b) => b.date.localeCompare(a.date
   }
   .paper {
     position: relative;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    gap: var(--space-5);
     padding: clamp(1.5rem, 3vw, 2.25rem);
     background: var(--surface);
     border: 1px solid var(--border);
@@ -103,6 +109,21 @@ const newestFirst = [...publications].sort((a, b) => b.date.localeCompare(a.date
     transform: translateY(-3px);
     border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
     box-shadow: var(--shadow-lift);
+  }
+  .paper-visual {
+    padding: 0.5rem;
+  }
+  .paper-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  @media (min-width: 48rem) {
+    .paper {
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: var(--space-6);
+      align-items: start;
+    }
   }
   .paper-meta {
     display: flex;

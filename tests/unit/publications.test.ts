@@ -7,6 +7,7 @@ const base: Publication = {
   venue: 'Journal',
   date: '2019-08-17',
   topic: 'Test topic',
+  emblem: { main: 'cpu', badge: 'wifi', tone: 'indigo' },
   summary: 'Test summary',
   context: 'Test context',
   approach: 'Test approach',

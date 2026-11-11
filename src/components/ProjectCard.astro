@@ -1,7 +1,7 @@
 ---
-import ProjectEmblem from './ProjectEmblem.astro';
+import Emblem from './Emblem.astro';
 import Tag from './Tag.astro';
-import type { IconName } from '../lib/icon-names';
+import type { EmblemSpec } from '../lib/emblem';
 
 interface Props {
   title: string;
@@ -11,7 +11,7 @@ interface Props {
   href: string;
   /** 1-based position, shown on the cover; it also decides which side the cover sits on. */
   position: number;
-  emblem: { main: IconName; badge: IconName; tone: 'indigo' | 'violet' | 'cyan' };
+  emblem: EmblemSpec;
   fact: { value: string; label: string };
 }
 
@@ -24,7 +24,7 @@ const { title, tagline, summary, tags, href, position, emblem, fact } = Astro.pr
       <span class="number" aria-hidden="true">
         {String(position).padStart(2, '0')}
       </span>
-      <ProjectEmblem {...emblem} />
+      <Emblem {...emblem} size="lg" />
     </div>
     <span class="fact">
       <strong>{fact.value}</strong>

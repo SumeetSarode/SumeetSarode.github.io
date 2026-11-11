@@ -231,3 +231,29 @@ test.describe('Experience roles are one column on a phone', () => {
     expect(list.y).toBeGreaterThan(head.y + head.height - 1);
   });
 });
+
+test('every research paper shows its emblem in the list, on its page, and on the home tile', async ({
+  page,
+}) => {
+  await page.goto('/research/');
+  const papers = page.locator('article.paper');
+  await expect(papers).toHaveCount(4);
+  for (const paper of await papers.all()) {
+    await expect(paper.locator('.emblem svg')).toHaveCount(2); // symbol + badge
+  }
+  const firstLink = await papers.first().getByRole('link', { name: 'Explore the research' });
+  await firstLink.click();
+  await expect(page.locator('header .emblem svg')).toHaveCount(2);
+
+  await page.goto('/');
+  await expect(page.locator('.paper-emblems .emblem')).toHaveCount(4);
+});
+
+test('project emblems are big enough to see on the Projects page', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/projects/');
+  for (const emblem of await page.locator('#work .emblem').all()) {
+    const box = (await emblem.boundingBox())!;
+    expect(box.width, 'a project emblem is too small to notice').toBeGreaterThanOrEqual(100);
+  }
+});

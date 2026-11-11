@@ -2,6 +2,7 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { iconNames } from './lib/icon-names';
+import { emblemTones } from './lib/emblem';
 
 const text = z.string().min(1);
 /** Text may use **bold** and `code`; nothing else is interpreted (see src/lib/inline.ts). */
@@ -59,7 +60,7 @@ const projects = defineCollection({
     emblem: z.strictObject({
       main: icon,
       badge: icon,
-      tone: z.enum(['indigo', 'violet', 'cyan']),
+      tone: z.enum(emblemTones),
     }),
     facts: z
       .array(z.strictObject({ value: text, label: text }))

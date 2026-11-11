@@ -5,7 +5,7 @@ import Button from '../../components/Button.astro';
 import FlowDiagram from '../../components/FlowDiagram.astro';
 import HighlightCards from '../../components/HighlightCards.astro';
 import PageHero from '../../components/PageHero.astro';
-import ProjectEmblem from '../../components/ProjectEmblem.astro';
+import Emblem from '../../components/Emblem.astro';
 import Rich from '../../components/Rich.astro';
 import Tag from '../../components/Tag.astro';
 import { site } from '../../config/site';
@@ -46,7 +46,7 @@ const jsonLd = {
     lead={data.tagline}
   >
     <div slot="visual">
-      <ProjectEmblem {...data.emblem} size="lg" />
+      <Emblem {...data.emblem} size="lg" />
     </div>
     <a slot="before" class="route-link back" href="/projects/">
       <span aria-hidden="true">←</span> All projects
@@ -149,7 +149,7 @@ const jsonLd = {
 
     <nav class="next" aria-label="More case studies">
       <a href={`/projects/${next.id}/`}>
-        <ProjectEmblem {...next.data.emblem} />
+        <Emblem {...next.data.emblem} />
         <span class="next-text">
           <span class="next-kicker">Next case study</span>
           <span class="next-title">{next.data.title}</span>

@@ -92,6 +92,9 @@ punctuation around them.
 4. Run `npm run build`. If you left something out or a line is too long, the error tells you exactly which
    field to fix. It also appears on the Projects page automatically.
 
+Research papers (`src/data/publications.ts`) get an `emblem` the same way: a big symbol, a small badge, and a colour.
+Copy the one from an existing paper and change the names.
+
 To use a symbol that is not in the list yet, add its name to `src/lib/icon-names.ts` and import it in
 `src/lib/icons.ts` (copy the pattern there). Browse the free symbols at lucide.dev.
 
