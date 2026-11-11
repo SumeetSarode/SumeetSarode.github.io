@@ -1,0 +1,111 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { moreProjects } from '../../data/more-projects';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+  title="Projects | Sumeet Sarode"
+  description="Personal engineering projects in agentic AI, resilient market-data software, and computer vision. Explore the decisions behind each build."
+>
+  <PageHero
+    eyebrow="02 / Projects"
+    title="Built to learn. Engineered to work."
+    lead="Three personal projects that put the ideas into practice. Each case study covers the problem, the architecture, the trade-offs, and what the project is not."
+  />
+
+  <section id="work" class="section" aria-labelledby="work-title">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Case studies</p>
+          <h2 id="work-title">Selected work</h2>
+        </div>
+        <p>Open a project for the architecture diagram and the decisions behind it.</p>
+      </div>
+      <ul class="grid">
+        {projects.map((project, index) => (
+          <li>
+            <ProjectCard
+              title={project.data.title}
+              tagline={project.data.tagline}
+              summary={project.data.summary}
+              tags={project.data.tags}
+              href={`/projects/${project.id}/`}
+              position={index + 1}
+              fact={project.data.facts[0]!}
+            />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section more-section" aria-labelledby="more-title">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Also on GitHub</p>
+          <h2 id="more-title">More experiments</h2>
+        </div>
+      </div>
+      <ul class="more">
+        {moreProjects.map((project) => (
+          <li class="panel">
+            <h3>
+              <a href={project.url}>
+                {project.name} <span aria-hidden="true">↗</span>
+              </a>
+            </h3>
+            <p>{project.description}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .grid {
+    display: grid;
+    gap: var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .more-section {
+    border-top: 1px solid var(--border);
+  }
+  .more {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .more h3 {
+    font-size: 1.125rem;
+  }
+  .more h3 a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  .more h3 a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+  .more p {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+  }
+  @media (min-width: 56rem) {
+    .more {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

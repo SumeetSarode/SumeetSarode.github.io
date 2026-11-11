@@ -10,9 +10,8 @@ export const site = {
   },
   resumePath: '/resume/sumeet-sarode-resume.pdf',
   heroIntro:
-    'I design and ship production AI systems: multi-agent platforms, guardrailed LLM pipelines, ' +
-    "and the ML that powers them. Today I'm a Principal Data Scientist at Walmart. On my own " +
-    'time, I build things like the projects below.',
+    'I architect multi-agent platforms, guardrailed LLM pipelines, and production machine ' +
+    "learning, now running in every U.S. Walmart and Sam's Club store.",
   metaDescription:
     'Principal Data Scientist and agentic AI architect. Case studies in multi-agent LLM systems, guardrails, and production ML.',
   summary:

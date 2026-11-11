@@ -1,0 +1,58 @@
+---
+/**
+ * The dark header band every inner page opens with.
+ * Slots: "before" (e.g. a back link, above the eyebrow) and the default slot
+ * (actions, stats, or anything else shown under the lead paragraph).
+ */
+interface Props {
+  eyebrow: string;
+  title: string;
+  lead?: string;
+}
+
+const { eyebrow, title, lead } = Astro.props;
+---
+
+<header class="ink page-hero">
+  <div class="container inner">
+    {Astro.slots.has('before') && (
+      <div class="before">
+        <slot name="before" />
+      </div>
+    )}
+    <p class="eyebrow rise">{eyebrow}</p>
+    <h1 class="rise rise-2">{title}</h1>
+    {lead && <p class="lead rise rise-3">{lead}</p>}
+    {Astro.slots.has('default') && (
+      <div class="extra rise rise-4">
+        <slot />
+      </div>
+    )}
+  </div>
+</header>
+
+<style>
+  .page-hero {
+    border-bottom: 1px solid rgb(255 255 255 / 8%);
+  }
+  .inner {
+    padding-block: clamp(3rem, 8vw, 6rem) clamp(2.5rem, 6vw, 4.5rem);
+  }
+  .before {
+    margin-bottom: var(--space-4);
+  }
+  h1 {
+    max-width: 20ch;
+    font-size: clamp(2.25rem, 1.4rem + 3.6vw, 4.5rem);
+  }
+  .lead {
+    max-width: 42rem;
+    margin-top: var(--space-4);
+    font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.3rem);
+    line-height: 1.55;
+    color: var(--text-muted);
+  }
+  .extra {
+    margin-top: var(--space-6);
+  }
+</style>

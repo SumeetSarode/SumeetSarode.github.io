@@ -7,6 +7,8 @@ export interface Role {
   title: string;
   /** Display text, e.g. "Oct 2025 – Present" (en dash). */
   dates: string;
+  /** One line for the home page's career path. A condensed restatement of the bullets, no new claims. */
+  summary: string;
   bullets: readonly string[];
 }
 
@@ -29,6 +31,7 @@ export const employers: readonly Employer[] = [
       {
         title: 'Principal Data Scientist',
         dates: 'Oct 2025 \u2013 Present',
+        summary: 'Architecting multi-agent AI deployed across every U.S. Walmart location.',
         bullets: [
           'Architected, built, and deployed a multi-agent AI platform across every U.S. Walmart location, transforming process guides from documents, chats, and forms into governed, prioritized operational actions.',
           'Established a provider-agnostic LLM architecture integrating model routing, evaluation, guardrails, and human-in-the-loop validation to prevent unchecked model output from triggering operational actions.',
@@ -38,6 +41,8 @@ export const employers: readonly Employer[] = [
       {
         title: 'Senior Data Scientist',
         dates: 'Nov 2023 \u2013 Oct 2025',
+        summary:
+          'Led inventory-intelligence and ML-platform workstreams, scaling models into production on GCP.',
         bullets: [
           "Led multiple workstreams across inventory intelligence and ML platform engineering, protecting ~$100M in annual sales across all U.S. Sam's Club locations.",
           'Scaled item-prioritization models into a production GCP service and delivered a Kubeflow AutoML platform adopted across data science teams.',
@@ -47,6 +52,8 @@ export const employers: readonly Employer[] = [
       {
         title: 'Data Scientist',
         dates: 'Aug 2021 \u2013 Oct 2023',
+        summary:
+          "Built predictive pipelines and ML models deployed across every U.S. Sam's Club location.",
         bullets: [
           "Engineered a daily predictive pipeline ranking priority items for store associates, deployed across all U.S. Sam's Club locations.",
           'Developed ML models identifying potentially incorrect shipments, reducing supplier-related losses by approximately $16M.',
@@ -54,6 +61,37 @@ export const employers: readonly Employer[] = [
         ],
       },
     ],
+  },
+];
+
+/**
+ * The three pillars of the current role, shown as "signature work" on the home page.
+ * Each is a shortened, faithful restatement of a Principal Data Scientist bullet above.
+ * If those bullets change, change these too.
+ */
+export interface Highlight {
+  title: string;
+  description: string;
+}
+
+export const signatureHeadline =
+  'Architected, built, and deployed a multi-agent AI platform across every U.S. Walmart location.';
+
+export const highlights: readonly Highlight[] = [
+  {
+    title: 'Multi-agent platform',
+    description:
+      'Turns process guides from documents, chats, and forms into governed, prioritized operational actions.',
+  },
+  {
+    title: 'Provider-agnostic LLM architecture',
+    description:
+      'Model routing, evaluation, guardrails, and human-in-the-loop validation, so unchecked model output never triggers an operational action.',
+  },
+  {
+    title: 'Real-time knowledge-graph agent',
+    description:
+      'Natural language to Cypher over a Neo4j knowledge graph, connecting live operational signals with process guidance.',
   },
 ];
 

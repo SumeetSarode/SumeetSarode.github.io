@@ -1,11 +1,42 @@
 ---
+import { nav } from '../config/nav';
 import { site } from '../config/site';
 
 const year = new Date().getFullYear();
 ---
 
-<footer class="site-footer">
-  <div class="container">
+<footer class="ink-vars site-footer">
+  <div class="container grid">
+    <div class="brand">
+      <p class="name">{site.name}</p>
+      <p class="title">{site.title}</p>
+    </div>
+    <nav aria-label="Footer">
+      <p class="heading">Explore</p>
+      <ul>
+        {nav.map((item) => (
+          <li>
+            <a href={item.href}>{item.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <div>
+      <p class="heading">Connect</p>
+      <ul>
+        <li>
+          <a href={`mailto:${site.email}`}>Email</a>
+        </li>
+        <li>
+          <a href={site.links.linkedin}>LinkedIn</a>
+        </li>
+        <li>
+          <a href={site.links.github}>GitHub</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="container legal">
     <p>
       &copy; {year} {site.name}. Built with <a href="https://astro.build">Astro</a>.
     </p>
@@ -14,12 +45,62 @@ const year = new Date().getFullYear();
 
 <style>
   .site-footer {
-    padding-block: var(--space-6);
-    border-top: 1px solid var(--border);
-    color: var(--text-muted);
+    background: var(--ink);
+    border-top: 1px solid rgb(255 255 255 / 8%);
     font-size: var(--step-small);
+  }
+  .grid {
+    display: grid;
+    gap: var(--space-6);
+    padding-block: var(--space-7) var(--space-6);
   }
   p {
     margin: 0;
+  }
+  .name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .title {
+    margin-top: var(--space-2);
+    color: var(--text-muted);
+  }
+  .heading {
+    margin-bottom: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  ul {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  ul a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--text);
+    text-decoration: none;
+  }
+  ul a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+  .legal {
+    padding-block: var(--space-5);
+    border-top: 1px solid rgb(255 255 255 / 8%);
+    color: var(--text-muted);
+  }
+  @media (min-width: 48rem) {
+    .grid {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
   }
 </style>

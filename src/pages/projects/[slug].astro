@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ArchitectureDiagram from '../../components/ArchitectureDiagram.astro';
 import Button from '../../components/Button.astro';
+import PageHero from '../../components/PageHero.astro';
 import Tag from '../../components/Tag.astro';
 import { site } from '../../config/site';
 
@@ -37,34 +38,33 @@ const jsonLd = {
 ---
 
 <BaseLayout {title} description={data.metaDescription} type="article" {jsonLd}>
-  <article class="container case">
-    <p class="back">
-      <a href="/#work">&larr; All work</a>
-    </p>
-
-    <header>
-      <h1>{data.title}</h1>
-      <p class="tagline">{data.tagline}</p>
-      <ul class="tags" aria-label="Technologies">
-        {data.tags.map((tag) => (
-          <li>
-            <Tag>{tag}</Tag>
-          </li>
-        ))}
-      </ul>
-      <p class="status">{data.status}</p>
-      {data.disclaimer && (
-        <p class="disclaimer" role="note">
-          <strong>Note:</strong> {data.disclaimer}
-        </p>
-      )}
-      <p>
-        <Button href={data.repoUrl} variant="secondary">
-          View the code on GitHub
-        </Button>
+  <PageHero
+    eyebrow={`Case study · ${String(data.order).padStart(2, '0')}`}
+    title={data.title}
+    lead={data.tagline}
+  >
+    <a slot="before" class="route-link back" href="/projects/">
+      <span aria-hidden="true">←</span> All projects
+    </a>
+    <ul class="tags" aria-label="Technologies">
+      {data.tags.map((tag) => (
+        <li>
+          <Tag>{tag}</Tag>
+        </li>
+      ))}
+    </ul>
+    <p class="status">{data.status}</p>
+    {data.disclaimer && (
+      <p class="disclaimer" role="note">
+        <strong>Note:</strong> {data.disclaimer}
       </p>
-    </header>
+    )}
+    <Button href={data.repoUrl} variant="secondary">
+      View the code on GitHub <span aria-hidden="true">↗</span>
+    </Button>
+  </PageHero>
 
+  <article class="container case">
     <ul class="facts" aria-label="Key facts">
       {data.facts.map((fact) => (
         <li>
@@ -104,16 +104,13 @@ const jsonLd = {
     padding-block: var(--space-6) var(--space-7);
   }
   .back {
-    margin-bottom: var(--space-5);
+    margin-bottom: var(--space-4);
+    color: var(--text-muted);
+    text-decoration: none;
     font-size: var(--step-small);
   }
-  header {
-    max-width: var(--measure);
-  }
-  .tagline {
-    font-family: var(--font-heading);
-    font-size: var(--step-1);
-    line-height: 1.35;
+  .back:hover {
+    color: var(--text);
   }
   .tags {
     display: flex;
@@ -128,10 +125,11 @@ const jsonLd = {
     font-size: var(--step-small);
   }
   .disclaimer {
+    max-width: var(--measure);
     padding: var(--space-3) var(--space-4);
     border: 1px solid var(--border);
     border-left: 4px solid var(--accent);
-    border-radius: var(--radius);
+    border-radius: var(--radius-small);
     background: var(--surface);
     font-size: var(--step-small);
   }
@@ -146,16 +144,19 @@ const jsonLd = {
   .facts li {
     display: flex;
     flex-direction: column;
-    padding: var(--space-4);
+    gap: var(--space-1);
+    padding: var(--space-5);
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
   }
   .facts strong {
-    font-family: var(--font-heading);
-    font-size: var(--step-3);
-    font-weight: 600;
-    line-height: 1.1;
+    font-size: clamp(2.25rem, 1.8rem + 1.6vw, 3.25rem);
+    font-weight: 750;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    color: var(--accent);
   }
   .facts span {
     color: var(--text-muted);
@@ -166,6 +167,7 @@ const jsonLd = {
   }
   .body :global(h2) {
     margin-top: var(--space-6);
+    font-size: clamp(1.6rem, 1.3rem + 1vw, 2.1rem);
   }
   .body :global(h2:first-child) {
     margin-top: 0;

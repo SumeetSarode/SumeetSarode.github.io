@@ -1,0 +1,163 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import { publications, publicationYear, shortVenue } from '../../data/publications';
+
+const newestFirst = [...publications].sort((a, b) => b.date.localeCompare(a.date));
+---
+
+<BaseLayout
+  title="Research | Sumeet Sarode"
+  description="Four research publications by Sumeet Sarode, covering machine learning, IoT-based automation, irrigation control, and accessible language learning."
+>
+  <PageHero
+    eyebrow="03 / Research"
+    title="Questions worth exploring."
+    lead="Published work across machine learning, connected systems, and assistive technology. Open a publication for the problem, the approach, and the full record."
+  >
+    <ul class="venues" aria-label="Publication venues">
+      {newestFirst.map((paper) => (
+        <li>
+          {shortVenue(paper)} · {publicationYear(paper)}
+        </li>
+      ))}
+    </ul>
+  </PageHero>
+
+  <section class="section" aria-labelledby="publications-title">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Publications</p>
+          <h2 id="publications-title">Four papers, newest first</h2>
+        </div>
+        <p>Paper links open the publisher's page in a new tab, so this site stays open.</p>
+      </div>
+      <div class="publications">
+        {newestFirst.map((paper) => (
+          <article class="paper">
+            <div class="paper-meta">
+              <span class="venue-badge">{shortVenue(paper)}</span>
+              <span class="year">{publicationYear(paper)}</span>
+            </div>
+            <p class="topic">{paper.topic}</p>
+            <h3>
+              <a href={`/research/${paper.slug}/`}>{paper.title}</a>
+            </h3>
+            <p class="summary">{paper.summary}</p>
+            <div class="paper-actions">
+              <a class="route-link" href={`/research/${paper.slug}/`}>
+                Explore the research <span aria-hidden="true">→</span>
+              </a>
+              {paper.url && (
+                <a class="route-link" href={paper.url} target="_blank" rel="noopener noreferrer">
+                  Read the paper <span aria-hidden="true">↗</span>
+                  <span class="visually-hidden"> (opens in a new tab)</span>
+                </a>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .venues {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .venues li {
+    padding: 0.4rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    background: rgb(255 255 255 / 5%);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .publications {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .paper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    transition:
+      transform 0.25s,
+      box-shadow 0.25s,
+      border-color 0.25s;
+  }
+  .paper:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+    box-shadow: var(--shadow-lift);
+  }
+  .paper-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+  }
+  .venue-badge {
+    padding: 0.3rem 0.75rem;
+    border-radius: var(--radius-small);
+    background: var(--accent);
+    color: var(--accent-contrast);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .year {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+  }
+  .topic {
+    margin-bottom: var(--space-2);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  h3 {
+    font-size: clamp(1.4rem, 1.2rem + 0.9vw, 1.9rem);
+  }
+  h3 a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  h3 a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+  .summary {
+    color: var(--text-muted);
+  }
+  .paper-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-5);
+    margin-top: auto;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border);
+    font-size: var(--step-small);
+  }
+  @media (min-width: 52rem) {
+    .publications {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

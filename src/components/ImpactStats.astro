@@ -1,0 +1,59 @@
+---
+import { impacts } from '../data/impact';
+
+interface Props {
+  /** Accessible name for the list, so screen readers announce what the numbers are. */
+  label?: string;
+}
+
+const { label = 'Career impact' } = Astro.props;
+---
+
+<ul class="impact" aria-label={label}>
+  {impacts.map((impact) => (
+    <li>
+      <strong>{impact.value}</strong>
+      <span>{impact.label}</span>
+    </li>
+  ))}
+</ul>
+
+<style>
+  /* The 1px gap shows the border colour behind the cells, which draws the dividers. */
+  .impact {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--border);
+    overflow: hidden;
+  }
+  li {
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+    padding: clamp(1rem, 2.5vw, 1.75rem);
+    background: color-mix(in srgb, var(--bg) 82%, var(--surface));
+  }
+  @media (min-width: 56rem) {
+    .impact {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  strong {
+    font-size: clamp(1.5rem, 1.1rem + 1.8vw, 2.6rem);
+    font-weight: 750;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--text);
+  }
+  span {
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: var(--text-muted);
+  }
+</style>

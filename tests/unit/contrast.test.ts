@@ -47,6 +47,24 @@ describe('WCAG 2.2 AA colour contrast', () => {
     });
   }
 
+  describe('ink bands (always dark, in both themes)', () => {
+    const ink = readTheme(':root {');
+    const pairs: [string, string][] = [
+      ['ink-text', 'ink'],
+      ['ink-text', 'ink-raised'],
+      ['ink-muted', 'ink'],
+      ['ink-muted', 'ink-raised'],
+      ['ink-accent', 'ink'],
+      ['ink-accent', 'ink-raised'],
+    ];
+    for (const [fg, bg] of pairs) {
+      it(`${fg} on ${bg} is at least 4.5:1`, () => {
+        const ratio = contrastRatio(ink[fg]!, ink[bg]!);
+        expect(ratio, `${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(4.5);
+      });
+    }
+  });
+
   it('prints the ratios so they can be recorded in a commit message', () => {
     const rows = Object.entries(themes).map(([name, t]) => {
       const r = (a: string, b: string) => contrastRatio(t[a]!, t[b]!).toFixed(2);

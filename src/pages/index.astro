@@ -1,14 +1,17 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
-import WorkSection from '../components/WorkSection.astro';
-import ExperienceSection from '../components/ExperienceSection.astro';
-import ResearchSection from '../components/ResearchSection.astro';
-import ContactSection from '../components/ContactSection.astro';
+import ChapterCard from '../components/ChapterCard.astro';
 import { site } from '../config/site';
+import { employers, highlights, signatureHeadline } from '../data/experience';
+import { publications, shortVenue } from '../data/publications';
 
-// Search engines read this. Name, title, and public profiles only:
-// no phone number and no address, by design.
+// Newest first, matching the Experience page.
+const career = employers[0]!.roles;
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+
+// Search engines read this. Name, title, and public profiles only: no phone number or address.
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
@@ -19,10 +22,347 @@ const jsonLd = {
 };
 ---
 
-<BaseLayout title={`${site.name} \u2014 Principal Data Scientist & Agentic AI Architect`} {jsonLd}>
+<BaseLayout title={`${site.name} — Principal Data Scientist & Agentic AI Architect`} {jsonLd}>
   <Hero />
-  <WorkSection />
-  <ExperienceSection />
-  <ResearchSection />
-  <ContactSection />
+
+  <section class="section" aria-labelledby="chapters-title">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Explore the work</p>
+          <h2 id="chapters-title">Four chapters. Start with the career.</h2>
+        </div>
+        <p>Each section opens on its own page, from enterprise impact to research.</p>
+      </div>
+
+      <div class="chapters">
+        <div class="slot-experience">
+          <ChapterCard
+            number="01"
+            label="Experience"
+            title="Experience"
+            description="From hands-on data science to architecting production multi-agent AI, with measurable impact at every step."
+            href="/experience/"
+            cta="Explore the career"
+            tone="indigo"
+            featured
+          >
+            <span class="path" role="list" aria-label="Career path">
+              {career.map((role, index) => (
+                <span class:list={['path-step', { current: index === 0 }]} role="listitem">
+                  <span class="path-title">
+                    {role.title}
+                    {index === 0 && <span class="now">Current</span>}
+                  </span>
+                  <span class="path-dates">{role.dates}</span>
+                  <span class="path-summary">{role.summary}</span>
+                </span>
+              ))}
+            </span>
+          </ChapterCard>
+        </div>
+
+        <div class="slot-projects">
+          <ChapterCard
+            number="02"
+            label="Projects"
+            title="Projects"
+            description="Personal builds in agent reliability, resilient software, and computer vision."
+            href="/projects/"
+            cta="See the case studies"
+            tone="violet"
+          >
+            <span class="mini-list" role="list" aria-label="Case studies">
+              {projects.map((project) => (
+                <span class="mini" role="listitem">
+                  <span class="mini-title">{project.data.title}</span>
+                  <span class="mini-meta">
+                    {project.data.facts[0]!.value} {project.data.facts[0]!.label}
+                  </span>
+                </span>
+              ))}
+            </span>
+          </ChapterCard>
+        </div>
+
+        <div class="slot-research">
+          <ChapterCard
+            number="03"
+            label="Research"
+            title="Research"
+            description="Peer-reviewed work across machine learning, IoT, and assistive technology."
+            href="/research/"
+            cta="Read the research"
+            tone="cyan"
+          >
+            <span class="research-preview">
+              <span class="big-number">
+                {String(publications.length).padStart(2, '0')}
+                <span>publications</span>
+              </span>
+              <span class="venues" role="list" aria-label="Venues">
+                {publications.map((paper) => (
+                  <span role="listitem">{shortVenue(paper)}</span>
+                ))}
+              </span>
+            </span>
+          </ChapterCard>
+        </div>
+
+        <div class="slot-contact">
+          <ChapterCard
+            number="04"
+            label="Contact"
+            title="Let's talk"
+            description="Production AI, reliable agents, or an engineering problem worth solving."
+            href="/contact/"
+            cta="Get in touch"
+            tone="ink"
+          >
+            <span class="contact-preview">{site.email}</span>
+          </ChapterCard>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section signature" aria-labelledby="signature-title">
+    <div class="container">
+      <p class="eyebrow">Signature work</p>
+      <h2 id="signature-title">{signatureHeadline}</h2>
+      <ol class="pillars">
+        {highlights.map((highlight, index) => (
+          <li>
+            <span class="pillar-number" aria-hidden="true">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <h3>{highlight.title}</h3>
+            <p>{highlight.description}</p>
+          </li>
+        ))}
+      </ol>
+      <a class="route-link" href="/experience/">
+        See the full career story <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .chapters {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .chapters > div {
+    min-width: 0;
+  }
+
+  /* Experience preview: the roles as steps on a line, newest at the top. */
+  .path {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding: var(--space-2) 0 0 2.25rem;
+  }
+  /* Steps share the tile's height, so the path fills the space without a gap at the bottom. */
+  .path-step {
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .path-step:last-child {
+    flex: 0 0 auto;
+  }
+  /* The line: one segment from each marker down to the next marker. */
+  .path-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 1.5rem;
+    bottom: calc(-1 * var(--space-5) - 0.35rem);
+    left: calc(-2.25rem + 0.5rem);
+    width: 2px;
+    background: linear-gradient(180deg, var(--accent), var(--border));
+  }
+  .path-step::before {
+    content: '';
+    position: absolute;
+    top: 0.35rem;
+    left: -2.25rem;
+    width: 1.125rem;
+    height: 1.125rem;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    background: var(--surface);
+  }
+  .current::before {
+    border-color: var(--accent);
+    background: var(--accent);
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+  .path-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .now {
+    padding: 0.15rem 0.6rem;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    color: var(--accent-contrast);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+  .path-dates {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+  .path-summary {
+    max-width: 34rem;
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+  }
+
+  /* Projects preview. */
+  .mini-list {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .mini {
+    display: grid;
+    gap: 0.1rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: color-mix(in srgb, var(--bg) 60%, transparent);
+  }
+  .mini-title {
+    font-size: 0.9375rem;
+    font-weight: 650;
+  }
+  .mini-meta {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+  }
+
+  /* Research preview. */
+  .research-preview {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .big-number {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    font-size: clamp(3.5rem, 3rem + 2vw, 4.5rem);
+    font-weight: 750;
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+  .big-number span {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--text-muted);
+  }
+  .venues {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .venues span {
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  .contact-preview {
+    font-size: clamp(1rem, 0.9rem + 0.6vw, 1.375rem);
+    font-weight: 600;
+    word-break: break-all;
+  }
+
+  /* Signature work. */
+  .signature {
+    border-top: 1px solid var(--border);
+  }
+  .signature h2 {
+    max-width: 24ch;
+    font-size: clamp(1.9rem, 1.3rem + 2.6vw, 3.5rem);
+  }
+  .pillars {
+    display: grid;
+    gap: var(--space-4);
+    margin: clamp(2rem, 5vw, 3.5rem) 0 var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+  .pillars li {
+    padding: var(--space-5) 0 0;
+    border-top: 2px solid var(--border);
+  }
+  .pillar-number {
+    display: block;
+    margin-bottom: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .pillars h3 {
+    font-size: 1.25rem;
+  }
+  .pillars p {
+    margin: 0;
+    color: var(--text-muted);
+  }
+
+  @media (min-width: 48rem) {
+    .chapters {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .slot-experience,
+    .slot-contact {
+      grid-column: 1 / -1;
+    }
+    .pillars {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+    }
+  }
+  @media (min-width: 64rem) {
+    .chapters {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .slot-experience {
+      grid-column: 1 / 3;
+      grid-row: 1 / 3;
+    }
+    .slot-projects,
+    .slot-research {
+      grid-column: 3;
+    }
+    /* Here the tile spans two rows, so the path gets room to breathe. */
+    .path-title {
+      font-size: 1.625rem;
+    }
+    .path-dates {
+      font-size: 0.8125rem;
+    }
+    .path-summary {
+      font-size: 1.0625rem;
+    }
+  }
+</style>

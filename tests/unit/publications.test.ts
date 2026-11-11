@@ -1,7 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { publicationMeta, publications, type Publication } from '../../src/data/publications';
 
-const base: Publication = { title: 'T', venue: 'Journal', date: '2019-08-17' };
+const base: Publication = {
+  slug: 'test-publication',
+  title: 'T',
+  venue: 'Journal',
+  date: '2019-08-17',
+  topic: 'Test topic',
+  summary: 'Test summary',
+  context: 'Test context',
+  approach: 'Test approach',
+  scope: 'Test scope',
+};
 
 describe('publicationMeta', () => {
   it('joins venue and year with a trailing period', () => {

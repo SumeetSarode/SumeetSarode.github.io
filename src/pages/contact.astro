@@ -1,0 +1,144 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../config/site';
+
+const channels = [
+  {
+    label: 'Email',
+    value: site.email,
+    note: 'The quickest way to reach me.',
+    href: `mailto:${site.email}`,
+    primary: true,
+  },
+  {
+    label: 'LinkedIn',
+    value: 'in/SumeetSarode',
+    note: 'Full career history.',
+    href: site.links.linkedin,
+    primary: false,
+  },
+  {
+    label: 'GitHub',
+    value: 'SumeetSarode',
+    note: 'The code behind every case study.',
+    href: site.links.github,
+    primary: false,
+  },
+];
+---
+
+<BaseLayout
+  title="Contact | Sumeet Sarode"
+  description="Get in touch with Sumeet Sarode about production AI, agent reliability, machine learning, and personal engineering projects."
+  closing={false}
+>
+  <PageHero
+    eyebrow="04 / Contact"
+    title="Let's compare notes."
+    lead="Production AI, reliable agents, or an engineering problem worth solving. I'm always glad to talk."
+  />
+
+  <section class="section" aria-labelledby="channels-title">
+    <div class="container">
+      <h2 id="channels-title" class="visually-hidden">
+        Ways to reach me
+      </h2>
+      <ul class="channels">
+        {channels.map((channel) => (
+          <li>
+            <a class:list={['channel', { primary: channel.primary }]} href={channel.href}>
+              <span class="label">{channel.label}</span>
+              <span class="value">{channel.value}</span>
+              <span class="note">{channel.note}</span>
+              <span class="arrow" aria-hidden="true">
+                ↗
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="resume">
+        Prefer a document?
+        <a class="route-link" href={site.resumePath} download>
+          Download my résumé (PDF)
+        </a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .channels {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .channel {
+    position: relative;
+    display: grid;
+    gap: var(--space-2);
+    height: 100%;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    color: var(--text);
+    text-decoration: none;
+    transition:
+      transform 0.25s,
+      box-shadow 0.25s,
+      border-color 0.25s;
+  }
+  .channel:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+    box-shadow: var(--shadow-lift);
+  }
+  .primary {
+    background: var(--accent);
+    border-color: transparent;
+    color: var(--accent-contrast);
+  }
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+  .value {
+    margin-top: var(--space-4);
+    font-size: clamp(1.15rem, 1rem + 0.8vw, 1.6rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    word-break: break-all;
+  }
+  .note {
+    font-size: 0.9375rem;
+    opacity: 0.85;
+  }
+  .arrow {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    font-size: 1.25rem;
+  }
+  .resume {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--space-3);
+    margin: var(--space-6) 0 0;
+    color: var(--text-muted);
+  }
+  @media (min-width: 56rem) {
+    .channels {
+      grid-template-columns: 1.4fr 1fr 1fr;
+    }
+  }
+</style>

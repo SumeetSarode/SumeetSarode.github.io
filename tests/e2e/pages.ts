@@ -1,3 +1,4 @@
+import { publications } from '../../src/data/publications';
 import { readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
@@ -11,7 +12,16 @@ export const projectSlugs = readdirSync(projectsDir)
 export const projectPaths = projectSlugs.map((slug) => `/projects/${slug}/`);
 
 /** Every real page of the site. */
-export const allPaths = ['/', ...projectPaths];
+export const researchPaths = publications.map((paper) => `/research/${paper.slug}/`);
+export const allPaths = [
+  '/',
+  '/experience/',
+  '/projects/',
+  '/research/',
+  '/contact/',
+  ...projectPaths,
+  ...researchPaths,
+];
 
 export const themes = ['light', 'dark'] as const;
 export type ThemeName = (typeof themes)[number];

@@ -1,0 +1,158 @@
+---
+/**
+ * One home-page "chapter": the whole card is a single link to a section.
+ * The default slot holds a small preview of what the section contains.
+ */
+interface Props {
+  number: string;
+  label: string;
+  title: string;
+  description: string;
+  href: string;
+  cta: string;
+  tone: 'indigo' | 'violet' | 'cyan' | 'ink';
+  featured?: boolean;
+}
+
+const { number, label, title, description, href, cta, tone, featured = false } = Astro.props;
+---
+
+<a class:list={['chapter', `tone-${tone}`, { featured, ink: tone === 'ink' }]} {href}>
+  <span class="topline">
+    <span class="number">{number}</span>
+    <span class="label">{label}</span>
+    <span class="arrow" aria-hidden="true">
+      ↗
+    </span>
+  </span>
+  <h3>{title}</h3>
+  <p class="description">{description}</p>
+  <span class="preview">
+    <slot />
+  </span>
+  <span class="cta">
+    {cta} <span aria-hidden="true">→</span>
+  </span>
+</a>
+
+<style>
+  .chapter {
+    --tone: var(--glow-indigo);
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-height: 100%;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    color: var(--text);
+    text-decoration: none;
+    transition:
+      transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1),
+      box-shadow 0.25s,
+      border-color 0.25s;
+  }
+  .tone-violet {
+    --tone: var(--glow-violet);
+  }
+  .tone-cyan {
+    --tone: var(--glow-cyan);
+  }
+  /* A soft wash of the card's colour in the top corner, plus a coloured top edge. */
+  .chapter::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(
+      28rem 16rem at 100% 0%,
+      color-mix(in srgb, var(--tone) 16%, transparent),
+      transparent 70%
+    );
+  }
+  .chapter::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 3px;
+    background: linear-gradient(90deg, var(--tone), transparent);
+  }
+  .chapter:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--tone) 55%, var(--border));
+    box-shadow: var(--shadow-lift);
+  }
+  .chapter:hover .arrow {
+    transform: translate(3px, -3px);
+    background: var(--accent);
+    color: var(--accent-contrast);
+  }
+  .topline {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .number {
+    color: var(--accent);
+  }
+  .arrow {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-left: auto;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    font-size: 1rem;
+    color: var(--accent);
+    transition:
+      transform 0.25s,
+      background-color 0.25s,
+      color 0.25s;
+  }
+  h3 {
+    margin: var(--space-3) 0 0;
+    font-size: clamp(1.75rem, 1.4rem + 1.2vw, 2.25rem);
+  }
+  .featured h3 {
+    font-size: clamp(2rem, 1.5rem + 2vw, 3.25rem);
+  }
+  .description {
+    margin: 0;
+    max-width: 32rem;
+    color: var(--text-muted);
+  }
+  .preview {
+    display: block;
+    margin-block: var(--space-4);
+  }
+  /* The featured card can be taller than its text, so its preview grows to fill the space. */
+  .featured .preview {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+  .cta {
+    margin-top: auto;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border);
+    font-size: var(--step-small);
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .ink {
+    background: var(--ink);
+    border-color: rgb(255 255 255 / 10%);
+  }
+</style>

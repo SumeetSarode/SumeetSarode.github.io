@@ -34,7 +34,8 @@ test.describe('touch targets (44 px tall) on a phone', () => {
   });
 
   test('a whole project card is the tap target, not just its title', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/projects/');
+    await expect(page.locator('#work article')).toHaveCount(3);
     for (const card of await page.locator('#work article').all()) {
       await card.scrollIntoViewIfNeeded(); // elementFromPoint only sees what is on screen
       const cardBox = (await card.boundingBox())!;

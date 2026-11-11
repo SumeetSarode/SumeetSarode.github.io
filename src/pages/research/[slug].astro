@@ -1,0 +1,291 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Button from '../../components/Button.astro';
+import {
+  publicationMeta,
+  publications,
+  publicationYear,
+  shortVenue,
+} from '../../data/publications';
+
+export function getStaticPaths() {
+  return publications.map((paper, index) => ({
+    params: { slug: paper.slug },
+    props: {
+      paper,
+      previous: publications[(index + publications.length - 1) % publications.length]!,
+      next: publications[(index + 1) % publications.length]!,
+    },
+  }));
+}
+
+const { paper, previous, next } = Astro.props;
+const listedOn = new Date(paper.date).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  timeZone: 'UTC',
+});
+const story = [
+  { title: 'The question', text: paper.context },
+  { title: 'The approach', text: paper.approach },
+  { title: 'Scope of the work', text: paper.scope },
+];
+---
+
+<BaseLayout title={`${paper.title} | Research | Sumeet Sarode`} description={paper.summary}>
+  <PageHero
+    eyebrow={`${shortVenue(paper)} · ${publicationYear(paper)}`}
+    title={paper.title}
+    lead={paper.summary}
+  >
+    <a slot="before" class="route-link back" href="/research/">
+      <span aria-hidden="true">←</span> All research
+    </a>
+    {(paper.url || paper.codeUrl) && (
+      <ul class="actions">
+        {paper.url && (
+          <li>
+            <Button href={paper.url} newTab>
+              Read the publication <span aria-hidden="true">↗</span>
+            </Button>
+          </li>
+        )}
+        {paper.codeUrl && (
+          <li>
+            <Button href={paper.codeUrl} variant="secondary" newTab>
+              View related code <span aria-hidden="true">↗</span>
+            </Button>
+          </li>
+        )}
+      </ul>
+    )}
+  </PageHero>
+
+  <div class="container section layout">
+    <article class="story">
+      <p class="topic">{paper.topic}</p>
+      {story.map((part, index) => (
+        <section class="part">
+          <span class="part-number" aria-hidden="true">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+          <h2>{part.title}</h2>
+          <p>{part.text}</p>
+        </section>
+      ))}
+    </article>
+
+    <aside class="panel record" aria-labelledby="record-title">
+      <p class="eyebrow">Publication record</p>
+      <h2 id="record-title">{paper.venue}</h2>
+      {paper.detail && <p class="detail">{paper.detail}</p>}
+      <dl>
+        {paper.issue && (
+          <>
+            <dt>Issue</dt>
+            <dd>{paper.issue}</dd>
+          </>
+        )}
+        <dt>Date listed on LinkedIn</dt>
+        <dd>
+          <time datetime={paper.date}>{listedOn}</time>
+        </dd>
+        <dt>Author</dt>
+        <dd>Sumeet Sarode</dd>
+        {paper.coAuthors && (
+          <>
+            <dt>Co-authors</dt>
+            <dd>{paper.coAuthors.join(', ')}</dd>
+          </>
+        )}
+        {paper.doi && (
+          <>
+            <dt>DOI</dt>
+            <dd>
+              <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer">
+                {paper.doi}
+                <span class="visually-hidden"> (opens in a new tab)</span>
+              </a>
+            </dd>
+          </>
+        )}
+      </dl>
+      <p class="citation">{publicationMeta(paper)}</p>
+      {paper.sources && (
+        <details>
+          <summary>Sources and further reading</summary>
+          <ul>
+            {paper.sources.map((source) => (
+              <li>
+                <a href={source.url} target="_blank" rel="noopener noreferrer">
+                  {source.label}
+                  <span class="visually-hidden"> (opens in a new tab)</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
+    </aside>
+  </div>
+
+  <nav class="container research-next" aria-label="More research">
+    <a href={`/research/${previous.slug}/`}>
+      <span class="direction">← Previous publication</span>
+      <strong>{previous.title}</strong>
+    </a>
+    <a href={`/research/${next.slug}/`} class="forward">
+      <span class="direction">Next publication →</span>
+      <strong>{next.title}</strong>
+    </a>
+  </nav>
+</BaseLayout>
+
+<style>
+  .back {
+    margin-bottom: var(--space-4);
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: var(--step-small);
+  }
+  .back:hover {
+    color: var(--text);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .layout {
+    display: grid;
+    gap: var(--space-6);
+    align-items: start;
+  }
+  .topic {
+    margin-bottom: var(--space-5);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .part {
+    display: grid;
+    gap: var(--space-2);
+    padding-block: var(--space-5);
+    border-top: 1px solid var(--border);
+  }
+  .part-number {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .part h2 {
+    margin: 0;
+    font-size: clamp(1.4rem, 1.2rem + 0.8vw, 1.85rem);
+  }
+  .part p {
+    max-width: 44rem;
+    margin: 0;
+    font-size: 1.0625rem;
+    color: var(--text-muted);
+  }
+  .record h2 {
+    font-size: 1.2rem;
+  }
+  .detail,
+  dl,
+  .citation,
+  details {
+    font-size: 0.875rem;
+  }
+  dl {
+    margin: var(--space-4) 0 0;
+  }
+  dt {
+    margin-top: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  dd {
+    margin: 0.25rem 0 0;
+  }
+  .citation {
+    margin-top: var(--space-5);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+  summary {
+    display: flex;
+    align-items: center;
+    min-height: 2.75rem;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  details ul {
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+  details li {
+    padding-block: 0.4rem;
+  }
+  .research-next {
+    display: grid;
+    gap: var(--space-4);
+    padding-bottom: var(--space-7);
+  }
+  .research-next a {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    color: var(--text);
+    text-decoration: none;
+    transition:
+      transform 0.25s,
+      border-color 0.25s;
+  }
+  .research-next a:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  }
+  .direction {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .research-next strong {
+    font-size: 1.125rem;
+    line-height: 1.35;
+  }
+  @media (min-width: 56rem) {
+    .layout {
+      grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+    }
+    .record {
+      position: sticky;
+      top: 6rem;
+    }
+    .research-next {
+      grid-template-columns: 1fr 1fr;
+    }
+    .forward {
+      text-align: right;
+    }
+  }
+</style>

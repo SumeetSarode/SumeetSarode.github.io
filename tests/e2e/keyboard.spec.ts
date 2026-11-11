@@ -94,9 +94,10 @@ test.describe('works without JavaScript', () => {
 
   test('all the content is still there', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByRole('heading', { level: 1, name: 'Sumeet Sarode' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Sumeet Sarode');
+    await expect(page.getByRole('heading', { name: 'Experience', exact: true })).toBeVisible();
+    await page.goto('/projects/');
     await expect(page.locator('#work article')).toHaveCount(3);
-    await expect(page.getByRole('heading', { name: 'Experience' })).toBeVisible();
     await page.goto('/projects/stock-price-predictor/');
     await expect(page.locator('figure.diagram li.layer')).toHaveCount(5);
   });

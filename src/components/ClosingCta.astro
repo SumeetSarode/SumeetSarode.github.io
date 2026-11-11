@@ -1,0 +1,59 @@
+---
+import { site } from '../config/site';
+import Button from './Button.astro';
+---
+
+<section class="ink closing" aria-labelledby="closing-title">
+  <div class="container inner">
+    <p class="eyebrow">Let's talk</p>
+    <h2 id="closing-title">
+      Building AI that has to be <span class="gradient-text">right?</span>
+    </h2>
+    <p class="lead">
+      I'm glad to compare notes on production AI, agent reliability, and turning models into systems
+      people trust.
+    </p>
+    <ul class="actions">
+      <li>
+        <Button href={`mailto:${site.email}`}>
+          Email me <span aria-hidden="true">→</span>
+        </Button>
+      </li>
+      <li>
+        <Button href={site.links.linkedin} variant="secondary">
+          Connect on LinkedIn
+        </Button>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .inner {
+    padding-block: clamp(4rem, 9vw, 7rem);
+    text-align: center;
+  }
+  .eyebrow {
+    justify-content: center;
+  }
+  h2 {
+    max-width: 18ch;
+    margin-inline: auto;
+    font-size: clamp(2.25rem, 1.5rem + 3.4vw, 4.25rem);
+    letter-spacing: -0.045em;
+  }
+  .lead {
+    max-width: 34rem;
+    margin: var(--space-4) auto 0;
+    color: var(--text-muted);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+    margin: var(--space-6) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

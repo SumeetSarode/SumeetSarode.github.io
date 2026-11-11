@@ -83,8 +83,8 @@ for (const path of allPaths) {
 }
 
 test.describe('home page', () => {
-  test('lists the case studies in the agreed order', async ({ page }) => {
-    await page.goto('/');
+  test('lists the case studies in the agreed order on their own page', async ({ page }) => {
+    await page.goto('/projects/');
     const titles = await page.locator('#work article h3').allInnerTexts();
     expect(titles).toEqual([
       'Stock Price Predictor',
@@ -94,7 +94,7 @@ test.describe('home page', () => {
   });
 
   test('each project card is a single link', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/projects/');
     for (const card of await page.locator('#work article').all()) {
       await expect(card.locator('a')).toHaveCount(1);
     }

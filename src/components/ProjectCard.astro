@@ -7,51 +7,135 @@ interface Props {
   summary: string;
   tags: readonly string[];
   href: string;
-  /** The lead project gets a larger, more prominent card. */
-  featured?: boolean;
+  /** 1-based position, shown on the cover and used to pick its colour. */
+  position: number;
+  fact: { value: string; label: string };
 }
 
-const { title, tagline, summary, tags, href, featured = false } = Astro.props;
+const { title, tagline, summary, tags, href, position, fact } = Astro.props;
+const tones = ['indigo', 'violet', 'cyan'] as const;
+const tone = tones[(position - 1) % tones.length];
 ---
 
-<article class:list={['project-card', { featured }]}>
-  <h3>
-    <a class="stretched" {href}>
-      {title}
-    </a>
-  </h3>
-  <p class="tagline">{tagline}</p>
-  <p class="summary">{summary}</p>
-  <ul class="tags" aria-label="Technologies">
-    {tags.slice(0, 5).map((tag) => (
-      <li>
-        <Tag>{tag}</Tag>
-      </li>
-    ))}
-  </ul>
-  <p class="cta" aria-hidden="true">
-    Read the case study &rarr;
-  </p>
+<article class:list={['project-card', `tone-${tone}`, { reverse: position % 2 === 0 }]}>
+  <div class="cover ink-vars">
+    <span class="number" aria-hidden="true">
+      {String(position).padStart(2, '0')}
+    </span>
+    <span class="fact">
+      <strong>{fact.value}</strong>
+      <span>{fact.label}</span>
+    </span>
+  </div>
+  <div class="content">
+    <h3>
+      <a class="stretched" {href}>
+        {title}
+      </a>
+    </h3>
+    <p class="tagline">{tagline}</p>
+    <p class="summary">{summary}</p>
+    <ul class="tags" aria-label="Technologies">
+      {tags.slice(0, 5).map((tag) => (
+        <li>
+          <Tag>{tag}</Tag>
+        </li>
+      ))}
+    </ul>
+    <p class="cta" aria-hidden="true">
+      Read the case study <span>→</span>
+    </p>
+  </div>
 </article>
 
 <style>
   .project-card {
+    --tone: var(--glow-indigo);
     position: relative;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: var(--space-5);
+    display: grid;
+    overflow: hidden;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    transition: border-color 0.2s;
+    box-shadow: var(--shadow-card);
+    transition:
+      transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1),
+      box-shadow 0.25s,
+      border-color 0.25s;
+  }
+  .tone-violet {
+    --tone: var(--glow-violet);
+  }
+  .tone-cyan {
+    --tone: var(--glow-cyan);
   }
   .project-card:hover,
   .project-card:focus-within {
-    border-color: var(--accent);
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--tone) 50%, var(--border));
+    box-shadow: var(--shadow-lift);
+  }
+
+  /* The cover: dark, with a glow and rings in the card's colour. */
+  .cover {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-6);
+    min-height: 15rem;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    overflow: hidden;
+    background: var(--ink);
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(
+        22rem 16rem at 100% 0%,
+        color-mix(in srgb, var(--tone) 65%, transparent),
+        transparent 70%
+      ),
+      repeating-radial-gradient(
+        circle at 100% 0%,
+        transparent 0 38px,
+        rgb(255 255 255 / 6%) 39px 40px
+      );
+  }
+  .number {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .fact {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .fact strong {
+    font-size: clamp(3rem, 2.2rem + 3vw, 4.75rem);
+    font-weight: 750;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    color: var(--text);
+  }
+  .fact span {
+    max-width: 16rem;
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    padding: clamp(1.5rem, 3.5vw, 2.75rem);
   }
   h3 {
-    margin-bottom: var(--space-2);
+    font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.25rem);
   }
   /* One link per card: its ::after covers the whole card, so the card is one big target. */
   .stretched {
@@ -62,6 +146,7 @@ const { title, tagline, summary, tags, href, featured = false } = Astro.props;
     content: '';
     position: absolute;
     inset: 0;
+    z-index: 2;
     border-radius: var(--radius);
   }
   .stretched:focus-visible {
@@ -69,13 +154,13 @@ const { title, tagline, summary, tags, href, featured = false } = Astro.props;
   }
   .stretched:focus-visible::after {
     outline: 3px solid var(--focus-ring);
-    outline-offset: 3px;
+    outline-offset: -3px;
   }
   .tagline {
-    font-family: var(--font-heading);
     font-size: var(--step-1);
-    line-height: 1.3;
-    margin-bottom: var(--space-3);
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -0.015em;
   }
   .summary {
     color: var(--text-muted);
@@ -84,26 +169,33 @@ const { title, tagline, summary, tags, href, featured = false } = Astro.props;
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
-    margin: auto 0 var(--space-4);
+    margin: var(--space-2) 0 var(--space-5);
     padding: 0;
     list-style: none;
   }
   .cta {
-    margin: 0;
+    margin: auto 0 0;
     color: var(--accent);
     font-weight: 600;
     font-size: var(--step-small);
   }
+  .cta span {
+    display: inline-block;
+    transition: transform 0.25s;
+  }
+  .project-card:hover .cta span {
+    transform: translateX(4px);
+  }
+
   @media (min-width: 56rem) {
-    .featured {
-      padding: var(--space-6);
+    .project-card {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
     }
-    .featured .tagline {
-      font-size: var(--step-2);
-      max-width: var(--measure);
+    .reverse {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     }
-    .featured .summary {
-      max-width: var(--measure);
+    .reverse .cover {
+      order: 2;
     }
   }
 </style>

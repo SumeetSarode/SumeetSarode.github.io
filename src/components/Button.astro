@@ -3,13 +3,22 @@ interface Props {
   href: string;
   variant?: 'primary' | 'secondary';
   download?: boolean;
+  /** Open in a new tab, and say so to screen-reader users. */
+  newTab?: boolean;
 }
 
-const { href, variant = 'primary', download = false } = Astro.props;
+const { href, variant = 'primary', download = false, newTab = false } = Astro.props;
 ---
 
-<a class:list={['button', variant]} href={href} download={download || undefined}>
+<a
+  class:list={['button', variant]}
+  href={href}
+  download={download || undefined}
+  target={newTab ? '_blank' : undefined}
+  rel={newTab ? 'noopener noreferrer' : undefined}
+>
   <slot />
+  {newTab && <span class="visually-hidden"> (opens in a new tab)</span>}
 </a>
 
 <style>
@@ -17,31 +26,37 @@ const { href, variant = 'primary', download = false } = Astro.props;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 2.75rem;
-    padding: var(--space-2) var(--space-5);
-    border: 2px solid var(--accent);
+    gap: 0.6rem;
+    min-height: 3rem;
+    padding: 0.7rem 1.4rem;
+    border: 1px solid transparent;
     border-radius: var(--radius-pill);
     font-weight: 600;
     font-size: var(--step-small);
+    line-height: 1.2;
     text-decoration: none;
     transition:
+      transform 0.2s,
+      box-shadow 0.2s,
       background-color 0.2s,
       color 0.2s;
   }
   .primary {
     background: var(--accent);
     color: var(--accent-contrast);
-  }
-  .secondary {
-    background: transparent;
-    color: var(--accent);
-  }
-  .secondary:hover {
-    background: var(--accent);
-    color: var(--accent-contrast);
+    box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--accent) 70%, transparent);
   }
   .primary:hover {
-    background: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px -12px color-mix(in srgb, var(--accent) 80%, transparent);
+  }
+  .secondary {
+    background: color-mix(in srgb, var(--surface) 60%, transparent);
+    border-color: var(--border);
+    color: var(--text);
+  }
+  .secondary:hover {
+    border-color: var(--accent);
     color: var(--accent);
   }
 </style>

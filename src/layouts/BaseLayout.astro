@@ -3,8 +3,8 @@ import { THEME_INIT_SCRIPT } from '../lib/theme';
 import { site } from '../config/site';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import ClosingCta from '../components/ClosingCta.astro';
 import '@fontsource-variable/inter';
-import '@fontsource-variable/fraunces';
 import '@fontsource-variable/jetbrains-mono';
 import '../styles/tokens.css';
 import '../styles/global.css';
@@ -15,6 +15,8 @@ interface Props {
   noindex?: boolean;
   type?: 'website' | 'article';
   jsonLd?: Record<string, unknown>;
+  /** The "Let's talk" band above the footer. Off for pages that are already about contact. */
+  closing?: boolean;
 }
 
 const {
@@ -23,6 +25,7 @@ const {
   noindex = false,
   type = 'website',
   jsonLd,
+  closing = true,
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, site.url).href;
 const ogImage = new URL('/og-image.png', site.url).href;
@@ -59,6 +62,7 @@ const ogImage = new URL('/og-image.png', site.url).href;
     <main id="main" tabindex="-1">
       <slot />
     </main>
+    {closing && <ClosingCta />}
     <Footer />
   </body>
 </html>

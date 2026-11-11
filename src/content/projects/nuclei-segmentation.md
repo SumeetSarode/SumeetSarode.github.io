@@ -15,10 +15,10 @@ tags:
 checkedOn: 2026-11-10
 attribution: "The Mask R-CNN implementation is Matterport's open-source Keras and TensorFlow version (MIT license). The nucleus training and detection module follows the sample written by Waleed Abdulla for the Kaggle 2018 Data Science Bowl. My work here is applying and fine-tuning that model, not inventing it."
 facts:
-  - value: '5'
-    label: epochs fine-tuning the head layers
   - value: '2018'
     label: Kaggle Data Science Bowl dataset
+  - value: '5'
+    label: epochs fine-tuning the head layers
 diagram:
   caption: 'From a microscope image to one outline per nucleus.'
   layers:
