@@ -148,7 +148,7 @@ main {
   border-radius: 2px;
 }
 
-/* A section heading with an optional line of supporting text beside it. */
+/* A section heading: a small label above a title. */
 .section-head {
   display: flex;
   flex-wrap: wrap;
@@ -160,19 +160,6 @@ main {
 .section-head h2 {
   margin: 0;
   max-width: 24ch;
-}
-.section-head p {
-  margin: 0;
-  max-width: 26rem;
-  color: var(--text-muted);
-}
-@media (min-width: 56rem) {
-  .section-head {
-    flex-wrap: nowrap;
-  }
-  .section-head p {
-    text-align: right;
-  }
 }
 
 /* A white (or dark) card with a soft shadow. */

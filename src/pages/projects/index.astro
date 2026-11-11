@@ -25,7 +25,6 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
           <p class="eyebrow">Case studies</p>
           <h2 id="work-title">Selected work</h2>
         </div>
-        <p>Open a project for the architecture diagram and the decisions behind it.</p>
       </div>
       <ul class="grid">
         {projects.map((project, index) => (
