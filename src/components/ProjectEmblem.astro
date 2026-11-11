@@ -1,0 +1,79 @@
+---
+import Icon from './Icon.astro';
+import type { IconName } from '../lib/icon-names';
+
+interface Props {
+  /** What the project is (the big symbol). */
+  main: IconName;
+  /** What makes it special (the small badge in the corner). */
+  badge: IconName;
+  tone?: 'indigo' | 'violet' | 'cyan';
+  /** `lg` for page headers, `md` for cards. */
+  size?: 'md' | 'lg';
+}
+
+const { main, badge, tone = 'indigo', size = 'md' } = Astro.props;
+---
+
+<!-- Purely decorative: the project's title is always printed beside it. -->
+<span class:list={['emblem', `tone-${tone}`, size]} aria-hidden="true">
+  <Icon name={main} size={size === 'lg' ? 64 : 36} />
+  <span class="badge">
+    <Icon name={badge} size={size === 'lg' ? 26 : 16} />
+  </span>
+</span>
+
+<style>
+  .emblem {
+    --tone: var(--glow-indigo);
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    border: 1px solid rgb(255 255 255 / 16%);
+    border-radius: 1.25rem;
+    background:
+      radial-gradient(
+        circle at 30% 20%,
+        color-mix(in srgb, var(--tone) 70%, transparent),
+        transparent 70%
+      ),
+      var(--ink-raised);
+    box-shadow: 0 14px 34px -14px var(--tone);
+    color: var(--ink-text);
+  }
+  .lg {
+    width: 8rem;
+    height: 8rem;
+    border-radius: 2rem;
+  }
+  .tone-violet {
+    --tone: var(--glow-violet);
+  }
+  .tone-cyan {
+    --tone: var(--glow-cyan);
+  }
+  /* The badge sits half outside the corner, ringed in the page colour so it reads as a separate piece. */
+  .badge {
+    position: absolute;
+    right: -0.45rem;
+    bottom: -0.45rem;
+    display: grid;
+    place-items: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border: 3px solid var(--bg);
+    border-radius: 50%;
+    background: var(--ink-accent);
+    color: var(--ink);
+  }
+  .lg .badge {
+    right: -0.7rem;
+    bottom: -0.7rem;
+    width: 3rem;
+    height: 3rem;
+    border-width: 4px;
+  }
+</style>

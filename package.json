@@ -33,6 +33,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^10.0.1",
+    "@lucide/astro": "^1.71.0",
     "@playwright/test": "^1.65.0",
     "eslint": "^10.14.0",
     "eslint-plugin-astro": "^1.7.0",

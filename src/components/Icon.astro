@@ -1,0 +1,23 @@
+---
+import { icons } from '../lib/icons';
+import type { IconName } from '../lib/icon-names';
+
+interface Props {
+  name: IconName;
+  /** Pixel size; the icon scales with the surrounding text if given in em via CSS instead. */
+  size?: number;
+  class?: string;
+}
+
+const { name, size = 24, class: className } = Astro.props;
+const Glyph = icons[name];
+---
+
+<!-- Decorative: the words next to an icon always carry the meaning. -->
+<Glyph
+  {size}
+  stroke-width={1.75}
+  {...(className ? { class: className } : {})}
+  aria-hidden="true"
+  focusable="false"
+/>
