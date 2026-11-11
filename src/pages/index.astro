@@ -9,6 +9,7 @@ import { site } from '../config/site';
 import { certifications, degrees } from '../data/education';
 import { employers, highlights, signatureHeadline } from '../data/experience';
 import { publications, shortVenue } from '../data/publications';
+import { formatRange } from '../lib/months';
 
 // Oldest first, so the path reads as a climb: left to right (top to bottom on a phone).
 const career = [...employers[0]!.roles].reverse();
@@ -59,7 +60,7 @@ const jsonLd = {
                     {role.title}
                     {index === career.length - 1 && <span class="now">Current</span>}
                   </span>
-                  <span class="path-dates">{role.dates}</span>
+                  <span class="path-dates">{formatRange(role.start, role.end)}</span>
                   <span class="path-summary">{role.summary}</span>
                 </span>
               ))}

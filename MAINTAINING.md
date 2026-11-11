@@ -55,7 +55,7 @@ previews, and the saved picture all follow. Nothing else needs touching.
 | To change…                                                                                         | Edit this file                                        |
 | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | Your name, title, email, links, the intro under your name, the social-sharing description          | `src/config/site.ts`                                  |
-| Jobs and their bullet points                                                                       | `src/data/experience.ts`                              |
+| Jobs, bullet points, earlier roles, and the impact numbers                                         | `content/experience.yaml`                             |
 | Capabilities: the stack's layers (top = today's focus), one-line summaries, and the "Runs on" base | `src/data/skills.ts`                                  |
 | Research papers                                                                                    | `content/research.yaml`                               |
 | Degrees                                                                                            | `content/education.yaml`                              |

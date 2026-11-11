@@ -1,5 +1,5 @@
 ---
-import { impacts } from '../data/impact';
+import { impacts } from '../data/experience';
 
 interface Props {
   /** Accessible name for the list, so screen readers announce what the numbers are. */
@@ -9,14 +9,16 @@ interface Props {
 const { label = 'Career impact' } = Astro.props;
 ---
 
-<ul class="impact" aria-label={label}>
-  {impacts.map((impact) => (
-    <li>
-      <strong>{impact.value}</strong>
-      <span>{impact.label}</span>
-    </li>
-  ))}
-</ul>
+{impacts.length > 0 && (
+  <ul class="impact" aria-label={label}>
+    {impacts.map((impact) => (
+      <li>
+        <strong>{impact.value}</strong>
+        <span>{impact.label}</span>
+      </li>
+    ))}
+  </ul>
+)}
 
 <style>
   /* The 1px gap shows the border colour behind the cells, which draws the dividers. */

@@ -5,6 +5,7 @@ import ImpactStats from '../components/ImpactStats.astro';
 import MetricText from '../components/MetricText.astro';
 import CapabilityStack from '../components/CapabilityStack.astro';
 import { earlierRoles, employers } from '../data/experience';
+import { formatRange } from '../lib/months';
 ---
 
 <BaseLayout
@@ -37,7 +38,7 @@ import { earlierRoles, employers } from '../data/experience';
                 <div class="role-head">
                   <div class="role-meta">
                     {index === 0 && <span class="badge">Current role</span>}
-                    <span class="dates">{role.dates}</span>
+                    <span class="dates">{formatRange(role.start, role.end)}</span>
                     <span class="org">{employer.name}</span>
                   </div>
                   <h3>{role.title}</h3>
@@ -58,32 +59,34 @@ import { earlierRoles, employers } from '../data/experience';
     </div>
   </section>
 
-  <section class="section earlier-section" aria-labelledby="earlier-title">
-    <div class="container">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Foundations</p>
-          <h2 id="earlier-title">Research and internships</h2>
+  {earlierRoles.length > 0 && (
+    <section class="section earlier-section" aria-labelledby="earlier-title">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Foundations</p>
+            <h2 id="earlier-title">Research and internships</h2>
+          </div>
+        </div>
+        <div class="earlier">
+          {earlierRoles.map((role) => (
+            <article class="panel early">
+              <p class="dates">{formatRange(role.start, role.end)}</p>
+              <h3>{role.title}</h3>
+              <p class="org">{role.organization}</p>
+              <ul class="bullets">
+                {role.bullets.map((bullet) => (
+                  <li>
+                    <MetricText text={bullet} />
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
         </div>
       </div>
-      <div class="earlier">
-        {earlierRoles.map((role) => (
-          <article class="panel early">
-            <p class="dates">{role.dates}</p>
-            <h3>{role.title}</h3>
-            <p class="org">{role.organization}</p>
-            <ul class="bullets">
-              {role.bullets.map((bullet) => (
-                <li>
-                  <MetricText text={bullet} />
-                </li>
-              ))}
-            </ul>
-          </article>
-        ))}
-      </div>
-    </div>
-  </section>
+    </section>
+  )}
 
   <section class="section" aria-labelledby="capabilities-title">
     <div class="container">

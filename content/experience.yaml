@@ -1,0 +1,147 @@
+# Experience: shown on the Experience page; the home page shows the career path and
+# the impact numbers.
+#
+# Use the résumé's exact wording. Don't add internal project names, systems, or numbers
+# that aren't on the résumé. Dates are months, written like 2023-11. Leave out "end"
+# for the job you're in now, and the site shows "Present".
+#
+# Long text: write ">-" after the field name or the "-" of a list item, then the text
+# on the next lines, indented two more spaces. Line breaks inside it become spaces.
+#
+# Order doesn't matter: the site shows the newest role first.
+
+# employers: each employer, with every role you held there.
+#   name      The employer's name, as plain text (no logos).               required
+#   roles     Each role:                                                    required
+#     title     Job title.                                                  required
+#     start     First month in the role.                                    required
+#     end       Last month. Leave out for your current role.                optional
+#     summary   One line for the home page's career path.                   required
+#     bullets   What you did, one bullet per item.                          required
+employers:
+  - name: Walmart Inc.
+    roles:
+      - title: Principal Data Scientist
+        start: 2025-10
+        summary: Architecting multi-agent AI with guardrails and human review.
+        bullets:
+          - >-
+            Architected, built, and deployed a multi-agent AI platform across every U.S.
+            Walmart location, transforming process guides from documents, chats, and forms
+            into governed, prioritized operational actions.
+          - >-
+            Established a provider-agnostic LLM architecture integrating model routing,
+            evaluation, guardrails, and human-in-the-loop validation to prevent unchecked
+            model output from triggering operational actions.
+          - >-
+            Developed a real-time natural-language-to-Cypher agent over a Neo4j knowledge
+            graph, connecting live operational signals with process guidance to generate
+            context-aware, compliant recommendations.
+
+      - title: Senior Data Scientist
+        start: 2023-11
+        end: 2025-10
+        summary: >-
+          Led inventory-intelligence and ML-platform workstreams, scaling models into
+          production on GCP.
+        bullets:
+          - >-
+            Led multiple workstreams across inventory intelligence and ML platform
+            engineering, protecting ~$100M in annual sales across all U.S. Sam's Club
+            locations.
+          - >-
+            Scaled item-prioritization models into a production GCP service and delivered a
+            Kubeflow AutoML platform adopted across data science teams.
+          - >-
+            Owned delivery of confidence-scoring, anomaly-detection, and
+            location-intelligence pipelines, embedding automated monitoring and drift
+            detection into production.
+
+      - title: Data Scientist
+        start: 2021-08
+        end: 2023-10
+        summary: >-
+          Built predictive pipelines and ML models deployed across every U.S. Sam's Club
+          location.
+        bullets:
+          - >-
+            Engineered a daily predictive pipeline ranking priority items for store
+            associates, deployed across all U.S. Sam's Club locations.
+          - >-
+            Developed ML models identifying potentially incorrect shipments, reducing
+            supplier-related losses by approximately $16M.
+          - >-
+            Integrated model outputs into restocking and receiving workflows with
+            engineering, product, and operations teams, improving execution across clubs.
+# earlierRoles: internships and research roles, shown in a smaller list.
+#   title, organization, start, end, bullets: as above.                    optional section
+earlierRoles:
+  - title: Data Science Intern
+    organization: Siemens
+    start: 2021-06
+    end: 2021-07
+    bullets:
+      - >-
+        Built an ETL pipeline extracting project data to predict risks across active
+        engagements, giving auditors early visibility.
+      - >-
+        Quantified risk components and their revenue impact to inform audit-team
+        prioritization.
+
+  - title: Data Science Intern
+    organization: Trust Lab
+    start: 2021-01
+    end: 2021-04
+    bullets:
+      - >-
+        Prototyped an NLP pipeline analyzing social media data to flag malicious intent with
+        85% recall; deployed on AWS for a rental-lodging client.
+      - >-
+        Measured the spread and impact of COVID misinformation across social platforms using
+        crowdsourced data.
+
+  - title: Research Assistant
+    organization: Societal Computing Lab
+    start: 2020-10
+    end: 2021-05
+    bullets:
+      - >-
+        Uncovered wildlife migratory patterns by analyzing social-media imagery through
+        spatial-temporal visualization.
+      - >-
+        Modeled migration drivers using Geographically Weighted Regression and time series
+        forecasting for the Smithsonian Museum.
+
+  # LinkedIn says Mar–Aug 2020; the résumé says Mar–Oct 2020. The résumé wins until Sumeet says otherwise.
+  - title: Graduate Researcher
+    organization: Cyberinfrastructure for Network Science Center
+    start: 2020-03
+    end: 2020-10
+    bullets:
+      - >-
+        Applied computer vision and deep learning to process 3D prototypes for the HuBMAP
+        consortium alongside UPenn researchers.
+      - >-
+        Slashed object-detection training time by 40% via distributed GPU training and
+        boosted model performance by 8% through transfer learning.
+# impact: up to four big numbers shown on the Experience page.
+#   value    The number, shown large, like ~$100M.                          required
+#   label    What it means, in a few words.                                 required
+#   source   Which résumé line it comes from. Not shown on the site; it     required
+#            keeps every number traceable. Never round up or combine figures.
+impact:
+  - value: ~$100M
+    label: in annual sales protected across every U.S. Sam's Club
+    source: Senior Data Scientist, bullet 1
+
+  - value: ~$16M
+    label: in supplier-related losses reduced with machine learning
+    source: Data Scientist, bullet 2
+
+  - value: Nationwide
+    label: multi-agent AI platform deployed to every U.S. Walmart location
+    source: Principal Data Scientist, bullet 1
+
+  - value: 5+ years
+    label: from hands-on modeling to enterprise AI architecture
+    source: Profile summary

@@ -15,6 +15,18 @@ export const month = z
   .string()
   .regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'must be a month written like 2020-06');
 
+/** Start and end months. Leave out `end` while it is still going; the site then shows "Present". */
+export const period = { start: month, end: month.optional() };
+
+/** Use with .refine() on anything that has a `period`. */
+export const endNotBeforeStart: [
+  check: (entry: { start: string; end?: string | undefined }) => boolean,
+  params: { message: string; path: string[] },
+] = [
+  (entry) => !entry.end || entry.end >= entry.start,
+  { message: 'end must not be before start', path: ['end'] },
+];
+
 /** A day as YYYY-MM-DD (2019-08-17). */
 export const day = z
   .string()

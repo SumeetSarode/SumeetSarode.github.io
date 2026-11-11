@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { ContentError, parseContent } from '../../src/content-files/load';
-import { certificationsFile, educationFile, researchFile } from '../../src/content-files/schemas';
+import {
+  certificationsFile,
+  educationFile,
+  experienceFile,
+  researchFile,
+} from '../../src/content-files/schemas';
 import { countPhrase } from '../../src/lib/count';
 import { formatMonth, formatRange, newestFirst } from '../../src/lib/months';
 
@@ -129,5 +134,40 @@ describe('countPhrase', () => {
     expect(countPhrase(1, 'paper')).toBe('One paper');
     expect(countPhrase(0, 'paper')).toBe('No papers');
     expect(countPhrase(12, 'paper')).toBe('12 papers');
+  });
+});
+
+describe('experience.yaml', () => {
+  const role = (extra = '') =>
+    `employers:\n  - name: Acme\n    roles:\n      - title: Engineer\n        start: 2021-01\n        summary: S\n        bullets:\n          - Did a thing\n${extra}`;
+
+  it('needs only employers; earlier roles and impact numbers are optional', () => {
+    const data = parseContent('experience.yaml', role(), experienceFile);
+    expect(data.earlierRoles).toEqual([]);
+    expect(data.impact).toEqual([]);
+  });
+
+  it('allows at most four impact numbers, so the row stays readable', () => {
+    const item = '  - value: ~$1M\n    label: L\n    source: S\n';
+    expect(() =>
+      parseContent('experience.yaml', role('impact:\n' + item.repeat(5)), experienceFile),
+    ).toThrow(/impact/);
+  });
+
+  it('requires a source for every impact number', () => {
+    expect(() =>
+      parseContent(
+        'experience.yaml',
+        role('impact:\n  - value: 1\n    label: L\n'),
+        experienceFile,
+      ),
+    ).toThrow(/source: is missing/);
+  });
+
+  it('refuses a role that ends before it starts', () => {
+    const bad = role().replace('start: 2021-01', 'start: 2021-01\n        end: 2020-01');
+    expect(() => parseContent('experience.yaml', bad, experienceFile)).toThrow(
+      /end must not be before start/,
+    );
   });
 });

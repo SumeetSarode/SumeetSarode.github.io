@@ -3,22 +3,27 @@
  * against these, so anything one accepts, the other accepts too.
  */
 import { z } from 'zod';
-import { day, emblem, httpsUrl, month, slug, text, uniqueSlugs } from './fields';
+import {
+  day,
+  emblem,
+  endNotBeforeStart,
+  httpsUrl,
+  month,
+  period,
+  slug,
+  text,
+  uniqueSlugs,
+} from './fields';
 
 /** content/education.yaml: degrees. */
 export const degreeSchema = z
   .strictObject({
     degree: text,
     school: text,
-    start: month,
-    /** Leave out while still studying; the site then shows "Present". */
-    end: month.optional(),
+    ...period,
     coursework: z.array(text).optional(),
   })
-  .refine((entry) => !entry.end || entry.end >= entry.start, {
-    message: 'end must not be before start',
-    path: ['end'],
-  });
+  .refine(...endNotBeforeStart);
 export const educationFile = z.array(degreeSchema).min(1);
 
 /** content/certifications.yaml: a list of certificates. */
@@ -51,3 +56,30 @@ export const publicationSchema = z.strictObject({
   sources: z.array(z.strictObject({ label: text, url: httpsUrl })).optional(),
 });
 export const researchFile = z.array(publicationSchema).min(1).superRefine(uniqueSlugs);
+
+/** content/experience.yaml: jobs, earlier roles, and the headline impact numbers. */
+const bullets = z.array(text).min(1);
+export const roleSchema = z
+  .strictObject({
+    title: text,
+    ...period,
+    /** One line for the home page's career path. */
+    summary: text,
+    bullets,
+  })
+  .refine(...endNotBeforeStart);
+export const earlierRoleSchema = z
+  .strictObject({ title: text, organization: text, ...period, bullets })
+  .refine(...endNotBeforeStart);
+export const impactSchema = z.strictObject({
+  /** Shown large, like ~$100M. */
+  value: text,
+  label: text,
+  /** Which résumé bullet the number comes from. Not shown; it keeps the numbers honest. */
+  source: text,
+});
+export const experienceFile = z.strictObject({
+  employers: z.array(z.strictObject({ name: text, roles: z.array(roleSchema).min(1) })).min(1),
+  earlierRoles: z.array(earlierRoleSchema).default([]),
+  impact: z.array(impactSchema).max(4).default([]),
+});
