@@ -1,4 +1,10 @@
 import { expect, test } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+
+const frame = JSON.parse(readFileSync('src/config/photo-frame.json', 'utf8')) as {
+  ratioWidth: number;
+  ratioHeight: number;
+};
 import { publications } from '../../src/data/publications';
 
 test('home is a concise overview, with Experience before Projects', async ({ page }) => {
@@ -36,10 +42,49 @@ test('every home-page chapter opens its own section page', async ({ page }) => {
 
 test('the opening screen shows no numbers', async ({ page }) => {
   await page.goto('/');
-  // Visible text only: the decorative badges count too, because people see them.
+  // Visible text only, so anything people can see counts.
   const text = await page.locator('section.hero').innerText();
   expect(text, 'the opening screen contains a digit').not.toMatch(/\d/);
   await expect(page.getByRole('list', { name: 'Career impact' })).toHaveCount(0);
+});
+
+test.describe('the opening screen on a laptop', () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test('says the chosen headline', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('h1')).toContainText('Smart AI is easy.');
+    await expect(page.locator('h1')).toContainText('Trustworthy AI is my job.');
+    await expect(page.locator('.hero')).toContainText(
+      'I build agents that reason, with guardrails that hold.',
+    );
+  });
+
+  test('has the photo on the left, with no badges on it', async ({ page }) => {
+    await page.goto('/');
+    const photo = (await page.locator('.hero img').boundingBox())!;
+    const headline = (await page.locator('.hero h1').boundingBox())!;
+    expect(photo.x + photo.width, 'the photo is not left of the headline').toBeLessThanOrEqual(
+      headline.x,
+    );
+    await expect(page.locator('.hero [aria-hidden="true"]:not(.dot)')).toHaveCount(
+      await page.locator('.hero .actions [aria-hidden="true"]').count(),
+    );
+  });
+
+  test('shows the whole photo, in the shared frame shape, without scrolling', async ({ page }) => {
+    await page.goto('/');
+    const photo = (await page.locator('.hero img').boundingBox())!;
+    expect(photo.y + photo.height, 'the photo runs off the screen').toBeLessThanOrEqual(900);
+    expect(photo.width / photo.height).toBeCloseTo(frame.ratioWidth / frame.ratioHeight, 1);
+  });
+});
+
+test('the opening screen fills the screen on a very wide monitor', async ({ page }) => {
+  await page.setViewportSize({ width: 2560, height: 1300 });
+  await page.goto('/');
+  const hero = (await page.locator('section.hero').boundingBox())!;
+  expect(hero.height).toBeGreaterThanOrEqual(1300 - 70);
 });
 
 test('the impact numbers live on the Experience page, and are the verified ones', async ({

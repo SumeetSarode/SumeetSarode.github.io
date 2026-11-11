@@ -7,23 +7,44 @@ import { site } from '../config/site';
 import Button from './Button.astro';
 
 // The page decides the photo's shape; Photo Studio follows this same setting.
-const frameRatio = `${frame.ratioWidth} / ${frame.ratioHeight}`;
-const frameHeight = Math.round((frame.outputWidth * frame.ratioHeight) / frame.ratioWidth);
+const frameAspect = frame.ratioHeight / frame.ratioWidth;
+const frameHeight = Math.round(frame.outputWidth * frameAspect);
+const frameVars = `--frame-ratio: ${frame.ratioWidth} / ${frame.ratioHeight}; --frame-aspect: ${frameAspect}`;
 ---
 
 <section class="ink hero" aria-labelledby="hero-title">
   <div class="container layout">
+    <div class="portrait rise" style={frameVars}>
+      <div class="frame">
+        <Picture
+          src={profile}
+          alt={photo.alt}
+          widths={[480, 960]}
+          sizes="(min-width: 56rem) 40vw, 64vw"
+          formats={['avif', 'webp']}
+          fallbackFormat="jpg"
+          width={frame.outputWidth}
+          height={frameHeight}
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+    </div>
+
     <div class="copy">
-      <p class="status rise">
+      <p class="role rise">
         <span class="dot" aria-hidden="true"></span>Principal Data Scientist · Walmart
       </p>
       <h1 id="hero-title" class="rise rise-2">
         <span class="name">{site.name}</span>
-        <span class="headline">
-          Agentic AI, engineered for <span class="gradient-text">national scale.</span>
+        <span class="setup">Smart AI is easy.</span>
+        <span class="punch">
+          <span class="gradient-text">Trustworthy</span> AI is my&nbsp;job.
         </span>
       </h1>
-      <p class="intro rise rise-3">{site.heroIntro}</p>
+      <p class="how rise rise-3">
+        I build agents that <strong>reason</strong>, with guardrails that <strong>hold</strong>.
+      </p>
       <ul class="actions rise rise-4">
         <li>
           <Button href="/experience/">
@@ -37,50 +58,58 @@ const frameHeight = Math.round((frame.outputWidth * frame.ratioHeight) / frame.r
         </li>
       </ul>
     </div>
-
-    <div class="portrait-wrap rise rise-3" style={`--frame-ratio: ${frameRatio}`}>
-      <div class="frame">
-        <Picture
-          src={profile}
-          alt={photo.alt}
-          widths={[480, 960]}
-          sizes="(min-width: 64rem) 480px, (min-width: 40rem) 360px, 70vw"
-          formats={['avif', 'webp']}
-          fallbackFormat="jpg"
-          width={frame.outputWidth}
-          height={frameHeight}
-          loading="eager"
-          fetchpriority="high"
-        />
-      </div>
-      <!-- Decorative badges. Both facts are stated in the text beside the photo and further down the page. -->
-      <div class="signal signal-top" aria-hidden="true">
-        <span class="signal-icon">◆</span>
-        <span>
-          <strong>Multi-agent AI</strong>Live in every U.S. Walmart
-        </span>
-      </div>
-      <div class="signal signal-bottom" aria-hidden="true">
-        <span class="signal-icon">▲</span>
-        <span>
-          <strong>Guardrailed LLMs</strong>Human-in-the-loop validation
-        </span>
-      </div>
-    </div>
   </div>
 </section>
 
 <style>
+  /* Fills the screen under the header, whatever the screen. */
   .hero {
-    padding-block: clamp(2.5rem, 7vw, 5.5rem) clamp(2.5rem, 6vw, 4.5rem);
+    display: grid;
+    align-items: center;
+    min-height: calc(100svh - 4rem);
+    padding-block: clamp(1.5rem, 4vw, 3.5rem);
     border-bottom: 1px solid rgb(255 255 255 / 8%);
   }
   .layout {
     display: grid;
-    gap: clamp(2.5rem, 6vw, 4rem);
+    gap: clamp(1.5rem, 4vw, 5rem);
     align-items: center;
   }
-  .status {
+
+  /* The photo: on top on a phone, on the left from tablet width up. */
+  .portrait {
+    justify-self: center;
+    width: min(64%, 15rem);
+  }
+  .frame {
+    position: relative;
+    padding: 4px;
+    border-radius: 2rem;
+    background: var(--gradient-brand);
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 6%),
+      0 40px 90px -30px rgb(79 70 229 / 70%);
+  }
+  .frame::before {
+    content: '';
+    position: absolute;
+    inset: -25%;
+    z-index: -1;
+    background: radial-gradient(circle, rgb(139 92 246 / 35%), transparent 62%);
+  }
+  .frame :global(picture),
+  .frame :global(img) {
+    display: block;
+    width: 100%;
+  }
+  .frame :global(img) {
+    height: auto;
+    aspect-ratio: var(--frame-ratio);
+    object-fit: cover;
+    border-radius: calc(2rem - 4px);
+  }
+
+  .role {
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
@@ -91,7 +120,6 @@ const frameHeight = Math.round((frame.outputWidth * frame.ratioHeight) / frame.r
     background: rgb(255 255 255 / 5%);
     font-size: 0.8125rem;
     font-weight: 600;
-    color: var(--text);
   }
   .dot {
     width: 0.55rem;
@@ -100,30 +128,45 @@ const frameHeight = Math.round((frame.outputWidth * frame.ratioHeight) / frame.r
     background: #34d399;
     box-shadow: 0 0 0 4px rgb(52 211 153 / 20%);
   }
+
   h1 {
     margin: 0;
   }
-  .name {
+  h1 span {
     display: block;
-    margin-bottom: var(--space-3);
+  }
+  .name {
+    margin-bottom: var(--space-4);
     font-size: clamp(1.125rem, 1rem + 0.6vw, 1.5rem);
     font-weight: 600;
     letter-spacing: -0.01em;
     color: var(--text-muted);
   }
-  .headline {
-    display: block;
-    max-width: 14ch;
-    font-size: clamp(2.6rem, 1.5rem + 4.6vw, 5.4rem);
-    line-height: 1.02;
-    letter-spacing: -0.05em;
-  }
-  .intro {
-    max-width: 36rem;
-    margin: var(--space-5) 0 0;
-    font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
-    line-height: 1.6;
+  /* The set-up line is quiet, so the punch line lands. */
+  .setup {
+    font-size: clamp(1.5rem, 1rem + 2vw, 3rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
     color: var(--text-muted);
+  }
+  .punch {
+    margin-top: 0.1em;
+    font-size: clamp(2.6rem, 0.8rem + 5.4vw, 7rem);
+    line-height: 1;
+    letter-spacing: -0.055em;
+  }
+  .how {
+    max-width: 38rem;
+    margin: var(--space-5) 0 0;
+    text-wrap: balance;
+    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.5rem);
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+  .how strong {
+    font-weight: 650;
+    color: var(--text);
   }
   .actions {
     display: flex;
@@ -134,95 +177,14 @@ const frameHeight = Math.round((frame.outputWidth * frame.ratioHeight) / frame.r
     list-style: none;
   }
 
-  .portrait-wrap {
-    position: relative;
-    justify-self: center;
-    width: min(100%, 22rem);
-    padding: 1.5rem 1rem;
-  }
-  .frame {
-    position: relative;
-    padding: 4px;
-    border-radius: 2rem;
-    background: var(--gradient-brand);
-    box-shadow:
-      0 0 0 1px rgb(255 255 255 / 6%),
-      0 40px 80px -30px rgb(79 70 229 / 70%);
-  }
-  .frame::before {
-    content: '';
-    position: absolute;
-    inset: -30%;
-    z-index: -1;
-    background: radial-gradient(circle, rgb(139 92 246 / 35%), transparent 60%);
-  }
-  .frame :global(img) {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: var(--frame-ratio);
-    object-fit: cover;
-    border-radius: calc(2rem - 4px);
-  }
-  .signal {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    padding: 0.65rem 0.9rem;
-    border: 1px solid rgb(255 255 255 / 14%);
-    border-radius: 1rem;
-    background: rgb(14 20 48 / 85%);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 18px 40px -18px rgb(0 0 0 / 70%);
-    font-size: 0.75rem;
-    line-height: 1.35;
-    color: var(--text-muted);
-    white-space: nowrap;
-  }
-  .signal strong {
-    display: block;
-    font-size: 0.875rem;
-    color: var(--text);
-  }
-  .signal-icon {
-    display: grid;
-    place-items: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 0.6rem;
-    background: var(--gradient-brand);
-    color: var(--ink);
-    font-size: 0.75rem;
-  }
-  .signal-top {
-    top: 0;
-    left: -0.5rem;
-  }
-  .signal-bottom {
-    right: -0.5rem;
-    bottom: 0;
-  }
-
-  @media (max-width: 29.99rem) {
-    .signal {
-      display: none;
-    }
-  }
-  @media (min-width: 64rem) {
+  @media (min-width: 56rem) {
     .layout {
-      grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     }
-    .portrait-wrap {
-      width: 100%;
-      max-width: 24rem;
-      padding: 2rem 0;
-    }
-    .signal-top {
-      left: -3rem;
-    }
-    .signal-bottom {
-      right: -2rem;
+    /* As large as the screen allows, but never taller than the space under the header. */
+    .portrait {
+      width: min(100%, calc((100svh - 9rem) / var(--frame-aspect)));
+      max-width: 34rem;
     }
   }
 </style>
