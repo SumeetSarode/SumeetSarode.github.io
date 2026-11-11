@@ -1,44 +1,25 @@
 /**
- * Degrees and certifications.
- *
- * Degrees use the résumé wording (the B.E. field is "Computer Science Engineering" there;
- * LinkedIn says "Computer Engineering").
- * Certifications live in content/certifications.yaml.
+ * Degrees and certifications. The content lives in content/education.yaml and
+ * content/certifications.yaml; this file loads, checks, and sorts it.
  */
 import type { z } from 'zod';
 import { loadContent } from '../content-files/load';
-import { certificationsFile, type certificationSchema } from '../content-files/schemas';
+import {
+  certificationsFile,
+  educationFile,
+  type certificationSchema,
+  type degreeSchema,
+} from '../content-files/schemas';
 import { newestFirst } from '../lib/months';
 
-export interface Degree {
-  school: string;
-  degree: string;
-  dates: string;
-  /** Optional highlights, from LinkedIn. */
-  coursework?: readonly string[];
-}
-
+export type Degree = z.output<typeof degreeSchema>;
 export type Certification = z.output<typeof certificationSchema>;
 
-export const degrees: readonly Degree[] = [
-  {
-    school: 'Indiana University, Bloomington',
-    degree: 'M.S. in Data Science',
-    dates: 'Aug 2019 \u2013 May 2021',
-    coursework: [
-      'Artificial Intelligence',
-      'Applied Machine Learning',
-      'Deep Learning',
-      'Statistics',
-      'Advanced Database Concepts',
-    ],
-  },
-  {
-    school: 'University of Mumbai, India',
-    degree: 'B.E. in Computer Science Engineering',
-    dates: 'Jul 2015 \u2013 May 2019',
-  },
-];
+/** Most recent first. */
+export const degrees: readonly Degree[] = newestFirst(
+  loadContent('education.yaml', educationFile),
+  (degree) => degree.start,
+);
 
 /** Newest first; undated ones last. */
 export const certifications: readonly Certification[] = newestFirst(

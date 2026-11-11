@@ -1,0 +1,29 @@
+# Degrees: shown on the Education page and on the home page.
+#
+# One entry per degree. To add one, copy an entry and change the words.
+#
+#   degree       The degree and field, for example M.S. in Data Science.      required
+#   school       The school and its city or country.                           required
+#   start        The month you started, written like 2019-08.                  required
+#   end          The month you finished. Leave it out while still studying,    optional
+#                and the site shows "Present".
+#   coursework   A short list of courses worth mentioning.                     optional
+#
+# Order doesn't matter: the site shows the most recent degree first.
+
+- degree: M.S. in Data Science
+  school: Indiana University, Bloomington
+  start: 2019-08
+  end: 2021-05
+  coursework:
+    - Artificial Intelligence
+    - Applied Machine Learning
+    - Deep Learning
+    - Statistics
+    - Advanced Database Concepts
+
+# The résumé says "Computer Science Engineering"; LinkedIn says "Computer Engineering".
+- degree: B.E. in Computer Science Engineering
+  school: University of Mumbai, India
+  start: 2015-07
+  end: 2019-05

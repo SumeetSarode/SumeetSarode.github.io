@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { ContentError, parseContent } from '../../src/content-files/load';
-import { certificationsFile } from '../../src/content-files/schemas';
-import { formatMonth, newestFirst } from '../../src/lib/months';
+import { certificationsFile, educationFile } from '../../src/content-files/schemas';
+import { formatMonth, formatRange, newestFirst } from '../../src/lib/months';
 
 const errorFor = (text: string): string => {
   try {
@@ -63,6 +63,11 @@ describe('months', () => {
     expect(formatMonth('2021-12')).toBe('Dec 2021');
   });
 
+  it('formats a range, with "Present" when there is no end', () => {
+    expect(formatRange('2019-08', '2021-05')).toBe('Aug 2019 \u2013 May 2021');
+    expect(formatRange('2024-03')).toBe('Mar 2024 \u2013 Present');
+  });
+
   it('sorts newest first, undated last, and keeps file order for ties', () => {
     const items = [
       { id: 'undated' },
@@ -76,5 +81,14 @@ describe('months', () => {
       'old',
       'undated',
     ]);
+  });
+});
+
+describe('education.yaml', () => {
+  it('rejects a degree that ends before it starts, pointing at the end line', () => {
+    const yaml = '- degree: X\n  school: Y\n  start: 2021-05\n  end: 2019-08\n';
+    expect(() => parseContent('education.yaml', yaml, educationFile)).toThrow(
+      /line 4, #1 › end: end must not be before start/,
+    );
   });
 });

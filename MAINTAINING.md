@@ -58,7 +58,7 @@ previews, and the saved picture all follow. Nothing else needs touching.
 | Jobs and their bullet points                                                                       | `src/data/experience.ts`                              |
 | Capabilities: the stack's layers (top = today's focus), one-line summaries, and the "Runs on" base | `src/data/skills.ts`                                  |
 | Publications                                                                                       | `src/data/publications.ts`                            |
-| Degrees                                                                                            | `src/data/education.ts`                               |
+| Degrees                                                                                            | `content/education.yaml`                              |
 | Certifications (the guide at the top of the file lists every field)                                | `content/certifications.yaml`                         |
 | The short "More on GitHub" list                                                                    | `src/data/more-projects.ts`                           |
 | The photo's description for screen readers                                                         | `src/config/profile-photo.json` (or use Photo Studio) |
