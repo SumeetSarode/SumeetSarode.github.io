@@ -57,6 +57,23 @@ test.describe('the tiles on a laptop', () => {
   });
 });
 
+test('every project shows its emblem on the Projects page and on the home tile', async ({
+  page,
+}) => {
+  await page.goto('/projects/');
+  const cards = page.locator('#work article');
+  await expect(cards).toHaveCount(3);
+  for (const card of await cards.all()) {
+    await expect(card.locator('.emblem svg')).toHaveCount(2); // symbol + badge
+  }
+  await page.goto('/');
+  const rows = page.getByRole('list', { name: 'Case studies' }).getByRole('listitem');
+  await expect(rows).toHaveCount(3);
+  for (const row of await rows.all()) {
+    await expect(row.locator('.emblem svg')).toHaveCount(2);
+  }
+});
+
 test('the Experience tile shows a career path, oldest to newest, not a chart', async ({ page }) => {
   await page.goto('/');
   const steps = page.getByRole('list', { name: 'Career path' }).getByRole('listitem');

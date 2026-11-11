@@ -1,5 +1,7 @@
 ---
+import ProjectEmblem from './ProjectEmblem.astro';
 import Tag from './Tag.astro';
+import type { IconName } from '../lib/icon-names';
 
 interface Props {
   title: string;
@@ -7,21 +9,23 @@ interface Props {
   summary: string;
   tags: readonly string[];
   href: string;
-  /** 1-based position, shown on the cover and used to pick its colour. */
+  /** 1-based position, shown on the cover; it also decides which side the cover sits on. */
   position: number;
+  emblem: { main: IconName; badge: IconName; tone: 'indigo' | 'violet' | 'cyan' };
   fact: { value: string; label: string };
 }
 
-const { title, tagline, summary, tags, href, position, fact } = Astro.props;
-const tones = ['indigo', 'violet', 'cyan'] as const;
-const tone = tones[(position - 1) % tones.length];
+const { title, tagline, summary, tags, href, position, emblem, fact } = Astro.props;
 ---
 
-<article class:list={['project-card', `tone-${tone}`, { reverse: position % 2 === 0 }]}>
+<article class:list={['project-card', `tone-${emblem.tone}`, { reverse: position % 2 === 0 }]}>
   <div class="cover ink-vars">
-    <span class="number" aria-hidden="true">
-      {String(position).padStart(2, '0')}
-    </span>
+    <div class="cover-top">
+      <span class="number" aria-hidden="true">
+        {String(position).padStart(2, '0')}
+      </span>
+      <ProjectEmblem {...emblem} />
+    </div>
     <span class="fact">
       <strong>{fact.value}</strong>
       <span>{fact.label}</span>
@@ -105,6 +109,12 @@ const tone = tones[(position - 1) % tones.length];
         transparent 0 38px,
         rgb(255 255 255 / 6%) 39px 40px
       );
+  }
+  .cover-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
   }
   .number {
     font-family: var(--font-mono);

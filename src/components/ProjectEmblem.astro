@@ -8,18 +8,20 @@ interface Props {
   /** What makes it special (the small badge in the corner). */
   badge: IconName;
   tone?: 'indigo' | 'violet' | 'cyan';
-  /** `lg` for page headers, `md` for cards. */
-  size?: 'md' | 'lg';
+  /** `lg` for page headers, `md` for cards, `sm` for compact lists. */
+  size?: 'sm' | 'md' | 'lg';
 }
 
 const { main, badge, tone = 'indigo', size = 'md' } = Astro.props;
+// [symbol size, badge size] in pixels
+const pixels = { sm: [22, 12], md: [36, 16], lg: [64, 26] }[size];
 ---
 
 <!-- Purely decorative: the project's title is always printed beside it. -->
 <span class:list={['emblem', `tone-${tone}`, size]} aria-hidden="true">
-  <Icon name={main} size={size === 'lg' ? 64 : 36} />
+  <Icon name={main} size={pixels[0]!} />
   <span class="badge">
-    <Icon name={badge} size={size === 'lg' ? 26 : 16} />
+    <Icon name={badge} size={pixels[1]!} />
   </span>
 </span>
 
@@ -43,6 +45,18 @@ const { main, badge, tone = 'indigo', size = 'md' } = Astro.props;
       var(--ink-raised);
     box-shadow: 0 14px 34px -14px var(--tone);
     color: var(--ink-text);
+  }
+  .sm {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.8rem;
+  }
+  .sm .badge {
+    right: -0.3rem;
+    bottom: -0.3rem;
+    width: 1.15rem;
+    height: 1.15rem;
+    border-width: 2px;
   }
   .lg {
     width: 8rem;
