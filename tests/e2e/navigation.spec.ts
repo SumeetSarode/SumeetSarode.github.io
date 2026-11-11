@@ -201,3 +201,33 @@ test('publisher links explicitly open a separate tab without replacing the portf
     await expect(link).toContainText('opens in a new tab');
   }
 });
+
+test.describe('Experience roles are two columns on a wide screen', () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test('who and when on the left, the achievements on the right', async ({ page }) => {
+    await page.goto('/experience/');
+    const roles = page.locator('article.role');
+    await expect(roles).toHaveCount(3);
+    for (const role of await roles.all()) {
+      const head = (await role.locator('.role-head').boundingBox())!;
+      const list = (await role.locator('.bullets').boundingBox())!;
+      expect(head.x + head.width, 'the identity column is not left of the list').toBeLessThan(
+        list.x,
+      );
+      expect(Math.abs(head.y - list.y), 'the columns do not start together').toBeLessThan(40);
+    }
+  });
+});
+
+test.describe('Experience roles are one column on a phone', () => {
+  test.use({ viewport: { width: 390, height: 800 } });
+
+  test('the achievements sit under the title', async ({ page }) => {
+    await page.goto('/experience/');
+    const role = page.locator('article.role').first();
+    const head = (await role.locator('.role-head').boundingBox())!;
+    const list = (await role.locator('.bullets').boundingBox())!;
+    expect(list.y).toBeGreaterThan(head.y + head.height - 1);
+  });
+});

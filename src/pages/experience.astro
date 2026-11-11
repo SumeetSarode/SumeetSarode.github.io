@@ -37,12 +37,15 @@ import { certification, education } from '../data/education';
             <li class:list={['stop', { current: index === 0 }]}>
               <span class="marker" aria-hidden="true" />
               <article class="panel role">
-                <div class="role-meta">
-                  {index === 0 && <span class="badge">Current role</span>}
-                  <span class="dates">{role.dates}</span>
-                  <span class="org">{employer.name}</span>
+                <div class="role-head">
+                  <div class="role-meta">
+                    {index === 0 && <span class="badge">Current role</span>}
+                    <span class="dates">{role.dates}</span>
+                    <span class="org">{employer.name}</span>
+                  </div>
+                  <h3>{role.title}</h3>
+                  <p class="role-summary">{role.summary}</p>
                 </div>
-                <h3>{role.title}</h3>
                 <ul class="bullets">
                   {role.bullets.map((bullet) => (
                     <li>
@@ -206,18 +209,36 @@ import { certification, education } from '../data/education';
     font-weight: 600;
   }
   .role h3 {
-    margin: var(--space-4) 0 var(--space-5);
+    margin: var(--space-4) 0 var(--space-3);
     font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
   }
+  .role-summary {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+  /* The achievements: a calm list, each one set off by a rule and an accent bar. */
   .bullets {
     display: grid;
-    gap: var(--space-3);
-    max-width: 60rem;
-    margin: 0;
-    padding-left: 1.2rem;
+    margin: var(--space-5) 0 0;
+    padding: 0;
+    list-style: none;
   }
-  .bullets li::marker {
-    color: var(--accent);
+  .bullets li {
+    position: relative;
+    padding: var(--space-4) 0 var(--space-4) 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+  .bullets li::before {
+    content: '';
+    position: absolute;
+    top: 1.35rem;
+    bottom: 1.35rem;
+    left: 0;
+    width: 3px;
+    border-radius: 3px;
+    background: var(--accent);
   }
 
   .earlier-section,
@@ -263,6 +284,23 @@ import { certification, education } from '../data/education';
   }
   .next {
     margin-top: var(--space-6);
+  }
+
+  /* Two columns: who and when on the left (it stays in view), the achievements on the right. */
+  @media (min-width: 56rem) {
+    .role {
+      display: grid;
+      grid-template-columns: minmax(15rem, 5fr) minmax(0, 8fr);
+      gap: var(--space-7);
+      align-items: start;
+    }
+    .role-head {
+      position: sticky;
+      top: 6rem;
+    }
+    .role .bullets {
+      margin-top: 0;
+    }
   }
 
   @media (min-width: 48rem) {
