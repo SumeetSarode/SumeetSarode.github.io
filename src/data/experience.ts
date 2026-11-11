@@ -31,7 +31,7 @@ export const employers: readonly Employer[] = [
       {
         title: 'Principal Data Scientist',
         dates: 'Oct 2025 \u2013 Present',
-        summary: 'Architecting multi-agent AI deployed across every U.S. Walmart location.',
+        summary: 'Architecting multi-agent AI with guardrails and human review.',
         bullets: [
           'Architected, built, and deployed a multi-agent AI platform across every U.S. Walmart location, transforming process guides from documents, chats, and forms into governed, prioritized operational actions.',
           'Established a provider-agnostic LLM architecture integrating model routing, evaluation, guardrails, and human-in-the-loop validation to prevent unchecked model output from triggering operational actions.',
@@ -75,7 +75,7 @@ export interface Highlight {
 }
 
 export const signatureHeadline =
-  'Architected, built, and deployed a multi-agent AI platform across every U.S. Walmart location.';
+  'A multi-agent platform that turns process knowledge into safe, governed action.';
 
 export const highlights: readonly Highlight[] = [
   {

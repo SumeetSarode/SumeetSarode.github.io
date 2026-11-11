@@ -7,8 +7,8 @@ import { site } from '../config/site';
 import { employers, highlights, signatureHeadline } from '../data/experience';
 import { publications, shortVenue } from '../data/publications';
 
-// Newest first, matching the Experience page.
-const career = employers[0]!.roles;
+// Oldest first, so the path reads as a climb: left to right (top to bottom on a phone).
+const career = [...employers[0]!.roles].reverse();
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 
 // Search engines read this. Name, title, and public profiles only: no phone number or address.
@@ -49,10 +49,13 @@ const jsonLd = {
           >
             <span class="path" role="list" aria-label="Career path">
               {career.map((role, index) => (
-                <span class:list={['path-step', { current: index === 0 }]} role="listitem">
+                <span
+                  class:list={['path-step', { current: index === career.length - 1 }]}
+                  role="listitem"
+                >
                   <span class="path-title">
                     {role.title}
-                    {index === 0 && <span class="now">Current</span>}
+                    {index === career.length - 1 && <span class="now">Current</span>}
                   </span>
                   <span class="path-dates">{role.dates}</span>
                   <span class="path-summary">{role.summary}</span>
@@ -157,7 +160,7 @@ const jsonLd = {
     min-width: 0;
   }
 
-  /* Experience preview: the roles as steps on a line, newest at the top. */
+  /* Experience preview: the roles as steps on a line. Vertical on a phone, horizontal from tablet up. */
   .path {
     display: flex;
     flex: 1;
@@ -165,7 +168,6 @@ const jsonLd = {
     gap: var(--space-5);
     padding: var(--space-2) 0 0 2.25rem;
   }
-  /* Steps share the tile's height, so the path fills the space without a gap at the bottom. */
   .path-step {
     position: relative;
     display: flex;
@@ -176,7 +178,7 @@ const jsonLd = {
   .path-step:last-child {
     flex: 0 0 auto;
   }
-  /* The line: one segment from each marker down to the next marker. */
+  /* The line: one segment from each marker to the next marker. */
   .path-step:not(:last-child)::after {
     content: '';
     position: absolute;
@@ -184,7 +186,7 @@ const jsonLd = {
     bottom: calc(-1 * var(--space-5) - 0.35rem);
     left: calc(-2.25rem + 0.5rem);
     width: 2px;
-    background: linear-gradient(180deg, var(--accent), var(--border));
+    background: linear-gradient(180deg, var(--border), var(--accent));
   }
   .path-step::before {
     content: '';
@@ -341,28 +343,61 @@ const jsonLd = {
       grid-template-columns: repeat(3, 1fr);
       gap: var(--space-6);
     }
-  }
-  @media (min-width: 64rem) {
-    .chapters {
-      grid-template-columns: repeat(3, 1fr);
+    /* The career path runs left to right, one column per role. */
+    .path {
+      flex-direction: row;
+      gap: var(--space-6);
+      padding: var(--space-3) 0 0;
     }
-    .slot-experience {
-      grid-column: 1 / 3;
-      grid-row: 1 / 3;
+    .path-step,
+    .path-step:last-child {
+      flex: 1;
+      padding-top: 2.25rem;
     }
-    .slot-projects,
-    .slot-research {
-      grid-column: 3;
+    .path-step::before {
+      top: 0;
+      left: 0;
     }
-    /* Here the tile spans two rows, so the path gets room to breathe. */
+    .path-step:not(:last-child)::after {
+      top: 0.5rem;
+      right: calc(-1 * var(--space-6));
+      bottom: auto;
+      left: 1.25rem;
+      width: auto;
+      height: 2px;
+      background: linear-gradient(90deg, var(--border), var(--accent));
+    }
     .path-title {
-      font-size: 1.625rem;
+      font-size: clamp(1.25rem, 1rem + 0.8vw, 1.75rem);
+      line-height: 1.2;
+    }
+    /* The badge sits on the marker row, so it never pushes the text below it out of line. */
+    .now {
+      position: absolute;
+      top: 0;
+      left: 2.25rem;
     }
     .path-dates {
       font-size: 0.8125rem;
     }
     .path-summary {
-      font-size: 1.0625rem;
+      font-size: 1rem;
+    }
+  }
+  /* Projects, Research and Contact sit side by side as equal tiles. */
+  @media (min-width: 48rem) and (max-width: 63.99rem) {
+    /* Long titles wrap here, so every title gets two lines and the dates below stay aligned. */
+    .path-title {
+      min-height: 2.4em;
+      align-items: flex-start;
+    }
+  }
+  @media (min-width: 64rem) {
+    .chapters {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .slot-contact {
+      grid-column: auto;
     }
   }
 </style>

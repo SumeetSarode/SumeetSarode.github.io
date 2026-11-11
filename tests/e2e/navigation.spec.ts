@@ -19,15 +19,53 @@ test('home is a concise overview, with Experience before Projects', async ({ pag
   await expect(page.locator('#work article')).toHaveCount(0);
 });
 
-test('the Experience tile shows a career path, newest first, not a chart', async ({ page }) => {
+test.describe('the tiles on a laptop', () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test('Experience is full width; the other three share one row at equal size', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const boxes = await page.locator('.chapter').evaluateAll((tiles) =>
+      tiles.map((tile) => {
+        const { x, y, width, height } = tile.getBoundingClientRect();
+        return { x, y, width, height };
+      }),
+    );
+    const [experience, projects, research, contact] = boxes as [
+      (typeof boxes)[number],
+      (typeof boxes)[number],
+      (typeof boxes)[number],
+      (typeof boxes)[number],
+    ];
+    const rowWidth = projects.x + projects.width; // the right edge of the first tile in row 2
+    expect(experience.width).toBeGreaterThan(rowWidth + research.width); // it spans every column
+    for (const tile of [projects, research, contact]) {
+      expect(Math.abs(tile.y - projects.y), 'row 2 tiles are not on one line').toBeLessThan(2);
+      expect(Math.abs(tile.width - projects.width), 'row 2 tiles differ in width').toBeLessThan(2);
+    }
+    expect(projects.y).toBeGreaterThan(experience.y + experience.height - 1);
+  });
+
+  test('the career path runs left to right', async ({ page }) => {
+    await page.goto('/');
+    const xs = await page
+      .locator('.path-step')
+      .evaluateAll((steps) => steps.map((step) => step.getBoundingClientRect().x));
+    expect(xs).toEqual([...xs].sort((a, b) => a - b));
+    expect(new Set(xs).size).toBe(3);
+  });
+});
+
+test('the Experience tile shows a career path, oldest to newest, not a chart', async ({ page }) => {
   await page.goto('/');
   const steps = page.getByRole('list', { name: 'Career path' }).getByRole('listitem');
   await expect(steps.locator('.path-title')).toHaveText([
-    /^Principal Data Scientist/,
-    /^Senior Data Scientist/,
     /^Data Scientist/,
+    /^Senior Data Scientist/,
+    /^Principal Data Scientist/,
   ]);
-  await expect(steps.first()).toContainText('Current');
+  await expect(steps.last()).toContainText('Current');
   await expect(page.locator('.slot-experience').locator('.bar, canvas, svg')).toHaveCount(0);
 });
 
