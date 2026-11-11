@@ -18,6 +18,7 @@ export const allPaths = [
   '/experience/',
   '/projects/',
   '/research/',
+  '/education/',
   '/contact/',
   ...projectPaths,
   ...researchPaths,

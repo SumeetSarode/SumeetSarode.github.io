@@ -52,16 +52,16 @@ previews, and the saved picture all follow. Nothing else needs touching.
 
 ## 2. Edit text
 
-| To change…                                                                                | Edit this file                                        |
-| ----------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| Your name, title, email, links, the intro under your name, the social-sharing description | `src/config/site.ts`                                  |
-| Jobs and their bullet points                                                              | `src/data/experience.ts`                              |
-| Skills                                                                                    | `src/data/skills.ts`                                  |
-| Publications                                                                              | `src/data/publications.ts`                            |
-| Education and the certification                                                           | `src/data/education.ts`                               |
-| The short "More on GitHub" list                                                           | `src/data/more-projects.ts`                           |
-| The photo's description for screen readers                                                | `src/config/profile-photo.json` (or use Photo Studio) |
-| A case study                                                                              | `src/content/projects/<name>.yaml`                    |
+| To change…                                                                                         | Edit this file                                        |
+| -------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Your name, title, email, links, the intro under your name, the social-sharing description          | `src/config/site.ts`                                  |
+| Jobs and their bullet points                                                                       | `src/data/experience.ts`                              |
+| Capabilities: the stack's layers (top = today's focus), one-line summaries, and the "Runs on" base | `src/data/skills.ts`                                  |
+| Publications                                                                                       | `src/data/publications.ts`                            |
+| Degrees and certifications (only add a certificate link after opening it and checking it)          | `src/data/education.ts`                               |
+| The short "More on GitHub" list                                                                    | `src/data/more-projects.ts`                           |
+| The photo's description for screen readers                                                         | `src/config/profile-photo.json` (or use Photo Studio) |
+| A case study                                                                                       | `src/content/projects/<name>.yaml`                    |
 
 Open a file in any text editor, change the words between the quotes, and save. Don't change the
 punctuation around them.

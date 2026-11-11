@@ -4,7 +4,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import ChapterCard from '../components/ChapterCard.astro';
 import Emblem from '../components/Emblem.astro';
+import Icon from '../components/Icon.astro';
 import { site } from '../config/site';
+import { certificationsByIssuer, degrees } from '../data/education';
 import { employers, highlights, signatureHeadline } from '../data/experience';
 import { publications, shortVenue } from '../data/publications';
 
@@ -31,7 +33,7 @@ const jsonLd = {
       <div class="section-head">
         <div>
           <p class="eyebrow">Explore the work</p>
-          <h2 id="chapters-title">Four chapters. Start with the career.</h2>
+          <h2 id="chapters-title">Five chapters. Start with the career.</h2>
         </div>
       </div>
 
@@ -109,7 +111,7 @@ const jsonLd = {
                 {String(publications.length).padStart(2, '0')}
                 <span>publications</span>
               </span>
-              <span class="venues" role="list" aria-label="Venues">
+              <span class="chips" role="list" aria-label="Venues">
                 {publications.map((paper) => (
                   <span role="listitem">{shortVenue(paper)}</span>
                 ))}
@@ -118,9 +120,37 @@ const jsonLd = {
           </ChapterCard>
         </div>
 
-        <div class="slot-contact">
+        <div class="slot-education">
           <ChapterCard
             number="04"
+            label="Education"
+            title="Education"
+            description="A master's in data science, and certifications in deep learning and machine learning."
+            href="/education/"
+            cta="See education"
+            tone="indigo"
+          >
+            <span class="education-preview">
+              <span class="degree-list" role="list" aria-label="Degrees">
+                {degrees.map((item) => (
+                  <span class="degree-line" role="listitem">
+                    <Icon name="graduation-cap" size={18} />
+                    {item.degree}
+                  </span>
+                ))}
+              </span>
+              <span class="chips" role="list" aria-label="Certification issuers">
+                {certificationsByIssuer().map((group) => (
+                  <span role="listitem">{group.issuer}</span>
+                ))}
+              </span>
+            </span>
+          </ChapterCard>
+        </div>
+
+        <div class="slot-contact">
+          <ChapterCard
+            number="05"
             label="Contact"
             title="Let's talk"
             description="Production AI, reliable agents, or an engineering problem worth solving."
@@ -272,6 +302,25 @@ const jsonLd = {
     display: grid;
     gap: var(--space-4);
   }
+  .education-preview {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .degree-list {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .degree-line {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    font-weight: 650;
+    color: var(--text);
+  }
+  .degree-line :global(svg) {
+    flex: none;
+    color: var(--accent);
+  }
   .paper-emblems {
     display: flex;
     flex-wrap: wrap;
@@ -293,12 +342,12 @@ const jsonLd = {
     letter-spacing: 0;
     color: var(--text-muted);
   }
-  .venues {
+  .chips {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
   }
-  .venues span {
+  .chips span {
     padding: 0.3rem 0.7rem;
     border: 1px solid var(--border);
     border-radius: var(--radius-pill);
@@ -353,8 +402,7 @@ const jsonLd = {
     .chapters {
       grid-template-columns: repeat(2, 1fr);
     }
-    .slot-experience,
-    .slot-contact {
+    .slot-experience {
       grid-column: 1 / -1;
     }
     .pillars {
@@ -402,20 +450,11 @@ const jsonLd = {
       font-size: 1rem;
     }
   }
-  /* Projects, Research and Contact sit side by side as equal tiles. */
   @media (min-width: 48rem) and (max-width: 63.99rem) {
     /* Long titles wrap here, so every title gets two lines and the dates below stay aligned. */
     .path-title {
       min-height: 2.4em;
       align-items: flex-start;
-    }
-  }
-  @media (min-width: 64rem) {
-    .chapters {
-      grid-template-columns: repeat(3, 1fr);
-    }
-    .slot-contact {
-      grid-column: auto;
     }
   }
 </style>

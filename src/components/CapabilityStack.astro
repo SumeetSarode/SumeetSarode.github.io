@@ -1,0 +1,169 @@
+---
+import Icon from './Icon.astro';
+import Tag from './Tag.astro';
+import { foundations, skillLayers } from '../data/skills';
+
+const count = skillLayers.length;
+---
+
+<!--
+  Capabilities as a stack: each layer builds on the ones beneath it. The top layer (what I
+  focus on now) is the narrowest and brightest; layers widen toward the base, like a pyramid.
+-->
+<div class="stack">
+  <ol class="layers" aria-label="Capabilities, from today's focus down to the foundations">
+    {skillLayers.map((layer, index) => (
+      <li class="layer" style={`--inset: ${count - 1 - index}; --glow: ${count - index}`}>
+        <div class="layer-head">
+          <span class="layer-icon" aria-hidden="true">
+            <Icon name={layer.icon} size={22} />
+          </span>
+          <div>
+            <h3>
+              {layer.name}
+              {index === 0 && <span class="now">Focus now</span>}
+            </h3>
+            <p>{layer.summary}</p>
+          </div>
+        </div>
+        <ul class="tags" aria-label={`${layer.name} tools`}>
+          {layer.skills.map((skill) => (
+            <li>
+              <Tag>{skill}</Tag>
+            </li>
+          ))}
+        </ul>
+      </li>
+    ))}
+  </ol>
+  <div class="foundation">
+    <p class="foundation-label">Runs on</p>
+    {foundations.map((group) => (
+      <div class="foundation-group">
+        <span class="foundation-name">
+          <Icon name={group.icon} size={16} />
+          {group.name}
+        </span>
+        <ul class="tags" aria-label={group.name}>
+          {group.skills.map((skill) => (
+            <li>
+              <Tag>{skill}</Tag>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .stack {
+    display: grid;
+    gap: var(--space-3);
+  }
+  .layers {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .layer {
+    display: grid;
+    gap: var(--space-4);
+    padding: clamp(1.1rem, 2.5vw, 1.6rem) clamp(1.1rem, 3vw, 2rem);
+    border: 1px solid color-mix(in srgb, var(--accent) calc(var(--glow) * 7%), var(--border));
+    border-left: 4px solid color-mix(in srgb, var(--accent) calc(var(--glow) * 20%), var(--border));
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--accent) calc(var(--glow) * 2%), var(--surface));
+    box-shadow: var(--shadow-card);
+  }
+  .layer-head {
+    display: flex;
+    gap: var(--space-4);
+    align-items: flex-start;
+  }
+  .layer-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: var(--radius-small);
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    color: var(--accent);
+  }
+  h3 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+    margin: 0 0 var(--space-1);
+    font-size: 1.2rem;
+  }
+  .layer-head p {
+    margin: 0;
+    max-width: 52ch;
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+  }
+  .now {
+    padding: 0.15rem 0.6rem;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    color: var(--accent-contrast);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* The base everything stands on: one wide, quiet strip. */
+  .foundation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-6);
+    align-items: center;
+    padding: var(--space-4) clamp(1.1rem, 3vw, 2rem);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+  }
+  .foundation-label {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .foundation-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-3);
+    align-items: center;
+  }
+  .foundation-name {
+    display: inline-flex;
+    gap: var(--space-1);
+    align-items: center;
+    font-weight: 650;
+  }
+
+  /* Wide screens: the pyramid. Name and summary on the left, tools on the right. */
+  @media (min-width: 64rem) {
+    .layer {
+      grid-template-columns: minmax(18rem, 5fr) minmax(0, 6fr);
+      gap: var(--space-6);
+      align-items: center;
+      margin-inline: calc(var(--inset) * 1.75rem);
+    }
+  }
+</style>

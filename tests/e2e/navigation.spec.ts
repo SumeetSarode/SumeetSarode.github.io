@@ -1,4 +1,7 @@
 import { expect, test } from '@playwright/test';
+import { nav } from '../../src/config/nav';
+import { certifications, degrees } from '../../src/data/education';
+import { skillLayers } from '../../src/data/skills';
 import { readFileSync } from 'node:fs';
 
 const frame = JSON.parse(readFileSync('src/config/photo-frame.json', 'utf8')) as {
@@ -13,6 +16,7 @@ test('home is a concise overview, with Experience before Projects', async ({ pag
     'Experience',
     'Projects',
     'Research',
+    'Education',
     "Let's talk",
   ]);
   await expect(page.locator('.timeline')).toHaveCount(0);
@@ -22,7 +26,7 @@ test('home is a concise overview, with Experience before Projects', async ({ pag
 test.describe('the tiles on a laptop', () => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
-  test('Experience is full width; the other three share one row at equal size', async ({
+  test('Experience is full width; the other four form an even 2 x 2 grid below it', async ({
     page,
   }) => {
     await page.goto('/');
@@ -32,19 +36,21 @@ test.describe('the tiles on a laptop', () => {
         return { x, y, width, height };
       }),
     );
-    const [experience, projects, research, contact] = boxes as [
-      (typeof boxes)[number],
-      (typeof boxes)[number],
-      (typeof boxes)[number],
-      (typeof boxes)[number],
-    ];
-    const rowWidth = projects.x + projects.width; // the right edge of the first tile in row 2
-    expect(experience.width).toBeGreaterThan(rowWidth + research.width); // it spans every column
-    for (const tile of [projects, research, contact]) {
-      expect(Math.abs(tile.y - projects.y), 'row 2 tiles are not on one line').toBeLessThan(2);
-      expect(Math.abs(tile.width - projects.width), 'row 2 tiles differ in width').toBeLessThan(2);
-    }
+    type Box = (typeof boxes)[number];
+    const [experience, projects, research, education, contact] = boxes as [Box, Box, Box, Box, Box];
+    const same = (a: number, b: number) => Math.abs(a - b) < 2;
+
+    // Experience spans both columns.
+    expect(same(experience.x, projects.x)).toBe(true);
+    expect(same(experience.x + experience.width, research.x + research.width)).toBe(true);
     expect(projects.y).toBeGreaterThan(experience.y + experience.height - 1);
+    // Two rows of two, all the same width, lined up in columns.
+    expect(same(projects.y, research.y) && same(education.y, contact.y)).toBe(true);
+    expect(education.y).toBeGreaterThan(projects.y + projects.height - 1);
+    expect(same(projects.x, education.x) && same(research.x, contact.x)).toBe(true);
+    for (const tile of [research, education, contact]) {
+      expect(same(tile.width, projects.width), 'grid tiles differ in width').toBe(true);
+    }
   });
 
   test('the career path runs left to right', async ({ page }) => {
@@ -87,7 +93,7 @@ test('the Experience tile shows a career path, oldest to newest, not a chart', a
 });
 
 test('every home-page chapter opens its own section page', async ({ page }) => {
-  for (const [index, path] of ['/experience/', '/projects/', '/research/', '/contact/'].entries()) {
+  for (const [index, { href: path }] of nav.entries()) {
     await page.goto('/');
     await page.locator('.chapter').nth(index).click();
     await expect(page).toHaveURL(new RegExp(`${path}$`));
@@ -156,12 +162,7 @@ test('the impact numbers live on the Experience page, and are the verified ones'
 
 test('navigation opens subpages instead of scrolling through a résumé', async ({ page }) => {
   await page.goto('/');
-  for (const [name, path] of [
-    ['Experience', '/experience/'],
-    ['Projects', '/projects/'],
-    ['Research', '/research/'],
-    ['Contact', '/contact/'],
-  ] as const) {
+  for (const { label: name, href: path } of nav) {
     const link = page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name });
     await link.click();
     await expect(page).toHaveURL(new RegExp(`${path}$`));
@@ -255,5 +256,47 @@ test('project emblems are big enough to see on the Projects page', async ({ page
   for (const emblem of await page.locator('#work .emblem').all()) {
     const box = (await emblem.boundingBox())!;
     expect(box.width, 'a project emblem is too small to notice').toBeGreaterThanOrEqual(100);
+  }
+});
+
+test('the Education page lists both degrees and every certification, with safe verify links', async ({
+  page,
+}) => {
+  await page.goto('/education/');
+  await expect(page.locator('.degree')).toHaveCount(degrees.length);
+  await expect(page.locator('.certs li')).toHaveCount(certifications.length);
+  const verifyLinks = page.locator('a.verify');
+  await expect(verifyLinks).toHaveCount(certifications.filter((cert) => cert.url).length);
+  for (const link of await verifyLinks.all()) {
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', /noopener/);
+    // Each link names its certificate, so a screen reader hears more than "Verify, Verify".
+    await expect(link).toHaveAccessibleName(/^Verify .+ \(opens in a new tab\)$/);
+  }
+});
+
+test('capabilities are a stack: focus on top, foundations at the base, narrowing upward', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/experience/');
+  const layers = page.locator('.layer');
+  await expect(layers).toHaveCount(skillLayers.length);
+  await expect(layers.first()).toContainText('Focus now');
+  await expect(page.locator('.foundation')).toContainText('Runs on');
+  const top = (await layers.first().boundingBox())!;
+  const bottom = (await layers.last().boundingBox())!;
+  expect(top.width, 'the top layer should be narrower, like a pyramid').toBeLessThan(bottom.width);
+});
+
+test('the menu fits on one row on phones, so the sticky header stays short', async ({ page }) => {
+  for (const width of [320, 360, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto('/');
+    const tops = await page
+      .getByRole('navigation', { name: 'Primary' })
+      .getByRole('link')
+      .evaluateAll((links) => links.map((link) => Math.round(link.getBoundingClientRect().top)));
+    expect(new Set(tops).size, `menu wrapped at ${width}px`).toBe(1);
   }
 });

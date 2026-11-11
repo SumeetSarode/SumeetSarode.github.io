@@ -8,12 +8,17 @@
  */
 import type { IconName } from './icon-names';
 import Accessibility from '@lucide/astro/icons/accessibility';
+import Award from '@lucide/astro/icons/award';
+import Bot from '@lucide/astro/icons/bot';
 import BrainCircuit from '@lucide/astro/icons/brain-circuit';
 import Car from '@lucide/astro/icons/car';
 import ChartCandlestick from '@lucide/astro/icons/chart-candlestick';
+import Cloud from '@lucide/astro/icons/cloud';
+import Code from '@lucide/astro/icons/code';
 import Cpu from '@lucide/astro/icons/cpu';
 import Database from '@lucide/astro/icons/database';
 import EyeOff from '@lucide/astro/icons/eye-off';
+import GraduationCap from '@lucide/astro/icons/graduation-cap';
 import Landmark from '@lucide/astro/icons/landmark';
 import Languages from '@lucide/astro/icons/languages';
 import Layers from '@lucide/astro/icons/layers';
@@ -40,12 +45,17 @@ import Workflow from '@lucide/astro/icons/workflow';
 /** Every name in icon-names.ts must appear here, and nothing else may. */
 export const icons: Record<IconName, typeof ShieldCheck> = {
   accessibility: Accessibility,
+  award: Award,
+  bot: Bot,
   'brain-circuit': BrainCircuit,
   car: Car,
   'chart-candlestick': ChartCandlestick,
+  cloud: Cloud,
+  code: Code,
   cpu: Cpu,
   database: Database,
   'eye-off': EyeOff,
+  'graduation-cap': GraduationCap,
   landmark: Landmark,
   languages: Languages,
   layers: Layers,

@@ -5,12 +5,17 @@
  */
 export const iconNames = [
   'accessibility',
+  'award',
+  'bot',
   'brain-circuit',
   'car',
   'chart-candlestick',
+  'cloud',
+  'code',
   'cpu',
   'database',
   'eye-off',
+  'graduation-cap',
   'landmark',
   'languages',
   'layers',
