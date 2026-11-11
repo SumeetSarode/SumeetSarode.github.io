@@ -40,7 +40,11 @@ const jsonLd = {
 ---
 
 <BaseLayout {title} description={data.metaDescription} type="article" {jsonLd}>
-  <PageHero eyebrow="Case study" title={data.title} lead={data.tagline}>
+  <PageHero
+    eyebrow={`Case study · ${String(data.order).padStart(2, '0')}`}
+    title={data.title}
+    lead={data.tagline}
+  >
     <div slot="visual">
       <Emblem {...data.emblem} size="lg" />
     </div>
@@ -66,6 +70,15 @@ const jsonLd = {
   </PageHero>
 
   <article class="container case">
+    <ul class="facts" aria-label="Key facts">
+      {data.facts.map((fact) => (
+        <li>
+          <strong>{fact.value}</strong>
+          <span>{fact.label}</span>
+        </li>
+      ))}
+    </ul>
+
     <section class="block" aria-labelledby="challenge-title">
       <p class="eyebrow">The challenge</p>
       <h2 id="challenge-title" class="statement">
@@ -184,6 +197,36 @@ const jsonLd = {
     background: var(--surface);
     font-size: var(--step-small);
   }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: var(--space-4);
+    margin: var(--space-6) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .facts li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-5);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+  }
+  .facts strong {
+    font-size: clamp(2.25rem, 1.8rem + 1.6vw, 3.25rem);
+    font-weight: 750;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    color: var(--accent);
+  }
+  .facts span {
+    color: var(--text-muted);
+    font-size: var(--step-small);
+  }
+
   /* Each part of the story is its own block with room around it. */
   .block {
     margin-top: clamp(3rem, 7vw, 5.5rem);

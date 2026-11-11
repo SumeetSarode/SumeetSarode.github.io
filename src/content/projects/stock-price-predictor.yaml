@@ -23,6 +23,14 @@ emblem:
   badge: shield-check
   tone: indigo
 
+facts:
+  - value: '4'
+    label: guardrail tiers check every prediction
+  - value: '4'
+    label: horizons, from daily to monthly
+  - value: '1,744'
+    label: unit tests
+
 challenge:
   statement: >-
     A language model can write a convincing stock prediction and still be wrong in ways nobody

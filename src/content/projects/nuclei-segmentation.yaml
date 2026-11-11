@@ -20,6 +20,12 @@ emblem:
   badge: scan
   tone: cyan
 
+facts:
+  - value: '2018'
+    label: Kaggle Data Science Bowl dataset
+  - value: '5'
+    label: epochs fine-tuning the head layers
+
 challenge:
   statement: >-
     To count and measure cells in a microscope image, you first have to find each nucleus on its

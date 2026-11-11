@@ -62,6 +62,10 @@ const projects = defineCollection({
       badge: icon,
       tone: z.enum(emblemTones),
     }),
+    facts: z
+      .array(z.strictObject({ value: text, label: text }))
+      .min(2)
+      .max(4),
     challenge: z.strictObject({
       /** The problem in one sentence; shown large. */
       statement: rich,
