@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { allPaths } from './pages';
 
-const WIDTHS = [320, 375, 768, 1280];
+const WIDTHS = [320, 375, 768, 1280, 1920, 2560];
 
 for (const width of WIDTHS) {
   test.describe(`at ${width}px wide`, () => {

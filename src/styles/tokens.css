@@ -35,7 +35,9 @@
   --radius-small: 0.75rem;
   --radius-pill: 999px;
 
-  --max-width: 76rem;
+  /* Pages grow with the screen up to this width; text blocks keep their own reading width. */
+  --max-width: 120rem;
+  --gutter: clamp(1.25rem, 0.5rem + 3.5vw, 5rem);
   --measure: 42rem;
 
   --step-0: clamp(1.0625rem, 1.02rem + 0.2vw, 1.125rem);
