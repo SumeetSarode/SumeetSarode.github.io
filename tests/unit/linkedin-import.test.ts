@@ -153,6 +153,13 @@ describe('importing', () => {
     expect(result.message).toContain('content/linkedin/');
   });
 
+  it('says so when the download holds only the profile file, rather than "nothing new"', async () => {
+    const result = await review(setup(zipSync({ 'Profile.csv': strToU8(PROFILE) })));
+    expect(result.state).toBe('ready');
+    expect(result.message).toContain('no jobs, degrees or certificates');
+    expect(result.message).toContain('larger archive');
+  });
+
   it('proposes only what is genuinely new, and explains the rest', async () => {
     const result = await review(setup());
     expect(result.state).toBe('ready');

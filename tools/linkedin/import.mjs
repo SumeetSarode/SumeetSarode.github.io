@@ -83,12 +83,20 @@ export async function review({ contentDir, linkedinDir }) {
     ? [`These LinkedIn files couldn't be read and were skipped: ${linkedin.unreadable.join(', ')}.`]
     : [];
   const count = result.changes.length;
+  // LinkedIn's "Profile" option gives only Profile.csv. Say so, instead of "nothing new".
+  const missing = ['Positions.csv', 'Education.csv', 'Certifications.csv'].filter(
+    (name) => !(name in linkedin.data),
+  );
+  const incomplete = missing.length > 0 && count === 0;
+  const message = incomplete
+    ? 'This download has no jobs, degrees or certificates in it, so there is nothing to add. ' +
+      'In LinkedIn, request the larger archive (the first option) to import those.'
+    : count === 0
+      ? 'Nothing new to add: your site already has everything LinkedIn has that it can use.'
+      : `${count} thing${count === 1 ? '' : 's'} from LinkedIn could be added to your site.`;
   return {
     state: 'ready',
-    message:
-      count === 0
-        ? 'Nothing new to add: your site already has everything LinkedIn has that it can use.'
-        : `${count} thing${count === 1 ? '' : 's'} from LinkedIn could be added to your site.`,
+    message,
     // The entries themselves stay on the server; the page only needs to show and tick them.
     changes: result.changes.map(({ id, kind, heading, details }) => ({
       id,
