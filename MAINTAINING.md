@@ -50,23 +50,55 @@ previews, and the saved picture all follow. Nothing else needs touching.
 - **Still stuck:** open a terminal in this folder and run `npm run photo`. It prints what's wrong. A log
   of each run is kept in `~/Library/Logs/PhotoStudio.log` (Mac) or `%TEMP%\PhotoStudio.log` (Windows).
 
-## 2. Edit text
+## 2. Edit your content
 
-| To change…                                                                                                | Edit this file                                        |
-| --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| Your name, title, email, links, the home-page headline and intro, "Signature work", and the contact notes | `content/profile.yaml`                                |
-| Jobs, bullet points, earlier roles, and the impact numbers                                                | `content/experience.yaml`                             |
-| Capabilities: the stack's layers (top = today's focus) and the "Runs on" base                             | `content/capabilities.yaml`                           |
-| Research papers                                                                                           | `content/research.yaml`                               |
-| Degrees                                                                                                   | `content/education.yaml`                              |
-| Certifications (the guide at the top of the file lists every field)                                       | `content/certifications.yaml`                         |
-| The short "More on GitHub" list                                                                           | `content/more-projects.yaml`                          |
-| Each page's title and intro line, the home-page tile descriptions, and the closing "Let's talk" band      | `content/pages.yaml`                                  |
-| The photo's description for screen readers                                                                | `src/config/profile-photo.json` (or use Photo Studio) |
-| A case study                                                                                              | `content/projects/<name>.yaml`                        |
+Everything you'd want to change lives in one folder, **`content/`**, as plain text files. There is
+one file per section, and each starts with a short guide that lists every field.
 
-Open a file in any text editor, change the words between the quotes, and save. Don't change the
-punctuation around them.
+| To change…                                                                           | Edit this file                 |
+| ------------------------------------------------------------------------------------ | ------------------------------ |
+| Your name, title, email, links, the home-page headline and intro, "Signature work"   | `content/profile.yaml`         |
+| Each page's title and intro line, home-page tile text, the closing "Let's talk" band | `content/pages.yaml`           |
+| Jobs, bullet points, earlier roles, and the impact numbers                           | `content/experience.yaml`      |
+| Capabilities: the stack's layers (top = today's focus) and the "Runs on" base        | `content/capabilities.yaml`    |
+| Degrees                                                                              | `content/education.yaml`       |
+| Certifications                                                                       | `content/certifications.yaml`  |
+| Research papers                                                                      | `content/research.yaml`        |
+| The short "Also on GitHub" list                                                      | `content/more-projects.yaml`   |
+| A case study (see section 3)                                                         | `content/projects/<name>.yaml` |
+| The résumé PDF (see section 4)                                                       | `content/resume/`              |
+| The photo and its description for screen readers                                     | Photo Studio (section 1)       |
+
+**How to edit a file**
+
+1. Open it in any text editor.
+2. To add something (a job, a certificate, a paper), **copy a whole existing entry**, paste it below,
+   and change the words. Entries start with a dash (`-`).
+3. Save, and run `npm run dev` to see the result on your computer straight away.
+
+**Four things that trip people up**
+
+- **Indentation matters.** Lines inside an entry line up under the first word after the dash. Use
+  spaces, never the Tab key.
+- **A colon followed by a space inside your text breaks the line**, as in `Note: this`. Write the text
+  on the next line after `>-` (indented two more spaces), or put it in double quotes.
+- **Dates are written as numbers:** a month is `2020-06`, a day is `2019-08-17`. Leave `end` out for
+  something you're still doing, and the site shows "Present".
+- **Links must start with `https://`.** Only add a certificate or paper link after opening it and
+  checking that it shows the right thing. Never guess one.
+
+**If you make a mistake, nothing breaks.** The site refuses to build and tells you the file, the line,
+and what's wrong, for example:
+
+```text
+content/certifications.yaml needs fixing:
+  - line 3, #1 › date: must be a month written like 2020-06
+```
+
+Fix that line and run it again. The old site stays up until a build passes.
+
+Order doesn't matter in most files: the site sorts jobs, degrees, certificates and papers
+newest-first by itself.
 
 **House rules for the words** (the automatic checks enforce some of these):
 
@@ -105,13 +137,15 @@ that date to visitors.
 
 ## 4. Update the résumé PDF
 
-The site offers a résumé PDF **without your phone number**. To rebuild it after changing your Word résumé:
+The site offers a résumé PDF **without your phone number**. To rebuild it after changing your Word résumé,
+drop the `.docx` file into `content/resume/` (keep just one there) and run:
 
 ```bash
-npm run resume -- "/path/to/your resume.docx"
+npm run resume
 ```
 
-This needs **Python 3** and **LibreOffice** (both free). It works on a copy, so your original is never
+(You can also point at a file anywhere: `npm run resume -- "/path/to/your resume.docx"`.) Git ignores
+Word files, so your original, with your phone number in it, is never committed. This needs **Python 3** and **LibreOffice** (both free). It works on a copy, so your original is never
 touched. It removes the phone number, refuses to continue if any phone-like number remains, and writes
 `public/resume/sumeet-sarode-resume.pdf`. **Open the PDF and look at it** before publishing, since
 LibreOffice can draw fonts slightly differently from Word.
@@ -177,7 +211,10 @@ git push
 
 - **Astro**: builds plain HTML pages. The site ships no JavaScript files, only a few lines that remember
   light or dark mode.
-- **Case studies** are Markdown files with a checked set of fields at the top (`src/content.config.ts`).
+- **Your content** is plain text files in `content/`. Every file is checked against a set of rules when
+  the site builds (`src/content-files/schemas.ts`, and `src/content.config.ts` for case studies), which
+  is why mistakes produce clear messages instead of a broken page. The files in `src/data/` only load,
+  check, and sort that content.
 - **Design:** every color and size lives in `src/styles/tokens.css`. The light and dark themes share the
   same names with different values.
 - **Tests:** `tests/unit` (fast checks of the logic and the content rules) and `tests/e2e` (real browsers).

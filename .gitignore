@@ -10,3 +10,8 @@ tools/photo-studio/.tmp/
 playwright-report/
 test-results/
 .DS_Store
+
+# Résumé originals have a phone number in them. Only the cleaned PDF in public/ is published.
+*.docx
+*.doc
+__pycache__/

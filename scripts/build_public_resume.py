@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Build the public resume PDF from the owner's Word resume, WITHOUT the phone number.
 
-Usage:  python3 scripts/build_public_resume.py "path/to/resume.docx"
+Usage:  python3 scripts/build_public_resume.py ["path/to/resume.docx"]
+
+With no path, it uses the one .docx file in content/resume/ (git ignores Word files, so your
+phone number never gets committed).
 
 It never edits the original. It works on a temporary copy, refuses to continue if
 any phone-like number is still in the file, then converts the copy to
@@ -17,6 +20,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+RESUME_DIR = Path(__file__).resolve().parent.parent / "content" / "resume"
 OUTPUT = Path(__file__).resolve().parent.parent / "public" / "resume" / "sumeet-sarode-resume.pdf"
 TITLE = "Sumeet Sarode \u2014 R\u00e9sum\u00e9"
 AUTHOR = "Sumeet Sarode"
@@ -73,12 +77,26 @@ def convert(docx: Path) -> Path:
     return out_dir / (docx.stem + ".pdf")
 
 
-def main() -> None:
-    if len(sys.argv) != 2:
+def find_source(args: list[str]) -> Path:
+    """The path given on the command line, or the single .docx waiting in content/resume/."""
+    if len(args) > 1:
         raise SystemExit(__doc__)
-    source = Path(sys.argv[1]).expanduser()
-    if not source.is_file():
-        raise SystemExit(f"Cannot find {source}")
+    if args:
+        source = Path(args[0]).expanduser()
+        if not source.is_file():
+            raise SystemExit(f"Cannot find {source}")
+        return source
+    found = sorted(RESUME_DIR.glob("*.docx"))
+    if not found:
+        raise SystemExit(f"Put your Word r\u00e9sum\u00e9 (.docx) in {RESUME_DIR}, then run this again.")
+    if len(found) > 1:
+        names = ", ".join(path.name for path in found)
+        raise SystemExit(f"Found more than one .docx in {RESUME_DIR} ({names}). Keep just one.")
+    return found[0]
+
+
+def main() -> None:
+    source = find_source(sys.argv[1:])
     with tempfile.TemporaryDirectory() as work:
         clean = Path(work) / "sumeet-sarode-resume.docx"
         sanitize(source, clean)
