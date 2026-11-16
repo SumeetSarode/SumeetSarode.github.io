@@ -1,12 +1,14 @@
 // Checks the BUILT site (dist/) for anything that must never be published.
-// Run after `npm run build`:   npm run check:dist
+// Run after `npm run build`:   npm run check:dist   (or pass another build folder to check)
 // Exits with an error, and a list of problems, if any rule is broken.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { extname, join, relative } from 'node:path';
+import { extname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BANNED_WORDS, BUILD_LEAKS, PRIVACY_RULES, UNFINISHED } from './lib/content-rules.mjs';
 
-const dist = fileURLToPath(new URL('../dist/', import.meta.url));
+const dist = process.argv[2]
+  ? resolve(process.argv[2])
+  : fileURLToPath(new URL('../dist/', import.meta.url));
 if (!existsSync(dist)) {
   console.error('There is no dist/ folder. Run `npm run build` first.');
   process.exit(1);
@@ -73,9 +75,19 @@ for (const page of pages) {
   }
 }
 
-// Search-engine files.
+// Search-engine files. They need the site's address (url in content/profile.yaml); the home
+// page's canonical link says what it is, or that there isn't one yet.
+const home = readFileSync(join(dist, 'index.html'), 'utf8');
+const siteUrl = home.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
 const sitemapPath = join(dist, 'sitemap-0.xml');
-if (!existsSync(sitemapPath)) {
+const robots = existsSync(join(dist, 'robots.txt'))
+  ? readFileSync(join(dist, 'robots.txt'), 'utf8')
+  : '';
+if (!robots.includes('User-agent: *')) problems.push('robots.txt is missing');
+if (!siteUrl) {
+  if (existsSync(sitemapPath)) problems.push('there is a sitemap, but the site has no address');
+  if (/Sitemap:/.test(robots)) problems.push('robots.txt names a sitemap, but there is none');
+} else if (!existsSync(sitemapPath)) {
   problems.push('sitemap-0.xml is missing');
 } else {
   const sitemap = readFileSync(sitemapPath, 'utf8');
@@ -85,15 +97,11 @@ if (!existsSync(sitemapPath)) {
     problems.push(`sitemap lists ${urls.length} pages, but ${expected} exist`);
   for (const url of urls) {
     if (/404|styleguide/.test(url)) problems.push(`sitemap lists ${url}`);
-    if (!url.startsWith('https://sumeetsarode.github.io/'))
-      problems.push(`sitemap has a wrong address: ${url}`);
+    if (!url.startsWith(siteUrl)) problems.push(`sitemap has a wrong address: ${url}`);
   }
-}
-const robots = existsSync(join(dist, 'robots.txt'))
-  ? readFileSync(join(dist, 'robots.txt'), 'utf8')
-  : '';
-if (!/Sitemap:\s*https:\/\/sumeetsarode\.github\.io\/sitemap-index\.xml/.test(robots)) {
-  problems.push('robots.txt does not point at the sitemap');
+  if (!robots.includes(`Sitemap: ${new URL('/sitemap-index.xml', siteUrl).href}`)) {
+    problems.push('robots.txt does not point at the sitemap');
+  }
 }
 
 if (problems.length > 0) {

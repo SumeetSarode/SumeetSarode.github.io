@@ -1,0 +1,206 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { pages, tabTitle } from '../../data/pages';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import Tag from '../../components/Tag.astro';
+import { certifications, degrees } from '../../data/education';
+import { formatMonth, formatRange } from '../../lib/months';
+import { nextSection, pageIfOn, sectionNumber } from '../../config/sections';
+
+export const getStaticPaths = pageIfOn('education');
+const next = nextSection('education');
+---
+
+<BaseLayout title={tabTitle('Education')} description={pages.education.metaDescription}>
+  <PageHero
+    eyebrow={`${sectionNumber('education')} / Education`}
+    title={pages.education.title}
+    lead={pages.education.lead}
+  />
+
+  {degrees.length > 0 && (
+    <section class="section" aria-labelledby="degrees-title">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Degrees</p>
+            <h2 id="degrees-title">Where it started</h2>
+          </div>
+        </div>
+        <div class="degrees">
+          {degrees.map((item) => (
+            <article class="panel degree">
+              <span class="degree-icon" aria-hidden="true">
+                <Icon name="graduation-cap" size={26} />
+              </span>
+              <p class="dates">{formatRange(item.start, item.end)}</p>
+              <h3>{item.degree}</h3>
+              <p class="org">{item.school}</p>
+              {item.coursework && (
+                <ul class="tags" aria-label="Relevant coursework">
+                  {item.coursework.map((course) => (
+                    <li>
+                      <Tag>{course}</Tag>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {certifications.length > 0 && (
+    <section class="section certifications-section" aria-labelledby="certifications-title">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Certifications</p>
+            <h2 id="certifications-title">Always learning</h2>
+          </div>
+        </div>
+        <ul class="certs">
+          {certifications.map((cert) => (
+            <li class="panel cert">
+              <span class="cert-icon" aria-hidden="true">
+                <Icon name="award" size={20} />
+              </span>
+              <h3>{cert.name}</h3>
+              <p class="cert-meta">
+                {cert.issuer}
+                {cert.date && <span class="dates"> · {formatMonth(cert.date)}</span>}
+              </p>
+              {cert.url && (
+                <a
+                  class="route-link verify"
+                  href={cert.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Verify<span class="visually-hidden"> {cert.name}</span>
+                  <span aria-hidden="true"> ↗</span>
+                  <span class="visually-hidden"> (opens in a new tab)</span>
+                </a>
+              )}
+            </li>
+          ))}
+        </ul>
+        {next && (
+          <a class="route-link next" href={next.href}>
+            Next: {next.label} <span aria-hidden="true">→</span>
+          </a>
+        )}
+      </div>
+    </section>
+  )}
+  {certifications.length === 0 && next && (
+    <div class="container next-only">
+      <a class="route-link next" href={next.href}>
+        Next: {next.label} <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  )}
+</BaseLayout>
+
+<style>
+  /* Without certifications, the Next link sits on its own at the end. */
+  .next-only {
+    padding-block-end: var(--space-7);
+  }
+  .degrees {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .degree {
+    position: relative;
+  }
+  .degree-icon,
+  .cert-icon {
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-small);
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    color: var(--accent);
+  }
+  .degree-icon {
+    width: 3.25rem;
+    height: 3.25rem;
+    margin-bottom: var(--space-4);
+  }
+  .cert-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-bottom: var(--space-3);
+  }
+  .dates {
+    margin: 0 0 var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+  }
+  .degree h3 {
+    margin-bottom: var(--space-1);
+    font-size: clamp(1.3rem, 1.1rem + 0.8vw, 1.7rem);
+  }
+  .org {
+    margin: 0;
+    color: var(--text-muted);
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: var(--space-5) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .certifications-section {
+    border-block: 1px solid var(--border);
+    background: color-mix(in srgb, var(--surface) 45%, var(--bg));
+  }
+  .certs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .cert {
+    display: flex;
+    flex-direction: column;
+  }
+  .cert h3 {
+    margin-bottom: var(--space-2);
+    font-size: 1.05rem;
+    line-height: 1.35;
+  }
+  .cert-meta {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+  .cert-meta .dates {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+  }
+  .verify {
+    align-self: flex-start;
+    margin-top: auto;
+    padding-top: var(--space-3);
+    font-size: 0.875rem;
+  }
+  .next {
+    margin-top: var(--space-6);
+  }
+
+  @media (min-width: 48rem) {
+    .degrees {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

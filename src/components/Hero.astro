@@ -4,11 +4,17 @@ import profile from '../assets/profile/profile.jpg';
 import photo from '../config/profile-photo.json';
 import frame from '../config/photo-frame.json';
 import { site } from '../config/site';
+import { sections } from '../config/sections';
 import Button from './Button.astro';
 import Rich from './Rich.astro';
 
+const { hero } = site;
 // Keep the last two words together, so a lonely word never wraps onto its own line.
-const rest = site.hero.rest.replace(/ (\S+)$/, '\u00a0$1');
+const rest = hero?.rest.replace(/ (\S+)$/, '\u00a0$1');
+// Without a headline in profile.yaml, the line above the name shows the title instead.
+const role = hero?.role ?? site.title;
+// The main button leads to the first section there is (Contact has its own band below).
+const start = sections.find((section) => section.key !== 'contact');
 
 // The page decides the photo's shape; Photo Studio follows this same setting.
 const frameAspect = frame.ratioHeight / frame.ratioWidth;
@@ -36,32 +42,46 @@ const frameVars = `--frame-ratio: ${frame.ratioWidth} / ${frame.ratioHeight}; --
     </div>
 
     <div class="copy">
-      <p class="role rise">
-        <span class="dot" aria-hidden="true"></span>
-        {site.hero.role}
-      </p>
-      <h1 id="hero-title" class="rise rise-2">
+      {role && (
+        <p class="role rise">
+          <span class="dot" aria-hidden="true" />
+          {role}
+        </p>
+      )}
+      <h1 id="hero-title" class:list={['rise rise-2', { 'name-only': !hero }]}>
         <span class="name">{site.name}</span>
-        <span class="setup">{site.hero.setup}</span>
-        <span class="punch">
-          <span class="gradient-text">{site.hero.highlight}</span> {rest}
-        </span>
+        {hero && <span class="setup">{hero.setup}</span>}
+        {hero && (
+          <span class="punch">
+            <span class="gradient-text">{hero.highlight}</span> {rest}
+          </span>
+        )}
       </h1>
-      <p class="how rise rise-3">
-        <Rich text={site.hero.intro} />
-      </p>
-      <ul class="actions rise rise-4">
-        <li>
-          <Button href="/experience/">
-            Explore my experience <span aria-hidden="true">→</span>
-          </Button>
-        </li>
-        <li>
-          <Button href={site.resumePath} variant="secondary" download>
-            Download résumé <span aria-hidden="true">↓</span>
-          </Button>
-        </li>
-      </ul>
+      {hero && (
+        <p class="how rise rise-3">
+          <Rich text={hero.intro} />
+        </p>
+      )}
+      {(start || site.resume) && (
+        <ul class="actions rise rise-4">
+          {start && (
+            <li>
+              <Button href={start.href}>
+                {/* The space lives in the text: Astro drops a bare one after a value here. */}
+                {`Explore my ${start.label.toLowerCase()} `}
+                <span aria-hidden="true">→</span>
+              </Button>
+            </li>
+          )}
+          {site.resume && (
+            <li>
+              <Button href={site.resume.href} variant="secondary" download={site.resume.fileName}>
+                Download résumé <span aria-hidden="true">↓</span>
+              </Button>
+            </li>
+          )}
+        </ul>
+      )}
     </div>
   </div>
 </section>
@@ -146,6 +166,14 @@ const frameVars = `--frame-ratio: ${frame.ratioWidth} / ${frame.ratioHeight}; --
     font-weight: 600;
     letter-spacing: -0.01em;
     color: var(--text-muted);
+  }
+  /* Without a headline in profile.yaml, the name is the headline. */
+  .name-only .name {
+    margin-bottom: 0;
+    font-size: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+    color: var(--text);
   }
   /* The set-up line is quiet, so the punch line lands. */
   .setup {

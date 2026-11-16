@@ -6,7 +6,7 @@ Drop your Word résumé (a `.docx` file) in this folder, then run:
 npm run resume
 ```
 
-That builds the PDF people download from the site, at `public/resume/sumeet-sarode-resume.pdf`:
+That builds the PDF people download from the site, at `public/resume/resume.pdf`:
 
 - It works on a copy, so your Word file is never changed.
 - It **removes your phone number** and stops if any phone-like number is left.

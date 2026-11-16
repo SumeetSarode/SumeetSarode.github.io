@@ -103,7 +103,12 @@ test.describe('home page', () => {
   test('the résumé link downloads a PDF', async ({ page, request }) => {
     await page.goto('/');
     const href = await page.getByRole('link', { name: /résumé/i }).getAttribute('href');
-    expect(href).toBe('/resume/sumeet-sarode-resume.pdf');
+    expect(href).toBe('/resume/resume.pdf');
+    // Saved under the owner's name, not a generic "resume.pdf".
+    await expect(page.getByRole('link', { name: /résumé/i })).toHaveAttribute(
+      'download',
+      'sumeet-sarode-resume.pdf',
+    );
     const response = await request.get(href!);
     expect(response.status()).toBe(200);
     expect(response.headers()['content-type']).toContain('pdf');

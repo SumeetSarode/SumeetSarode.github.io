@@ -11,10 +11,26 @@ import { employers } from '../data/experience';
 import { tiles } from '../data/pages';
 import { publications, shortVenue } from '../data/publications';
 import { formatRange } from '../lib/months';
+import { moreProjects } from '../data/more-projects';
+import { skillLayers } from '../data/skills';
+import { countPhrase } from '../lib/count';
+import { isOn, sectionNumber, sections } from '../config/sections';
 
 // Oldest first, so the path reads as a climb: left to right (top to bottom on a phone).
-const career = [...employers[0]!.roles].reverse();
+const career = [...(employers[0]?.roles ?? [])].reverse();
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+
+// "Five chapters. Start with the career." The count follows the sections that are on.
+const chaptersTitle =
+  `${countPhrase(sections.length, 'chapter')}.` +
+  (isOn('experience') && sections.length > 1 ? ' Start with the career.' : '');
+
+// Experience spans the full width; the rest sit two to a row. With an odd number left over,
+// the last tile spans the row too, so no tile ever sits next to an empty gap.
+const pairedTiles = sections.length - (isOn('experience') ? 1 : 0);
+const lastIsWide = pairedTiles % 2 === 1;
+const { signature } = site;
+const wide = (key: string) => lastIsWide && sections.at(-1)?.key === key;
 
 // Search engines read this. Name, title, and public profiles only: no phone number or address.
 const jsonLd = {
@@ -27,7 +43,7 @@ const jsonLd = {
 };
 ---
 
-<BaseLayout title={`${site.name} — Principal Data Scientist & Agentic AI Architect`} {jsonLd}>
+<BaseLayout title={[site.name, site.titleInWords].filter(Boolean).join(' — ')} {jsonLd}>
   <Hero />
 
   <section class="section" aria-labelledby="chapters-title">
@@ -35,129 +51,163 @@ const jsonLd = {
       <div class="section-head">
         <div>
           <p class="eyebrow">Explore the work</p>
-          <h2 id="chapters-title">Five chapters. Start with the career.</h2>
+          <h2 id="chapters-title">{chaptersTitle}</h2>
         </div>
       </div>
 
       <div class="chapters">
-        <div class="slot-experience">
-          <ChapterCard
-            number="01"
-            label="Experience"
-            title="Experience"
-            description={tiles.experience}
-            href="/experience/"
-            cta="Explore the career"
-            tone="indigo"
-            featured
-          >
-            <span class="path" role="list" aria-label="Career path">
-              {career.map((role, index) => (
-                <span
-                  class:list={['path-step', { current: index === career.length - 1 }]}
-                  role="listitem"
-                >
-                  <span class="path-title">
-                    {role.title}
-                    {index === career.length - 1 && <span class="now">Current</span>}
-                  </span>
-                  <span class="path-dates">{formatRange(role.start, role.end)}</span>
-                  <span class="path-summary">{role.summary}</span>
-                </span>
-              ))}
-            </span>
-          </ChapterCard>
-        </div>
-
-        <div class="slot-projects">
-          <ChapterCard
-            number="02"
-            label="Projects"
-            title="Projects"
-            description={tiles.projects}
-            href="/projects/"
-            cta="See the case studies"
-            tone="violet"
-          >
-            <span class="mini-list" role="list" aria-label="Case studies">
-              {projects.map((project) => (
-                <span class="mini" role="listitem">
-                  <Emblem {...project.data.emblem} size="md" />
-                  <span class="mini-text">
-                    <span class="mini-title">{project.data.title}</span>
-                    <span class="mini-meta">
-                      {project.data.facts[0]!.value} {project.data.facts[0]!.label}
+        {isOn('experience') && (
+          <div class="slot-experience">
+            <ChapterCard
+              number={sectionNumber('experience')}
+              label="Experience"
+              title="Experience"
+              description={tiles.experience}
+              href="/experience/"
+              cta="Explore the career"
+              tone="indigo"
+              featured
+            >
+              {career.length > 0 ? (
+                <span class="path" role="list" aria-label="Career path">
+                  {career.map((role, index) => (
+                    <span
+                      class:list={['path-step', { current: index === career.length - 1 }]}
+                      role="listitem"
+                    >
+                      <span class="path-title">
+                        {role.title}
+                        {index === career.length - 1 && <span class="now">Current</span>}
+                      </span>
+                      <span class="path-dates">{formatRange(role.start, role.end)}</span>
+                      <span class="path-summary">{role.summary}</span>
                     </span>
-                  </span>
+                  ))}
                 </span>
-              ))}
-            </span>
-          </ChapterCard>
-        </div>
+              ) : (
+                <span class="preview-list" role="list" aria-label="Capabilities">
+                  {skillLayers.map((layer) => (
+                    <span class="preview-line" role="listitem">
+                      <Icon name={layer.icon} size={18} />
+                      {layer.name}
+                    </span>
+                  ))}
+                </span>
+              )}
+            </ChapterCard>
+          </div>
+        )}
 
-        <div class="slot-research">
-          <ChapterCard
-            number="03"
-            label="Research"
-            title="Research"
-            description={tiles.research}
-            href="/research/"
-            cta="Read the research"
-            tone="cyan"
-          >
-            <span class="research-preview">
-              <span class="paper-emblems" aria-hidden="true">
-                {publications.map((paper) => (
-                  <Emblem {...paper.emblem} size="md" />
-                ))}
-              </span>
-              <span class="big-number">
-                {String(publications.length).padStart(2, '0')}
-                <span>publications</span>
-              </span>
-              <span class="chips" role="list" aria-label="Venues">
-                {publications.map((paper) => (
-                  <span role="listitem">{shortVenue(paper)}</span>
-                ))}
-              </span>
-            </span>
-          </ChapterCard>
-        </div>
+        {isOn('projects') && (
+          <div class:list={['slot-projects', { wide: wide('projects') }]}>
+            <ChapterCard
+              number={sectionNumber('projects')}
+              label="Projects"
+              title="Projects"
+              description={tiles.projects}
+              href="/projects/"
+              cta="See the case studies"
+              tone="violet"
+            >
+              {projects.length > 0 ? (
+                <span class="mini-list" role="list" aria-label="Case studies">
+                  {projects.map((project) => (
+                    <span class="mini" role="listitem">
+                      <Emblem {...project.data.emblem} size="md" />
+                      <span class="mini-text">
+                        <span class="mini-title">{project.data.title}</span>
+                        <span class="mini-meta">
+                          {project.data.facts[0]!.value} {project.data.facts[0]!.label}
+                        </span>
+                      </span>
+                    </span>
+                  ))}
+                </span>
+              ) : (
+                <span class="preview-list" role="list" aria-label="Projects on GitHub">
+                  {moreProjects.map((project) => (
+                    <span class="preview-line" role="listitem">
+                      <Icon name="code" size={18} />
+                      {project.name}
+                    </span>
+                  ))}
+                </span>
+              )}
+            </ChapterCard>
+          </div>
+        )}
 
-        <div class="slot-education">
-          <ChapterCard
-            number="04"
-            label="Education"
-            title="Education"
-            description={tiles.education}
-            href="/education/"
-            cta="See education"
-            tone="indigo"
-          >
-            <span class="education-preview">
-              <span class="preview-list" role="list" aria-label="Degrees">
-                {degrees.map((item) => (
-                  <span class="preview-line" role="listitem">
-                    <Icon name="graduation-cap" size={18} />
-                    {item.degree}
+        {isOn('research') && (
+          <div class:list={['slot-research', { wide: wide('research') }]}>
+            <ChapterCard
+              number={sectionNumber('research')}
+              label="Research"
+              title="Research"
+              description={tiles.research}
+              href="/research/"
+              cta="Read the research"
+              tone="cyan"
+            >
+              <span class="research-preview">
+                <span class="paper-emblems" aria-hidden="true">
+                  {publications.map((paper) => (
+                    <Emblem {...paper.emblem} size="md" />
+                  ))}
+                </span>
+                <span class="big-number">
+                  {String(publications.length).padStart(2, '0')}
+                  <span>publications</span>
+                </span>
+                <span class="chips" role="list" aria-label="Venues">
+                  {publications.map((paper) => (
+                    <span role="listitem">{shortVenue(paper)}</span>
+                  ))}
+                </span>
+              </span>
+            </ChapterCard>
+          </div>
+        )}
+
+        {isOn('education') && (
+          <div class:list={['slot-education', { wide: wide('education') }]}>
+            <ChapterCard
+              number={sectionNumber('education')}
+              label="Education"
+              title="Education"
+              description={tiles.education}
+              href="/education/"
+              cta="See education"
+              tone="indigo"
+            >
+              <span class="education-preview">
+                {degrees.length > 0 && (
+                  <span class="preview-list" role="list" aria-label="Degrees">
+                    {degrees.map((item) => (
+                      <span class="preview-line" role="listitem">
+                        <Icon name="graduation-cap" size={18} />
+                        {item.degree}
+                      </span>
+                    ))}
                   </span>
-                ))}
-              </span>
-              <span class="preview-list" role="list" aria-label="Recent certifications">
-                {certifications.slice(0, 2).map((cert) => (
-                  <span class="preview-line" role="listitem">
-                    <Icon name="award" size={18} />
-                    {cert.name}
+                )}
+                {certifications.length > 0 && (
+                  <span class="preview-list" role="list" aria-label="Recent certifications">
+                    {certifications.slice(0, 2).map((cert) => (
+                      <span class="preview-line" role="listitem">
+                        <Icon name="award" size={18} />
+                        {cert.name}
+                      </span>
+                    ))}
                   </span>
-                ))}
+                )}
               </span>
-            </span>
-          </ChapterCard>
-        </div>
+            </ChapterCard>
+          </div>
+        )}
 
-        <div class="slot-contact">
+        <div class:list={['slot-contact', { wide: wide('contact') }]}>
           <ChapterCard
-            number="05"
+            number={sectionNumber('contact')}
             label="Contact"
             title="Let's talk"
             description={tiles.contact}
@@ -172,26 +222,30 @@ const jsonLd = {
     </div>
   </section>
 
-  <section class="section signature" aria-labelledby="signature-title">
-    <div class="container">
-      <p class="eyebrow">Signature work</p>
-      <h2 id="signature-title">{site.signature.headline}</h2>
-      <ol class="pillars">
-        {site.signature.highlights.map((highlight, index) => (
-          <li>
-            <span class="pillar-number" aria-hidden="true">
-              {String(index + 1).padStart(2, '0')}
-            </span>
-            <h3>{highlight.title}</h3>
-            <p>{highlight.description}</p>
-          </li>
-        ))}
-      </ol>
-      <a class="route-link" href="/experience/">
-        See the full career story <span aria-hidden="true">→</span>
-      </a>
-    </div>
-  </section>
+  {signature && (
+    <section class="section signature" aria-labelledby="signature-title">
+      <div class="container">
+        <p class="eyebrow">Signature work</p>
+        <h2 id="signature-title">{signature.headline}</h2>
+        <ol class="pillars">
+          {signature.highlights.map((highlight, index) => (
+            <li>
+              <span class="pillar-number" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <h3>{highlight.title}</h3>
+              <p>{highlight.description}</p>
+            </li>
+          ))}
+        </ol>
+        {isOn('experience') && (
+          <a class="route-link" href="/experience/">
+            See the full career story <span aria-hidden="true">→</span>
+          </a>
+        )}
+      </div>
+    </section>
+  )}
 </BaseLayout>
 
 <style>
@@ -409,7 +463,8 @@ const jsonLd = {
     .chapters {
       grid-template-columns: repeat(2, 1fr);
     }
-    .slot-experience {
+    .slot-experience,
+    .wide {
       grid-column: 1 / -1;
     }
     .pillars {

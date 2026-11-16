@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { nav } from '../../src/config/nav';
+import { sections as nav } from '../../src/config/sections';
 import { certifications, degrees } from '../../src/data/education';
 import { skillLayers } from '../../src/data/skills';
 import { readFileSync } from 'node:fs';

@@ -25,7 +25,7 @@ export const degreeSchema = z
     coursework: z.array(text).optional(),
   })
   .refine(...endNotBeforeStart);
-export const educationFile = z.array(degreeSchema).min(1);
+export const educationFile = z.array(degreeSchema).default([]);
 
 /** content/certifications.yaml: a list of certificates. */
 export const certificationSchema = z.strictObject({
@@ -34,7 +34,7 @@ export const certificationSchema = z.strictObject({
   date: month.optional(),
   url: httpsUrl.optional(),
 });
-export const certificationsFile = z.array(certificationSchema).min(1);
+export const certificationsFile = z.array(certificationSchema).default([]);
 
 /** content/research.yaml: research papers. Each one gets its own page. */
 export const publicationSchema = z.strictObject({
@@ -56,7 +56,7 @@ export const publicationSchema = z.strictObject({
   coAuthors: z.array(text).optional(),
   sources: z.array(z.strictObject({ label: text, url: httpsUrl })).optional(),
 });
-export const researchFile = z.array(publicationSchema).min(1).superRefine(uniqueSlugs);
+export const researchFile = z.array(publicationSchema).superRefine(uniqueSlugs).default([]);
 
 /** content/experience.yaml: jobs, earlier roles, and the headline impact numbers. */
 const bullets = z.array(text).min(1);
@@ -79,11 +79,15 @@ export const impactSchema = z.strictObject({
   /** Which résumé bullet the number comes from. Not shown; it keeps the numbers honest. */
   source: text,
 });
-export const experienceFile = z.strictObject({
-  employers: z.array(z.strictObject({ name: text, roles: z.array(roleSchema).min(1) })).min(1),
-  earlierRoles: z.array(earlierRoleSchema).default([]),
-  impact: z.array(impactSchema).max(4).default([]),
-});
+export const experienceFile = z
+  .strictObject({
+    employers: z
+      .array(z.strictObject({ name: text, roles: z.array(roleSchema).min(1) }))
+      .default([]),
+    earlierRoles: z.array(earlierRoleSchema).default([]),
+    impact: z.array(impactSchema).max(4).default([]),
+  })
+  .prefault({});
 
 /** content/capabilities.yaml: the layered stack on the Experience page. */
 export const layerSchema = z.strictObject({
@@ -92,14 +96,16 @@ export const layerSchema = z.strictObject({
   summary: text,
   skills: z.array(text).min(1),
 });
-export const capabilitiesFile = z.strictObject({
-  // The stack's colours are tuned for five layers at most.
-  layers: z.array(layerSchema).min(1).max(5),
-  foundations: z
-    .array(z.strictObject({ name: text, icon, skills: z.array(text).min(1) }))
-    .max(2)
-    .default([]),
-});
+export const capabilitiesFile = z
+  .strictObject({
+    // The stack's colours are tuned for five layers at most.
+    layers: z.array(layerSchema).max(5).default([]),
+    foundations: z
+      .array(z.strictObject({ name: text, icon, skills: z.array(text).min(1) }))
+      .max(2)
+      .default([]),
+  })
+  .prefault({});
 
 /** content/more-projects.yaml: the "Also on GitHub" list. */
 export const moreProjectsFile = z
@@ -110,31 +116,39 @@ export const moreProjectsFile = z
 export const profileFile = z.strictObject({
   name: text,
   /** Role and specialty joined by " · ", like "Principal Data Scientist · Agentic AI Architect". */
-  title: text,
-  /** The address the site is published at, without a trailing path. */
-  url: httpsUrl,
+  title: text.optional(),
+  /**
+   * The address the site is published at, without a trailing path. Optional: without it the
+   * site still builds, just without the sitemap and link-preview tags that need a full address.
+   */
+  url: httpsUrl.optional(),
   email: z.email({ error: 'must be an email address like name@example.org' }),
   github: httpsUrl.optional(),
   linkedin: httpsUrl.optional(),
   /** What search engines show under the link; they cut off around 155 characters. */
-  metaDescription: text.max(155),
-  hero: z.strictObject({
-    role: text,
-    /** The first line of the headline. */
-    setup: text,
-    /** The word in the second line that gets the colourful gradient. */
-    highlight: text,
-    /** The rest of the second line. */
-    rest: text,
-    intro: text,
-  }),
-  signature: z.strictObject({
-    headline: text,
-    highlights: z
-      .array(z.strictObject({ title: text, description: text }))
-      .min(1)
-      .max(3),
-  }),
+  metaDescription: text.max(155).optional(),
+  hero: z
+    .strictObject({
+      role: text,
+      /** The first line of the headline. */
+      setup: text,
+      /** The word in the second line that gets the colourful gradient. */
+      highlight: text,
+      /** The rest of the second line. */
+      rest: text,
+      intro: text,
+    })
+    .optional(),
+  /** The "Signature work" band on the home page. Leave out to hide it. */
+  signature: z
+    .strictObject({
+      headline: text,
+      highlights: z
+        .array(z.strictObject({ title: text, description: text }))
+        .min(1)
+        .max(3),
+    })
+    .optional(),
   /** The short line under each contact method. Leave out to use the defaults. */
   contactNotes: z
     .strictObject({ email: text.optional(), linkedin: text.optional(), github: text.optional() })
@@ -148,24 +162,26 @@ const pageText = z.strictObject({
   /** What search engines show under the link; they cut off around 155 characters. */
   metaDescription: text.max(155).optional(),
 });
-export const pagesFile = z.strictObject({
-  experience: pageText.extend({ careerHeadline: text.optional() }).default({}),
-  projects: pageText.default({}),
-  research: pageText.default({}),
-  education: pageText.default({}),
-  contact: pageText.default({}),
-  /** The one-line description on each home-page tile. */
-  tiles: z
-    .strictObject({
-      experience: text.optional(),
-      projects: text.optional(),
-      research: text.optional(),
-      education: text.optional(),
-      contact: text.optional(),
-    })
-    .default({}),
-  /** The "Let's talk" band above the footer. */
-  closing: z
-    .strictObject({ before: text.optional(), highlight: text.optional(), lead: text.optional() })
-    .default({}),
-});
+export const pagesFile = z
+  .strictObject({
+    experience: pageText.extend({ careerHeadline: text.optional() }).default({}),
+    projects: pageText.default({}),
+    research: pageText.default({}),
+    education: pageText.default({}),
+    contact: pageText.default({}),
+    /** The one-line description on each home-page tile. */
+    tiles: z
+      .strictObject({
+        experience: text.optional(),
+        projects: text.optional(),
+        research: text.optional(),
+        education: text.optional(),
+        contact: text.optional(),
+      })
+      .default({}),
+    /** The "Let's talk" band above the footer. */
+    closing: z
+      .strictObject({ before: text.optional(), highlight: text.optional(), lead: text.optional() })
+      .default({}),
+  })
+  .prefault({});

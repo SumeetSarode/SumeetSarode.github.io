@@ -1,57 +1,68 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { pages, tabTitle } from '../data/pages';
-import PageHero from '../components/PageHero.astro';
-import ImpactStats from '../components/ImpactStats.astro';
-import MetricText from '../components/MetricText.astro';
-import CapabilityStack from '../components/CapabilityStack.astro';
-import { earlierRoles, employers } from '../data/experience';
-import { formatRange } from '../lib/months';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { pages, tabTitle } from '../../data/pages';
+import PageHero from '../../components/PageHero.astro';
+import ImpactStats from '../../components/ImpactStats.astro';
+import MetricText from '../../components/MetricText.astro';
+import CapabilityStack from '../../components/CapabilityStack.astro';
+import { earlierRoles, employers } from '../../data/experience';
+import { formatRange } from '../../lib/months';
+import { skillLayers } from '../../data/skills';
+import { nextSection, pageIfOn, sectionNumber } from '../../config/sections';
+
+export const getStaticPaths = pageIfOn('experience');
+const next = nextSection('experience');
 ---
 
 <BaseLayout title={tabTitle('Experience')} description={pages.experience.metaDescription}>
-  <PageHero eyebrow="01 / Experience" title={pages.experience.title} lead={pages.experience.lead}>
+  <PageHero
+    eyebrow={`${sectionNumber('experience')} / Experience`}
+    title={pages.experience.title}
+    lead={pages.experience.lead}
+  >
     <ImpactStats label="Impact highlights" />
   </PageHero>
 
-  <section class="section" aria-labelledby="career-title">
-    <div class="container">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Career</p>
-          <h2 id="career-title">{pages.experience.careerHeadline}</h2>
+  {employers.length > 0 && (
+    <section class="section" aria-labelledby="career-title">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Career</p>
+            <h2 id="career-title">{pages.experience.careerHeadline}</h2>
+          </div>
         </div>
-      </div>
 
-      {employers.map((employer) => (
-        <ol class="timeline">
-          {employer.roles.map((role, index) => (
-            <li class:list={['stop', { current: index === 0 }]}>
-              <span class="marker" aria-hidden="true" />
-              <article class="panel role">
-                <div class="role-head">
-                  <div class="role-meta">
-                    {index === 0 && <span class="badge">Current role</span>}
-                    <span class="dates">{formatRange(role.start, role.end)}</span>
-                    <span class="org">{employer.name}</span>
+        {employers.map((employer) => (
+          <ol class="timeline">
+            {employer.roles.map((role, index) => (
+              <li class:list={['stop', { current: index === 0 }]}>
+                <span class="marker" aria-hidden="true" />
+                <article class="panel role">
+                  <div class="role-head">
+                    <div class="role-meta">
+                      {index === 0 && <span class="badge">Current role</span>}
+                      <span class="dates">{formatRange(role.start, role.end)}</span>
+                      <span class="org">{employer.name}</span>
+                    </div>
+                    <h3>{role.title}</h3>
+                    <p class="role-summary">{role.summary}</p>
                   </div>
-                  <h3>{role.title}</h3>
-                  <p class="role-summary">{role.summary}</p>
-                </div>
-                <ul class="bullets">
-                  {role.bullets.map((bullet) => (
-                    <li>
-                      <MetricText text={bullet} />
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            </li>
-          ))}
-        </ol>
-      ))}
-    </div>
-  </section>
+                  <ul class="bullets">
+                    {role.bullets.map((bullet) => (
+                      <li>
+                        <MetricText text={bullet} />
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              </li>
+            ))}
+          </ol>
+        ))}
+      </div>
+    </section>
+  )}
 
   {earlierRoles.length > 0 && (
     <section class="section earlier-section" aria-labelledby="earlier-title">
@@ -82,23 +93,38 @@ import { formatRange } from '../lib/months';
     </section>
   )}
 
-  <section class="section" aria-labelledby="capabilities-title">
-    <div class="container">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">The toolkit</p>
-          <h2 id="capabilities-title">Capabilities</h2>
+  {skillLayers.length > 0 && (
+    <section class="section" aria-labelledby="capabilities-title">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">The toolkit</p>
+            <h2 id="capabilities-title">Capabilities</h2>
+          </div>
         </div>
+        <CapabilityStack />
+        {next && (
+          <a class="route-link next" href={next.href}>
+            Next: {next.label} <span aria-hidden="true">→</span>
+          </a>
+        )}
       </div>
-      <CapabilityStack />
-      <a class="route-link next" href="/projects/">
-        Next: Projects <span aria-hidden="true">→</span>
+    </section>
+  )}
+  {skillLayers.length === 0 && next && (
+    <div class="container next-only">
+      <a class="route-link next" href={next.href}>
+        Next: {next.label} <span aria-hidden="true">→</span>
       </a>
     </div>
-  </section>
+  )}
 </BaseLayout>
 
 <style>
+  /* Without the capabilities, the Next link sits on its own at the end. */
+  .next-only {
+    padding-block-end: var(--space-7);
+  }
   /* Timeline: a vertical rail with a marker beside each role. */
   .timeline {
     position: relative;

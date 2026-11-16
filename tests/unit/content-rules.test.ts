@@ -123,6 +123,6 @@ describe('the repository holds only what should be public', () => {
 
   it.skipIf(tracked === null)('tracks only one PDF: the public résumé', () => {
     const pdfs = (tracked ?? []).filter((file) => file.toLowerCase().endsWith('.pdf'));
-    expect(pdfs).toEqual(['public/resume/sumeet-sarode-resume.pdf']);
+    expect(pdfs).toEqual(['public/resume/resume.pdf']);
   });
 });

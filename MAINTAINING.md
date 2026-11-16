@@ -100,6 +100,21 @@ Fix that line and run it again. The old site stays up until a build passes.
 Order doesn't matter in most files: the site sorts jobs, degrees, certificates and papers
 newest-first by itself.
 
+**Leaving things out**
+
+Only your **name and email** in `profile.yaml` are required. Everything else is optional: if you have
+no research papers, delete `research.yaml` (or leave it empty). That section's page, menu link and
+home-page tile disappear, and the numbering closes up ("03 / Education" becomes the third section
+there is). The Contact page always stays.
+
+- Experience shows if you have jobs or capabilities. Projects shows if you have case studies or GitHub
+  links. Education shows if you have degrees or certificates. Each page shows only the parts it has.
+- `url` (where the site is published) is optional too. Without it, the site builds without a sitemap
+  and without the link-preview tags that need a full address. Add it once you know the address.
+- Your initials (the badge at the top left and the browser-tab icon) and the link-preview picture are
+  made from your name and title when the site is built. There's nothing to update by hand.
+- The photo isn't in `content/`. Change it in Photo Studio (section 1).
+
 **House rules for the words** (the automatic checks enforce some of these):
 
 - Only claim what you can prove. No numbers you haven't verified.
@@ -147,7 +162,7 @@ npm run resume
 (You can also point at a file anywhere: `npm run resume -- "/path/to/your resume.docx"`.) Git ignores
 Word files, so your original, with your phone number in it, is never committed. This needs **Python 3** and **LibreOffice** (both free). It works on a copy, so your original is never
 touched. It removes the phone number, refuses to continue if any phone-like number remains, and writes
-`public/resume/sumeet-sarode-resume.pdf`. **Open the PDF and look at it** before publishing, since
+`public/resume/resume.pdf` (visitors' downloads are still named after you). **Open the PDF and look at it** before publishing, since
 LibreOffice can draw fonts slightly differently from Word.
 
 ## 5. Check your changes before publishing

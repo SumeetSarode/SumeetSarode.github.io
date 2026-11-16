@@ -8,6 +8,9 @@ import { publications, publicationYear, shortVenue } from '../../data/publicatio
 
 const papers = countPhrase(publications.length, 'paper');
 const researchPublications = countPhrase(publications.length, 'research publication');
+import { pageIfOn, sectionNumber } from '../../config/sections';
+
+export const getStaticPaths = pageIfOn('research');
 ---
 
 <BaseLayout
@@ -17,7 +20,11 @@ const researchPublications = countPhrase(publications.length, 'research publicat
     researchPublications,
   )}
 >
-  <PageHero eyebrow="03 / Research" title={pages.research.title} lead={pages.research.lead}>
+  <PageHero
+    eyebrow={`${sectionNumber('research')} / Research`}
+    title={pages.research.title}
+    lead={pages.research.lead}
+  >
     <ul class="venues" aria-label="Publication venues">
       {publications.map((paper) => (
         <li>

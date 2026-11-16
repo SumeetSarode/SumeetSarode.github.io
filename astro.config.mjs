@@ -1,13 +1,21 @@
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { parse } from 'yaml';
+import { createHash } from 'node:crypto';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import { CONTENT_DIR } from './src/content-files/load.ts';
+import { site } from './src/config/site.ts';
 
-const contentDir = fileURLToPath(new URL('./content/', import.meta.url));
+const contentDir = `${CONTENT_DIR}/`;
 
-// The published address lives in content/profile.yaml, so there is one place to change it.
-const { url } = parse(readFileSync(`${contentDir}profile.yaml`, 'utf8'));
+// A build of some other content folder (the tests build practice sites) keeps its own cache,
+// so nothing from it can leak into a build of the real content.
+const cacheDir = process.env.PORTFOLIO_CONTENT
+  ? join(
+      tmpdir(),
+      `portfolio-cache-${createHash('sha1').update(CONTENT_DIR).digest('hex').slice(0, 12)}`,
+    )
+  : undefined;
 
 /**
  * Pages read content/*.yaml while they are built, which Vite doesn't track. In `npm run dev`,
@@ -28,9 +36,11 @@ const reloadOnContentChange = {
 };
 
 export default defineConfig({
-  site: url,
+  // From content/profile.yaml. Without it, the site still builds, minus the sitemap.
+  site: site.url,
   trailingSlash: 'always',
-  // The sitemap automatically leaves out 404.html.
-  integrations: [sitemap()],
+  cacheDir,
+  // The sitemap needs the site's address, and automatically leaves out 404.html.
+  integrations: site.url ? [sitemap()] : [],
   vite: { plugins: [reloadOnContentChange] },
 });

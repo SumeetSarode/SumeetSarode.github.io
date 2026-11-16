@@ -4,13 +4,19 @@
  * Mistakes stop the build with the file, the line, and the field, in plain words, so whoever
  * edits the content never has to read a stack trace.
  */
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { LineCounter, parseDocument, type Document } from 'yaml';
 import type { z } from 'zod';
 
-/** npm scripts run from the site folder, so content/ sits next to package.json. */
-export const CONTENT_DIR = join(process.cwd(), 'content');
+/**
+ * content/ sits next to package.json, and npm scripts run from there. PORTFOLIO_CONTENT points
+ * somewhere else instead; the tests use it to build sites with sections left out.
+ */
+export const CONTENT_DIR = resolve(process.env.PORTFOLIO_CONTENT ?? join(process.cwd(), 'content'));
+
+/** Where the case studies live, one file each. */
+export const PROJECTS_DIR = join(CONTENT_DIR, 'projects');
 
 export class ContentError extends Error {
   override name = 'ContentError';
@@ -57,8 +63,16 @@ export function parseContent<Schema extends z.ZodType>(
   if (doc.errors.length > 0) {
     throw new ContentError(`content/${fileName} is not valid YAML: ${doc.errors[0]!.message}`);
   }
-  const result = schema.safeParse(doc.toJS());
+  // An empty file means the same as a missing one: nothing in that section.
+  const data: unknown = doc.toJS() ?? undefined;
+  const result = schema.safeParse(data);
   if (result.success) return result.data;
+  if (data === undefined) {
+    throw new ContentError(
+      `content/${fileName} is missing or empty, and the site needs it. ` +
+        'MAINTAINING.md lists what goes in it.',
+    );
+  }
 
   const problems = result.error.issues.map((issue) => {
     const line = lineOf(doc, lines, issue.path);
@@ -70,10 +84,11 @@ export function parseContent<Schema extends z.ZodType>(
   );
 }
 
-/** Read and check content/<fileName>. */
+/** Read and check content/<fileName>. A missing file is treated like an empty one. */
 export function loadContent<Schema extends z.ZodType>(
   fileName: string,
   schema: Schema,
 ): z.output<Schema> {
-  return parseContent(fileName, readFileSync(join(CONTENT_DIR, fileName), 'utf8'), schema);
+  const path = join(CONTENT_DIR, fileName);
+  return parseContent(fileName, existsSync(path) ? readFileSync(path, 'utf8') : '', schema);
 }

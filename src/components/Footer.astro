@@ -1,5 +1,5 @@
 ---
-import { nav } from '../config/nav';
+import { sections as nav } from '../config/sections';
 import { site } from '../config/site';
 
 const year = new Date().getFullYear();
@@ -9,7 +9,7 @@ const year = new Date().getFullYear();
   <div class="container grid">
     <div class="brand">
       <p class="name">{site.name}</p>
-      <p class="title">{site.title}</p>
+      {site.title && <p class="title">{site.title}</p>}
     </div>
     <nav aria-label="Footer">
       <p class="heading">Explore</p>

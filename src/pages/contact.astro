@@ -28,10 +28,15 @@ const channels = [
     primary: false,
   },
 ].filter((channel): channel is Exclude<typeof channel, '' | undefined> => Boolean(channel));
+import { sectionNumber } from '../config/sections';
 ---
 
 <BaseLayout title={tabTitle('Contact')} description={pages.contact.metaDescription} closing={false}>
-  <PageHero eyebrow="05 / Contact" title={pages.contact.title} lead={pages.contact.lead} />
+  <PageHero
+    eyebrow={`${sectionNumber('contact')} / Contact`}
+    title={pages.contact.title}
+    lead={pages.contact.lead}
+  />
 
   <section class="section" aria-labelledby="channels-title">
     <div class="container">
@@ -52,12 +57,14 @@ const channels = [
           </li>
         ))}
       </ul>
-      <p class="resume">
-        Prefer a document?
-        <a class="route-link" href={site.resumePath} download>
-          Download my résumé (PDF)
-        </a>
-      </p>
+      {site.resume && (
+        <p class="resume">
+          Prefer a document?
+          <a class="route-link" href={site.resume.href} download={site.resume.fileName}>
+            Download my résumé (PDF)
+          </a>
+        </p>
+      )}
     </div>
   </section>
 </BaseLayout>

@@ -8,7 +8,7 @@ phone number never gets committed).
 
 It never edits the original. It works on a temporary copy, refuses to continue if
 any phone-like number is still in the file, then converts the copy to
-public/resume/sumeet-sarode-resume.pdf with LibreOffice (the `soffice` command).
+public/resume/resume.pdf with LibreOffice (the `soffice` command).
 Standard library only.
 """
 
@@ -21,7 +21,7 @@ import zipfile
 from pathlib import Path
 
 RESUME_DIR = Path(__file__).resolve().parent.parent / "content" / "resume"
-OUTPUT = Path(__file__).resolve().parent.parent / "public" / "resume" / "sumeet-sarode-resume.pdf"
+OUTPUT = Path(__file__).resolve().parent.parent / "public" / "resume" / "resume.pdf"
 TITLE = "Sumeet Sarode \u2014 R\u00e9sum\u00e9"
 AUTHOR = "Sumeet Sarode"
 

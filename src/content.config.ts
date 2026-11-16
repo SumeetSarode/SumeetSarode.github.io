@@ -3,6 +3,7 @@ import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { iconNames } from './lib/icon-names';
 import { emblemTones } from './lib/emblem';
+import { PROJECTS_DIR } from './content-files/load';
 
 const text = z.string().min(1);
 /** Text may use **bold** and `code`; nothing else is interpreted (see src/lib/inline.ts). */
@@ -36,7 +37,7 @@ const highlight = z.strictObject({
  * instead of shipping half-finished.
  */
 const projects = defineCollection({
-  loader: glob({ pattern: '*.yaml', base: './content/projects' }),
+  loader: glob({ pattern: '*.yaml', base: PROJECTS_DIR }),
   schema: z.strictObject({
     title: text,
     /** One-line angle shown under the title. */

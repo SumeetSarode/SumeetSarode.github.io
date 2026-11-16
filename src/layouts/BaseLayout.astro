@@ -27,8 +27,9 @@ const {
   jsonLd,
   closing = true,
 } = Astro.props;
-const canonical = new URL(Astro.url.pathname, site.url).href;
-const ogImage = new URL('/og-image.png', site.url).href;
+// Link previews and the canonical tag need a full address, so they wait until profile.yaml has a url.
+const canonical = site.url && new URL(Astro.url.pathname, site.url).href;
+const ogImage = site.url && new URL('/og-image.png', site.url).href;
 ---
 
 <!doctype html>
@@ -39,19 +40,19 @@ const ogImage = new URL('/og-image.png', site.url).href;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {canonical && <link rel="canonical" href={canonical} />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     {noindex && <meta name="robots" content="noindex" />}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content={type} />
-    <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={ogImage} />
-    <meta property="og:image:alt" content={`${site.name} \u2014 ${site.title}`} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    {ogImage && <meta property="og:image:alt" content={site.cardTitle} />}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImage} />
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   </head>
   <body>

@@ -2,7 +2,8 @@
 interface Props {
   href: string;
   variant?: 'primary' | 'secondary';
-  download?: boolean;
+  /** Download instead of opening. A string also names the downloaded file. */
+  download?: boolean | string;
   /** Open in a new tab, and say so to screen-reader users. */
   newTab?: boolean;
 }
