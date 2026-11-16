@@ -11,6 +11,7 @@ import {
   explainBuildFailure,
   publishCheckProblems,
 } from '../../tools/portfolio-preview/build-output.mjs';
+import { HttpError } from '../../tools/shared/http.mjs';
 import { createPreviewServer } from '../../tools/portfolio-preview/server.mjs';
 import { resolveSiteFile } from '../../tools/portfolio-preview/static.mjs';
 import { isNoise } from '../../tools/portfolio-preview/watcher.mjs';
@@ -206,5 +207,61 @@ describe('the preview server', () => {
     const next = new TextDecoder().decode((await reader.read()).value);
     expect(next).toMatch(/"version":2/);
     await reader.cancel();
+  });
+});
+
+describe('the LinkedIn import routes', () => {
+  const review = vi.fn(async () => ({ state: 'ready', message: '1 thing', changes: [] }));
+  const apply = vi.fn(async (ids: string[]) => ({ added: ids.length, files: [], skipped: 0 }));
+  const builder = {
+    status: { site: { state: 'ready' }, resume: {}, warnings: [], version: 1, siteDir: '' },
+  };
+  const server = createPreviewServer({ builder, linkedin: { review, apply } });
+  let base: string;
+
+  beforeAll(async () => {
+    await new Promise<void>((done) => server.listen(0, '127.0.0.1', done));
+    base = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
+  });
+  afterAll(() => new Promise((done) => server.close(done)));
+
+  const post = (body: string, origin: string | undefined = base) =>
+    fetch(`${base}/__preview/api/import/apply`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(origin ? { Origin: origin } : {}) },
+      body,
+    });
+
+  it('shows the review', async () => {
+    const answer = await (await fetch(`${base}/__preview/api/import`)).json();
+    expect(answer.state).toBe('ready');
+  });
+
+  it('passes only a list of ids on to the import', async () => {
+    const response = await post(
+      JSON.stringify({ ids: ['a', 'b'], path: '/etc/passwd', entry: { x: 1 } }),
+    );
+    expect(await response.json()).toMatchObject({ added: 2 });
+    expect(apply).toHaveBeenCalledExactlyOnceWith(['a', 'b']);
+  });
+
+  it('refuses anything that is not a list of text ids', async () => {
+    for (const body of ['{"ids":"a"}', '{"ids":[1]}', '{}', 'not json']) {
+      expect((await post(body)).status).toBe(400);
+    }
+    expect(apply).not.toHaveBeenCalled();
+  });
+
+  it('refuses a huge request and a request from another web page', async () => {
+    expect((await post(JSON.stringify({ ids: ['x'.repeat(70_000)] }))).status).toBe(413);
+    expect((await post('{"ids":["a"]}', 'https://evil.test')).status).toBe(403);
+    expect(apply).not.toHaveBeenCalled();
+  });
+
+  it('reports a problem in plain words when the import itself refuses', async () => {
+    apply.mockRejectedValueOnce(new HttpError(422, 'content/education.yaml has a mistake.'));
+    const response = await post('{"ids":["a"]}');
+    expect(response.status).toBe(422);
+    expect(await response.json()).toEqual({ error: 'content/education.yaml has a mistake.' });
   });
 });

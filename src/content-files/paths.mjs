@@ -16,6 +16,12 @@ export const PROJECTS_DIR = join(CONTENT_DIR, 'projects');
 /** Where the owner drops their résumé (Word or PDF). Git ignores everything in it but the README. */
 export const RESUME_INPUT_DIR = join(CONTENT_DIR, 'resume');
 
+/**
+ * Where the owner drops their LinkedIn data download (the .zip). It holds personal data, so git
+ * ignores everything in it but the README, and the site never reads it.
+ */
+export const LINKEDIN_INPUT_DIR = join(CONTENT_DIR, 'linkedin');
+
 /** The cleaned, phone-free PDF the site offers for download, and its address on the site. */
 export const RESUME_URL = '/resume/resume.pdf';
 export const RESUME_OUTPUT = join(root, 'public', 'resume', 'resume.pdf');

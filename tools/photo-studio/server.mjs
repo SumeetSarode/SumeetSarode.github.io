@@ -13,7 +13,9 @@ import { fileURLToPath } from 'node:url';
 import { validateCrop } from './crop-math.mjs';
 import { validateFilters } from './filters.mjs';
 import { loadFrame } from './frame.mjs';
-import { decodeToMaster, renderProfile, writeFileAtomic } from './process.mjs';
+import { HttpError, readBody, readJson as readJsonBody, send } from '../shared/http.mjs';
+import { writeFileAtomic } from '../shared/write-atomic.mjs';
+import { decodeToMaster, renderProfile } from './process.mjs';
 import {
   MAX_JSON_BYTES,
   MAX_UPLOAD_BYTES,
@@ -38,54 +40,7 @@ const STATIC_FILES = {
   '/filters.mjs': ['filters.mjs', 'text/javascript; charset=utf-8'],
 };
 
-class HttpError extends Error {
-  constructor(status, message) {
-    super(message);
-    this.status = status;
-  }
-}
-
-function send(res, status, body, headers = {}) {
-  const isJson = typeof body === 'object' && !Buffer.isBuffer(body);
-  res.writeHead(status, {
-    'Content-Type': isJson ? 'application/json; charset=utf-8' : 'text/plain; charset=utf-8',
-    'Cache-Control': 'no-store',
-    'X-Content-Type-Options': 'nosniff',
-    ...headers,
-  });
-  res.end(isJson ? JSON.stringify(body) : body);
-}
-
-/** Reads a request body, refusing anything over `limit` bytes. */
-function readBody(req, limit) {
-  return new Promise((resolveBody, reject) => {
-    const chunks = [];
-    let total = 0;
-    let overflowed = false;
-    req.on('data', (chunk) => {
-      if (overflowed) return; // keep draining so the client can still read our 413
-      total += chunk.length;
-      if (total > limit) {
-        overflowed = true;
-        chunks.length = 0;
-        reject(new HttpError(413, 'File is too large.'));
-        return;
-      }
-      chunks.push(chunk);
-    });
-    req.on('end', () => resolveBody(Buffer.concat(chunks)));
-    req.on('error', reject);
-  });
-}
-
-async function readJson(req) {
-  try {
-    return JSON.parse((await readBody(req, MAX_JSON_BYTES)).toString('utf8'));
-  } catch (error) {
-    if (error instanceof HttpError) throw error;
-    throw new HttpError(400, 'Request body must be valid JSON.');
-  }
-}
+const readJson = (req) => readJsonBody(req, MAX_JSON_BYTES);
 
 /**
  * @param {{ projectRoot: string, lifecycle?: { ping(): void, closing(): void, quit(): void } | undefined }} options

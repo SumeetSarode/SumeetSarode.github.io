@@ -8,10 +8,16 @@
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { CONTENT_DIR, RESUME_INPUT_DIR } from '../../src/content-files/paths.mjs';
+import {
+  CONTENT_DIR,
+  LINKEDIN_INPUT_DIR,
+  RESUME_INPUT_DIR,
+} from '../../src/content-files/paths.mjs';
+import { apply as applyLinkedIn, review as reviewLinkedIn } from '../linkedin/import.mjs';
 import { createLifecycle } from '../photo-studio/lifecycle.mjs';
 import { openBrowser } from '../photo-studio/open-browser.mjs';
 import { buildResume } from '../resume/build.mjs';
+import { HttpError } from '../shared/http.mjs';
 import { createBuilder } from './builder.mjs';
 import { DEFAULT_PORT, PREVIEW_PATH, createPreviewServer } from './server.mjs';
 import { watchContent } from './watcher.mjs';
@@ -33,7 +39,19 @@ const builder = createBuilder({
   },
 });
 const lifecycle = createLifecycle({ onShutdown: () => shutdown() });
-server = createPreviewServer({ builder, lifecycle });
+const linkedinDirs = { contentDir: CONTENT_DIR, linkedinDir: LINKEDIN_INPUT_DIR };
+server = createPreviewServer({
+  builder,
+  lifecycle,
+  linkedin: {
+    review: () => reviewLinkedIn(linkedinDirs),
+    // The import's own messages are written for the owner, so they are passed on as they are.
+    apply: (ids) =>
+      applyLinkedIn({ ...linkedinDirs, ids }).catch((error) => {
+        throw new HttpError(422, error.message);
+      }),
+  },
+});
 
 let watcher;
 async function shutdown() {

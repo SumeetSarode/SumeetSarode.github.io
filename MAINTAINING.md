@@ -67,6 +67,7 @@ one file per section, and each starts with a short guide that lists every field.
 | The short "Also on GitHub" list                                                      | `content/more-projects.yaml`   |
 | A case study (see section 3)                                                         | `content/projects/<name>.yaml` |
 | The résumé PDF (see section 4)                                                       | `content/resume/`              |
+| Missing jobs, degrees or certificates, from your LinkedIn data (see section 2)       | `content/linkedin/`            |
 | The photo and its description for screen readers                                     | Photo Studio (section 1)       |
 
 **How to edit a file**
@@ -95,6 +96,32 @@ published, under a slim status bar.
 If your computer refuses to open it, the fixes are the same as for Photo Studio (section 1). In a
 terminal, `npm run portfolio-preview` does the same and prints any problem. Logs are kept in
 `~/Library/Logs/PortfolioPreview.log` (Mac) or `%TEMP%\PortfolioPreview.log` (Windows).
+
+**Fill in your content from LinkedIn**
+
+LinkedIn can send you a copy of your own profile data. The preview app can read it and offer to add
+what's missing from your site, with you checking everything first.
+
+1. On LinkedIn: **Settings → Data privacy → Get a copy of your data**. Choose **"Want something in
+   particular?"**, tick only **Profile**, and request the archive. LinkedIn emails you when it's ready
+   (usually within minutes, sometimes up to a day).
+2. Put the downloaded `.zip` (as it came, don't unzip it) in `content/linkedin/`.
+3. Open Portfolio Preview. An **Import from LinkedIn** box lists jobs, degrees and certificates
+   that LinkedIn has and your site doesn't. Tick the ones you want and click **Add selected**.
+
+What to expect:
+
+- **It only adds.** Nothing you've written is ever changed or removed. If LinkedIn disagrees with your
+  site (a different headline, different dates), it's listed under **For you to check**, and left alone.
+- **Some things it can't do for you.** Research papers need a summary written by you, certificate links
+  need checking, and LinkedIn often has only a year instead of a month. These are listed as notes.
+- **A new job gets its bullet points from your LinkedIn description.** The home-page summary line is
+  made from the first bullet, so read it afterwards and polish the wording.
+- **Your private data is never read.** Only the headline, jobs, degrees, certificates and publications
+  are used, not your address, birth date, contacts or phone numbers.
+- **Backups.** Before each save, the old version of the file goes into `content/linkedin/backup/`.
+- **It stays on your computer.** Git ignores everything in `content/linkedin/`. Delete the download when
+  you're done.
 
 **Four things that trip people up**
 

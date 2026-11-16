@@ -2,6 +2,8 @@
  * The preview page: shows the build status, reloads the site when a new build is ready
  * (staying on the same page), and keeps the local server alive while the tab is open.
  */
+import { startImportPanel } from '/__preview/import.js';
+
 const $ = (id) => document.getElementById(id);
 const frame = $('site');
 const LABELS = { building: 'Updating…', ready: 'Up to date', error: 'Needs a fix' };
@@ -56,8 +58,12 @@ function show(status) {
   }
 }
 
+const refreshImport = startImportPanel();
 const events = new EventSource('/__preview/events');
-events.onmessage = (message) => show(JSON.parse(message.data));
+events.onmessage = (message) => {
+  show(JSON.parse(message.data));
+  refreshImport(); // a dropped download or a saved file may change what could be imported
+};
 
 /* ---------- desktop / phone width ---------- */
 for (const button of document.querySelectorAll('[data-width]')) {
@@ -83,5 +89,6 @@ $('quit').addEventListener('click', async () => {
   $('stage').hidden = true;
   $('problem').hidden = true;
   $('warnings').hidden = true;
+  $('import-panel').hidden = true;
   $('stopped').hidden = false;
 });

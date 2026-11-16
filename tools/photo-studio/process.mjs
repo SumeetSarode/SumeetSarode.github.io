@@ -3,7 +3,7 @@
  * upright "master" JPEG, then render the final profile picture from it.
  */
 import { execFile } from 'node:child_process';
-import { mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
@@ -77,11 +77,4 @@ export async function renderProfile(master, crop, srcWidth, srcHeight, adjustmen
   })
     .jpeg({ quality: PROFILE_QUALITY, mozjpeg: true })
     .toBuffer();
-}
-
-/** Write to a temp name, then rename, so a crash never leaves half a file. */
-export async function writeFileAtomic(path, data) {
-  const temp = `${path}.${process.pid}.tmp`;
-  await writeFile(temp, data);
-  await rename(temp, path);
 }

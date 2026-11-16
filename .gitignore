@@ -20,3 +20,9 @@ content/resume/*
 *.odt
 *.rtf
 public/resume/*.partial
+
+# The LinkedIn download holds personal data (address, birth date, contacts, phone numbers).
+# Everything dropped into content/linkedin/ stays on this computer, whatever its format.
+content/linkedin/*
+!content/linkedin/README.md
+*.zip

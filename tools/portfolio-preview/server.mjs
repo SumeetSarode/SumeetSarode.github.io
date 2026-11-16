@@ -13,6 +13,7 @@ import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { isAllowedHost, isAllowedOrigin } from '../photo-studio/validate.mjs';
+import { HttpError, readJson, send } from '../shared/http.mjs';
 import { resolveSiteFile } from './static.mjs';
 
 export const DEFAULT_PORT = 4323;
@@ -23,7 +24,10 @@ const UI_FILES = {
   [PREVIEW_PATH]: ['index.html', 'text/html; charset=utf-8'],
   [`${PREVIEW_PATH}preview.js`]: ['preview.js', 'text/javascript; charset=utf-8'],
   [`${PREVIEW_PATH}preview.css`]: ['preview.css', 'text/css; charset=utf-8'],
+  [`${PREVIEW_PATH}import.js`]: ['import.js', 'text/javascript; charset=utf-8'],
 };
+/** The apply request is a list of ids; nothing bigger than this is ever sensible. */
+const MAX_IMPORT_REQUEST_BYTES = 64 * 1024;
 const UI_POLICY =
   "default-src 'self'; frame-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'";
 const LIFECYCLE = {
@@ -38,18 +42,11 @@ updates by itself.</p></body>`;
 /** What the browser may know: everything but the build folder's location. */
 const publicStatus = ({ siteDir, ...rest }) => ({ ...rest, hasSite: Boolean(siteDir) });
 
-function send(res, status, body, headers = {}) {
-  res.writeHead(status, {
-    'Content-Type': 'text/plain; charset=utf-8',
-    'Cache-Control': 'no-store',
-    'X-Content-Type-Options': 'nosniff',
-    ...headers,
-  });
-  res.end(body);
-}
-
-/** @param {{ builder: { status: object }, lifecycle?: object }} options */
-export function createPreviewServer({ builder, lifecycle }) {
+/**
+ * @param {{ builder: { status: object }, lifecycle?: object,
+ *   linkedin?: { review(): Promise<object>, apply(ids: string[]): Promise<object> } }} options
+ */
+export function createPreviewServer({ builder, lifecycle, linkedin }) {
   const listeners = new Set();
 
   /** Tell every open preview page about a new status. */
@@ -75,6 +72,13 @@ export function createPreviewServer({ builder, lifecycle }) {
 
     if (req.method === 'POST') {
       if (!isAllowedOrigin(req.headers.origin, port)) return send(res, 403, 'Forbidden origin.');
+      if (pathname === `${PREVIEW_PATH}api/import/apply` && linkedin) {
+        const { ids } = await readJson(req, MAX_IMPORT_REQUEST_BYTES);
+        if (!Array.isArray(ids) || !ids.every((id) => typeof id === 'string')) {
+          throw new HttpError(400, 'Expected a list of ids.');
+        }
+        return send(res, 200, await linkedin.apply(ids));
+      }
       if (!(pathname in LIFECYCLE)) return send(res, 404, 'Not found.');
       req.resume();
       lifecycle?.[LIFECYCLE[pathname]]();
@@ -83,10 +87,10 @@ export function createPreviewServer({ builder, lifecycle }) {
     if (req.method !== 'GET' && req.method !== 'HEAD') return send(res, 405, 'Not allowed.');
 
     if (pathname === `${PREVIEW_PATH}events`) return events(req, res);
-    if (pathname === `${PREVIEW_PATH}api/state`) {
-      return send(res, 200, JSON.stringify(publicStatus(builder.status)), {
-        'Content-Type': 'application/json; charset=utf-8',
-      });
+    if (pathname === `${PREVIEW_PATH}api/state`)
+      return send(res, 200, publicStatus(builder.status));
+    if (pathname === `${PREVIEW_PATH}api/import` && linkedin) {
+      return send(res, 200, await linkedin.review());
     }
     if (pathname in UI_FILES) {
       const [file, type] = UI_FILES[pathname];
@@ -107,8 +111,10 @@ export function createPreviewServer({ builder, lifecycle }) {
 
   const server = createServer((req, res) => {
     route(req, res, server.address().port).catch((error) => {
+      if (res.headersSent) return;
+      if (error instanceof HttpError) return send(res, error.status, { error: error.message });
       console.error('Unexpected error:', error);
-      if (!res.headersSent) send(res, 500, 'Something went wrong.');
+      send(res, 500, { error: 'Something went wrong.' });
     });
   });
   server.on('close', () => {

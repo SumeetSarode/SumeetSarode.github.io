@@ -38,6 +38,39 @@
       <ul id="warning-list"></ul>
     </section>
 
+    <section
+      class="panel import"
+      id="import-panel"
+      aria-labelledby="import-title"
+      data-state="none"
+    >
+      <h2 id="import-title">Import from LinkedIn</h2>
+      <p id="import-message" data-state="none">
+        To import from LinkedIn, put the download (the .zip) in content/linkedin/.
+      </p>
+      <form id="import-form" hidden>
+        <fieldset>
+          <legend>
+            Tick what to add to your site. Nothing is saved until you click the button.
+          </legend>
+          <ul class="choices" id="import-list"></ul>
+        </fieldset>
+        <div class="row">
+          <button type="button" id="import-select-all">Select all</button>
+          <button type="submit" id="import-add" class="primary" disabled>Add selected</button>
+        </div>
+        <p id="import-result" role="status" aria-live="polite"></p>
+      </form>
+      <details id="import-already-box" hidden>
+        <summary>Already on your site</summary>
+        <ul id="import-already"></ul>
+      </details>
+      <details id="import-notes-box" hidden open>
+        <summary>For you to check</summary>
+        <ul id="import-notes"></ul>
+      </details>
+    </section>
+
     <main class="stage" id="stage">
       <p class="waiting" id="waiting">
         Building your site. This takes a few seconds the first time.
