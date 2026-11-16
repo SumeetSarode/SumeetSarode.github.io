@@ -1,0 +1,107 @@
+# Capabilities: the layered stack on the Experience page.
+#
+# Each layer builds on the ones beneath it, like the career did. Keep every summary
+# faithful to a résumé bullet; don't add claims that aren't there. No ratings or bars.
+#
+# layers: from the top (what you focus on now, shown narrowest and brightest) down to
+# the base. One to five layers.
+#   name      The layer's name.                                           required
+#   icon      A symbol for it. The names are in src/lib/icon-names.ts.    required
+#   summary   One sentence, restating a résumé bullet.                    required
+#   skills    The tools and topics in this layer, one per line.           required
+#
+# foundations: what the whole stack runs on, shown as a solid base under the layers.
+# Up to two groups, with name, icon and skills as above. Optional.
+#
+# Long text: write ">-" after the field name, then the text on the next lines,
+# indented two more spaces.
+
+layers:
+  - name: LLM reliability
+    icon: shield-check
+    summary: >-
+      Model routing, evaluation, guardrails, and human review, so unchecked model output
+      never triggers an operational action.
+    skills:
+      - Multi-Provider Model Routing
+      - LLM Evaluation
+      - Guardrails
+      - Human-in-the-Loop Validation
+
+  - name: GenAI and agentic AI
+    icon: bot
+    summary: >-
+      Multi-agent platforms, and a natural-language-to-Cypher agent over a Neo4j knowledge
+      graph.
+    skills:
+      - Multi-Agent Systems
+      - LLM Agents
+      - RAG
+      - GraphRAG
+      - Knowledge Graphs
+      - Neo4j
+      - Text-to-Cypher
+      - Semantic Search
+      - Vector Databases
+      - Embeddings
+      - Prompt Engineering
+
+  - name: MLOps
+    icon: workflow
+    summary: >-
+      Production GCP services, a Kubeflow AutoML platform, and automated monitoring and
+      drift detection.
+    skills:
+      - Kubeflow
+      - Vertex AI
+      - MLflow
+      - Model Monitoring and Drift Detection
+      - Feature Pipelines
+      - CI/CD (GitHub Actions, Jenkins)
+      - Docker
+      - Kubernetes
+
+  - name: Machine learning
+    icon: brain-circuit
+    summary: >-
+      Prioritization, confidence-scoring, anomaly-detection, and forecasting models.
+    skills:
+      - TensorFlow
+      - PyTorch
+      - Scikit-learn
+      - XGBoost
+      - H2O AutoML
+      - BERT
+      - NLP
+      - Time Series Forecasting
+      - Anomaly Detection
+      - Computer Vision
+      - A/B Testing
+
+  - name: Data engineering
+    icon: database
+    summary: Daily predictive and ETL pipelines that feed every layer above.
+    skills:
+      - Spark
+      - BigQuery
+      - Airflow
+      - Kafka
+      - PostgreSQL
+      - MySQL
+      - Azure SQL
+      - MongoDB
+foundations:
+  - name: Cloud
+    icon: cloud
+    skills:
+      - GCP
+      - Azure (Databricks, Azure ML)
+      - AWS (S3, Lambda)
+
+  - name: Languages
+    icon: code
+    skills:
+      - Python
+      - SQL
+      - PySpark
+      - R

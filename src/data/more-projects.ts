@@ -1,26 +1,11 @@
-/** Short list of other public repos. Each line is based on the repo's own contents. */
-export interface MoreProject {
-  name: string;
-  url: string;
-  description: string;
-}
+/** Other public repositories. The content lives in content/more-projects.yaml. */
+import type { z } from 'zod';
+import { loadContent } from '../content-files/load';
+import { moreProjectsFile } from '../content-files/schemas';
 
-export const moreProjects: readonly MoreProject[] = [
-  {
-    name: 'Glomeruli Detection with Faster R-CNN',
-    url: 'https://github.com/SumeetSarode/Glomeruli-Detection-using-Faster-RCNN',
-    description:
-      "Detecting glomeruli, a kidney structure, with Faster R-CNN in TensorFlow's object-detection pipeline.",
-  },
-  {
-    name: 'Cashflow Prediction Optimization',
-    url: 'https://github.com/SumeetSarode/Cashflow-Prediction-Optimization',
-    description:
-      'Three research questions on invoice payments: will a customer pay over 30 days late, will they pay at all, and will it be in full, in part, or not at all?',
-  },
-  {
-    name: 'Sentence Classification using BERT',
-    url: 'https://github.com/SumeetSarode/Sentence-Classification-using-BERT',
-    description: 'Fine-tuning BERT to classify sentences, using the CoLA dataset.',
-  },
-];
+export type MoreProject = z.output<typeof moreProjectsFile>[number];
+
+export const moreProjects: readonly MoreProject[] = loadContent(
+  'more-projects.yaml',
+  moreProjectsFile,
+);

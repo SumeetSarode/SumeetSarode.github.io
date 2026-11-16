@@ -8,6 +8,7 @@ import {
   emblem,
   endNotBeforeStart,
   httpsUrl,
+  icon,
   month,
   period,
   slug,
@@ -83,3 +84,24 @@ export const experienceFile = z.strictObject({
   earlierRoles: z.array(earlierRoleSchema).default([]),
   impact: z.array(impactSchema).max(4).default([]),
 });
+
+/** content/capabilities.yaml: the layered stack on the Experience page. */
+export const layerSchema = z.strictObject({
+  name: text,
+  icon,
+  summary: text,
+  skills: z.array(text).min(1),
+});
+export const capabilitiesFile = z.strictObject({
+  // The stack's colours are tuned for five layers at most.
+  layers: z.array(layerSchema).min(1).max(5),
+  foundations: z
+    .array(z.strictObject({ name: text, icon, skills: z.array(text).min(1) }))
+    .max(2)
+    .default([]),
+});
+
+/** content/more-projects.yaml: the "Also on GitHub" list. */
+export const moreProjectsFile = z
+  .array(z.strictObject({ name: text, url: httpsUrl, description: text }))
+  .default([]);

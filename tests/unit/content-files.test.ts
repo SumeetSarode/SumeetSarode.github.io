@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { ContentError, parseContent } from '../../src/content-files/load';
 import {
+  capabilitiesFile,
   certificationsFile,
   educationFile,
   experienceFile,
+  moreProjectsFile,
   researchFile,
 } from '../../src/content-files/schemas';
 import { countPhrase } from '../../src/lib/count';
@@ -169,5 +171,37 @@ describe('experience.yaml', () => {
     expect(() => parseContent('experience.yaml', bad, experienceFile)).toThrow(
       /end must not be before start/,
     );
+  });
+});
+
+describe('capabilities.yaml', () => {
+  const layer = (name: string) =>
+    `  - name: ${name}\n    icon: cpu\n    summary: S\n    skills: [A]\n`;
+
+  it('accepts one layer and no foundations', () => {
+    expect(
+      parseContent('c.yaml', 'layers:\n' + layer('One'), capabilitiesFile).foundations,
+    ).toEqual([]);
+  });
+
+  it('refuses more than five layers, which the stack colours are not made for', () => {
+    const six = ['a', 'b', 'c', 'd', 'e', 'f'].map(layer).join('');
+    expect(() => parseContent('c.yaml', 'layers:\n' + six, capabilitiesFile)).toThrow(/layers/);
+  });
+});
+
+describe('more-projects.yaml', () => {
+  it('may be empty', () => {
+    expect(parseContent('m.yaml', '[]\n', moreProjectsFile)).toEqual([]);
+  });
+
+  it('only accepts https links', () => {
+    expect(() =>
+      parseContent(
+        'm.yaml',
+        '- name: N\n  url: http://x.org\n  description: D\n',
+        moreProjectsFile,
+      ),
+    ).toThrow(/https:\/\//);
   });
 });

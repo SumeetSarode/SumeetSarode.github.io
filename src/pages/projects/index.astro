@@ -44,28 +44,30 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
     </div>
   </section>
 
-  <section class="section more-section" aria-labelledby="more-title">
-    <div class="container">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Also on GitHub</p>
-          <h2 id="more-title">More experiments</h2>
+  {moreProjects.length > 0 && (
+    <section class="section more-section" aria-labelledby="more-title">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Also on GitHub</p>
+            <h2 id="more-title">More experiments</h2>
+          </div>
         </div>
+        <ul class="more">
+          {moreProjects.map((project) => (
+            <li class="panel">
+              <h3>
+                <a href={project.url}>
+                  {project.name} <span aria-hidden="true">↗</span>
+                </a>
+              </h3>
+              <p>{project.description}</p>
+            </li>
+          ))}
+        </ul>
       </div>
-      <ul class="more">
-        {moreProjects.map((project) => (
-          <li class="panel">
-            <h3>
-              <a href={project.url}>
-                {project.name} <span aria-hidden="true">↗</span>
-              </a>
-            </h3>
-            <p>{project.description}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </section>
+    </section>
+  )}
 </BaseLayout>
 
 <style>
