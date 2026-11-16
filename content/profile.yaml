@@ -1,0 +1,66 @@
+# Profile: who you are, and the words on the home page and contact page.
+#
+# This file feeds the header, footer, home page, contact page, and what search engines and
+# link previews show. Don't put a phone number or home address here: the site never
+# publishes them, and its privacy check will stop the build if one slips in.
+#
+#   name             Your full name.                                          required
+#   title            Role and specialty, joined by " · " (a middle dot).      required
+#   url              Where the site is published, starting with https://.     required
+#   email            Shown on the Contact page.                                required
+#   github           Your GitHub profile link. Leave out to hide it.          optional
+#   linkedin         Your LinkedIn profile link. Leave out to hide it.        optional
+#   metaDescription  One or two sentences for search results. 155 characters  required
+#                    at most; search engines cut off after that.
+#
+#   hero             The big headline on the home page:
+#     role             The small line above your name.                        required
+#     setup            First line of the headline.                            required
+#     highlight        The word in line two that gets the colourful gradient. required
+#     rest             The rest of line two.                                  required
+#     intro            One sentence under the headline. Put **two stars**     required
+#                      around words to make them bold.
+#
+#   signature        The "Signature work" section on the home page:
+#     headline         One sentence.                                          required
+#     highlights       One to three items, each with a title and description. required
+#                      Keep each one faithful to a résumé bullet.
+#
+#   contactNotes     The short line under each contact method. Leave out      optional
+#                    any (or all) to use the default wording.
+#
+# Your photo and its description are handled by Photo Studio (npm run photo).
+# Your résumé PDF is built with npm run resume.
+
+name: Sumeet Sarode
+title: Principal Data Scientist · Agentic AI Architect
+url: https://sumeetsarode.github.io
+email: sumeet.s2597@gmail.com
+github: https://github.com/SumeetSarode
+linkedin: https://linkedin.com/in/SumeetSarode
+metaDescription: >-
+  Principal Data Scientist and agentic AI architect. Case studies in multi-agent LLM systems, guardrails, and production ML.
+
+hero:
+  role: Principal Data Scientist · Walmart
+  setup: Smart AI is easy.
+  highlight: Trustworthy
+  rest: AI is my job.
+  intro: I build agents that **reason**, with guardrails that **hold**.
+
+signature:
+  headline: A multi-agent platform that turns process knowledge into safe, governed action.
+  highlights:
+    - title: Multi-agent platform
+      description: Turns process guides from documents, chats, and forms into governed, prioritized operational actions.
+
+    - title: Provider-agnostic LLM architecture
+      description: Model routing, evaluation, guardrails, and human-in-the-loop validation, so unchecked model output never triggers an operational action.
+
+    - title: Real-time knowledge-graph agent
+      description: Natural language to Cypher over a Neo4j knowledge graph, connecting live operational signals with process guidance.
+
+contactNotes:
+  email: The quickest way to reach me.
+  linkedin: Full career history.
+  github: The code behind every case study.

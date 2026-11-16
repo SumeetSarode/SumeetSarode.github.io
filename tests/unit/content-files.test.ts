@@ -7,6 +7,7 @@ import {
   educationFile,
   experienceFile,
   moreProjectsFile,
+  profileFile,
   researchFile,
 } from '../../src/content-files/schemas';
 import { countPhrase } from '../../src/lib/count';
@@ -203,5 +204,46 @@ describe('more-projects.yaml', () => {
         moreProjectsFile,
       ),
     ).toThrow(/https:\/\//);
+  });
+});
+
+describe('profile.yaml', () => {
+  const profile = (extra = '', email = 'a@b.org') =>
+    `name: N\ntitle: T\nurl: https://x.org\nemail: ${email}\nmetaDescription: M\n` +
+    'hero: { role: R, setup: S, highlight: H, rest: E, intro: I }\n' +
+    'signature:\n  headline: H\n  highlights:\n    - { title: A, description: B }\n' +
+    extra;
+
+  it('needs no LinkedIn, GitHub, or contact notes', () => {
+    const data = parseContent('profile.yaml', profile(), profileFile);
+    expect(data.linkedin).toBeUndefined();
+    expect(data.contactNotes).toEqual({});
+  });
+
+  it('checks the email address', () => {
+    expect(() => parseContent('profile.yaml', profile('', 'not-an-email'), profileFile)).toThrow(
+      /email: must be an email address/,
+    );
+  });
+
+  it('keeps the search description short enough to show in full', () => {
+    expect(() =>
+      parseContent(
+        'profile.yaml',
+        profile().replace('metaDescription: M', `metaDescription: ${'x'.repeat(156)}`),
+        profileFile,
+      ),
+    ).toThrow(/metaDescription/);
+  });
+
+  it('only accepts https profile links', () => {
+    expect(() =>
+      parseContent('profile.yaml', profile('github: http://github.com/x\n'), profileFile),
+    ).toThrow(/github: must be a full link that starts with https:\/\//);
+  });
+
+  it('allows at most three signature highlights, which is what the layout holds', () => {
+    const four = '    - { title: A, description: B }\n'.repeat(3);
+    expect(() => parseContent('profile.yaml', profile(four), profileFile)).toThrow(/highlights/);
   });
 });

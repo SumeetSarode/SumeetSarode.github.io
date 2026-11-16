@@ -7,7 +7,7 @@ import Emblem from '../components/Emblem.astro';
 import Icon from '../components/Icon.astro';
 import { site } from '../config/site';
 import { certifications, degrees } from '../data/education';
-import { employers, highlights, signatureHeadline } from '../data/experience';
+import { employers } from '../data/experience';
 import { publications, shortVenue } from '../data/publications';
 import { formatRange } from '../lib/months';
 
@@ -20,9 +20,9 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: site.name,
-  jobTitle: 'Principal Data Scientist',
+  jobTitle: site.jobTitle,
   url: site.url,
-  sameAs: [site.links.github, site.links.linkedin],
+  sameAs: [site.links.github, site.links.linkedin].filter(Boolean),
 };
 ---
 
@@ -174,9 +174,9 @@ const jsonLd = {
   <section class="section signature" aria-labelledby="signature-title">
     <div class="container">
       <p class="eyebrow">Signature work</p>
-      <h2 id="signature-title">{signatureHeadline}</h2>
+      <h2 id="signature-title">{site.signature.headline}</h2>
       <ol class="pillars">
-        {highlights.map((highlight, index) => (
+        {site.signature.highlights.map((highlight, index) => (
           <li>
             <span class="pillar-number" aria-hidden="true">
               {String(index + 1).padStart(2, '0')}

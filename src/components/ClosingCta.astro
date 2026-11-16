@@ -19,11 +19,13 @@ import Button from './Button.astro';
           Email me <span aria-hidden="true">→</span>
         </Button>
       </li>
-      <li>
-        <Button href={site.links.linkedin} variant="secondary">
-          Connect on LinkedIn
-        </Button>
-      </li>
+      {site.links.linkedin && (
+        <li>
+          <Button href={site.links.linkedin} variant="secondary">
+            Connect on LinkedIn
+          </Button>
+        </li>
+      )}
     </ul>
   </div>
 </section>

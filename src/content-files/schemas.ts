@@ -105,3 +105,38 @@ export const capabilitiesFile = z.strictObject({
 export const moreProjectsFile = z
   .array(z.strictObject({ name: text, url: httpsUrl, description: text }))
   .default([]);
+
+/** content/profile.yaml: who you are, and the words on the home page and contact page. */
+export const profileFile = z.strictObject({
+  name: text,
+  /** Role and specialty joined by " · ", like "Principal Data Scientist · Agentic AI Architect". */
+  title: text,
+  /** The address the site is published at, without a trailing path. */
+  url: httpsUrl,
+  email: z.email({ error: 'must be an email address like name@example.org' }),
+  github: httpsUrl.optional(),
+  linkedin: httpsUrl.optional(),
+  /** What search engines show under the link; they cut off around 155 characters. */
+  metaDescription: text.max(155),
+  hero: z.strictObject({
+    role: text,
+    /** The first line of the headline. */
+    setup: text,
+    /** The word in the second line that gets the colourful gradient. */
+    highlight: text,
+    /** The rest of the second line. */
+    rest: text,
+    intro: text,
+  }),
+  signature: z.strictObject({
+    headline: text,
+    highlights: z
+      .array(z.strictObject({ title: text, description: text }))
+      .min(1)
+      .max(3),
+  }),
+  /** The short line under each contact method. Leave out to use the defaults. */
+  contactNotes: z
+    .strictObject({ email: text.optional(), linkedin: text.optional(), github: text.optional() })
+    .default({}),
+});

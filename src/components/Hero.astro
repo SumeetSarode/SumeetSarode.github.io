@@ -5,6 +5,10 @@ import photo from '../config/profile-photo.json';
 import frame from '../config/photo-frame.json';
 import { site } from '../config/site';
 import Button from './Button.astro';
+import Rich from './Rich.astro';
+
+// Keep the last two words together, so a lonely word never wraps onto its own line.
+const rest = site.hero.rest.replace(/ (\S+)$/, '\u00a0$1');
 
 // The page decides the photo's shape; Photo Studio follows this same setting.
 const frameAspect = frame.ratioHeight / frame.ratioWidth;
@@ -33,17 +37,18 @@ const frameVars = `--frame-ratio: ${frame.ratioWidth} / ${frame.ratioHeight}; --
 
     <div class="copy">
       <p class="role rise">
-        <span class="dot" aria-hidden="true"></span>Principal Data Scientist · Walmart
+        <span class="dot" aria-hidden="true"></span>
+        {site.hero.role}
       </p>
       <h1 id="hero-title" class="rise rise-2">
         <span class="name">{site.name}</span>
-        <span class="setup">Smart AI is easy.</span>
+        <span class="setup">{site.hero.setup}</span>
         <span class="punch">
-          <span class="gradient-text">Trustworthy</span> AI is my&nbsp;job.
+          <span class="gradient-text">{site.hero.highlight}</span> {rest}
         </span>
       </h1>
       <p class="how rise rise-3">
-        I build agents that <strong>reason</strong>, with guardrails that <strong>hold</strong>.
+        <Rich text={site.hero.intro} />
       </p>
       <ul class="actions rise rise-4">
         <li>
@@ -164,7 +169,8 @@ const frameVars = `--frame-ratio: ${frame.ratioWidth} / ${frame.ratioHeight}; --
     line-height: 1.5;
     color: var(--text-muted);
   }
-  .how strong {
+  /* The bold words come from <Rich>, a separate component, so reach them globally. */
+  .how :global(strong) {
     font-weight: 650;
     color: var(--text);
   }

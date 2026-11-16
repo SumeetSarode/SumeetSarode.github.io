@@ -1,8 +1,13 @@
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { parse } from 'yaml';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 const contentDir = fileURLToPath(new URL('./content/', import.meta.url));
+
+// The published address lives in content/profile.yaml, so there is one place to change it.
+const { url } = parse(readFileSync(`${contentDir}profile.yaml`, 'utf8'));
 
 /**
  * Pages read content/*.yaml while they are built, which Vite doesn't track. In `npm run dev`,
@@ -23,7 +28,7 @@ const reloadOnContentChange = {
 };
 
 export default defineConfig({
-  site: 'https://sumeetsarode.github.io',
+  site: url,
   trailingSlash: 'always',
   // The sitemap automatically leaves out 404.html.
   integrations: [sitemap()],

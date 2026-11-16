@@ -27,12 +27,16 @@ const year = new Date().getFullYear();
         <li>
           <a href={`mailto:${site.email}`}>Email</a>
         </li>
-        <li>
-          <a href={site.links.linkedin}>LinkedIn</a>
-        </li>
-        <li>
-          <a href={site.links.github}>GitHub</a>
-        </li>
+        {site.links.linkedin && (
+          <li>
+            <a href={site.links.linkedin}>LinkedIn</a>
+          </li>
+        )}
+        {site.links.github && (
+          <li>
+            <a href={site.links.github}>GitHub</a>
+          </li>
+        )}
       </ul>
     </div>
   </div>

@@ -52,17 +52,17 @@ previews, and the saved picture all follow. Nothing else needs touching.
 
 ## 2. Edit text
 
-| To change…                                                                                | Edit this file                                        |
-| ----------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| Your name, title, email, links, the intro under your name, the social-sharing description | `src/config/site.ts`                                  |
-| Jobs, bullet points, earlier roles, and the impact numbers                                | `content/experience.yaml`                             |
-| Capabilities: the stack's layers (top = today's focus) and the "Runs on" base             | `content/capabilities.yaml`                           |
-| Research papers                                                                           | `content/research.yaml`                               |
-| Degrees                                                                                   | `content/education.yaml`                              |
-| Certifications (the guide at the top of the file lists every field)                       | `content/certifications.yaml`                         |
-| The short "More on GitHub" list                                                           | `content/more-projects.yaml`                          |
-| The photo's description for screen readers                                                | `src/config/profile-photo.json` (or use Photo Studio) |
-| A case study                                                                              | `src/content/projects/<name>.yaml`                    |
+| To change…                                                                                                | Edit this file                                        |
+| --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Your name, title, email, links, the home-page headline and intro, "Signature work", and the contact notes | `content/profile.yaml`                                |
+| Jobs, bullet points, earlier roles, and the impact numbers                                                | `content/experience.yaml`                             |
+| Capabilities: the stack's layers (top = today's focus) and the "Runs on" base                             | `content/capabilities.yaml`                           |
+| Research papers                                                                                           | `content/research.yaml`                               |
+| Degrees                                                                                                   | `content/education.yaml`                              |
+| Certifications (the guide at the top of the file lists every field)                                       | `content/certifications.yaml`                         |
+| The short "More on GitHub" list                                                                           | `content/more-projects.yaml`                          |
+| The photo's description for screen readers                                                                | `src/config/profile-photo.json` (or use Photo Studio) |
+| A case study                                                                                              | `src/content/projects/<name>.yaml`                    |
 
 Open a file in any text editor, change the words between the quotes, and save. Don't change the
 punctuation around them.

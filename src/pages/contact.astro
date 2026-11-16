@@ -3,29 +3,30 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
 import { site } from '../config/site';
 
+const { contactNotes: notes, links, handles } = site;
 const channels = [
   {
     label: 'Email',
     value: site.email,
-    note: 'The quickest way to reach me.',
+    note: notes.email ?? 'The quickest way to reach me.',
     href: `mailto:${site.email}`,
     primary: true,
   },
-  {
+  links.linkedin && {
     label: 'LinkedIn',
-    value: 'in/SumeetSarode',
-    note: 'Full career history.',
-    href: site.links.linkedin,
+    value: handles.linkedin,
+    note: notes.linkedin ?? 'Full career history.',
+    href: links.linkedin,
     primary: false,
   },
-  {
+  links.github && {
     label: 'GitHub',
-    value: 'SumeetSarode',
-    note: 'The code behind every case study.',
-    href: site.links.github,
+    value: handles.github,
+    note: notes.github ?? 'The code behind every case study.',
+    href: links.github,
     primary: false,
   },
-];
+].filter((channel): channel is Exclude<typeof channel, '' | undefined> => Boolean(channel));
 ---
 
 <BaseLayout
