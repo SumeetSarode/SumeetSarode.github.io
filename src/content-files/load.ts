@@ -5,18 +5,12 @@
  * edits the content never has to read a stack trace.
  */
 import { existsSync, readFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 import { LineCounter, parseDocument, type Document } from 'yaml';
 import type { z } from 'zod';
+import { CONTENT_DIR } from './paths.mjs';
 
-/**
- * content/ sits next to package.json, and npm scripts run from there. PORTFOLIO_CONTENT points
- * somewhere else instead; the tests use it to build sites with sections left out.
- */
-export const CONTENT_DIR = resolve(process.env.PORTFOLIO_CONTENT ?? join(process.cwd(), 'content'));
-
-/** Where the case studies live, one file each. */
-export const PROJECTS_DIR = join(CONTENT_DIR, 'projects');
+export { CONTENT_DIR, PROJECTS_DIR } from './paths.mjs';
 
 export class ContentError extends Error {
   override name = 'ContentError';

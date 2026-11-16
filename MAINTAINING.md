@@ -152,18 +152,23 @@ that date to visitors.
 
 ## 4. Update the résumé PDF
 
-The site offers a résumé PDF **without your phone number**. To rebuild it after changing your Word résumé,
-drop the `.docx` file into `content/resume/` (keep just one there) and run:
+The site offers a résumé PDF **without your phone number**. Put your résumé (Word or PDF; keep just
+one) in `content/resume/`. The Portfolio Preview app rebuilds the PDF whenever that file changes and
+shows what it did; without the app, run `npm run resume`.
 
-```bash
-npm run resume
-```
+- Your phone number is removed, then the finished PDF is checked again. If anything phone-like is
+  left, or the file can't be checked (a scan, or a password-protected PDF), it isn't used, the site
+  keeps the résumé it had, and you're told why.
+- Your original is never changed, and git ignores everything in `content/resume/`, so it's never
+  committed or published.
+- Word files need **LibreOffice** (free) and give the cleanest result. PDFs work without it, but
+  leave a small gap where the number was.
+- The PDF's details (title and author) are set from your name; anything else Word stored in the file
+  is removed.
+- Emptying the folder takes the résumé off the site, along with its download buttons.
 
-(You can also point at a file anywhere: `npm run resume -- "/path/to/your resume.docx"`.) Git ignores
-Word files, so your original, with your phone number in it, is never committed. This needs **Python 3** and **LibreOffice** (both free). It works on a copy, so your original is never
-touched. It removes the phone number, refuses to continue if any phone-like number remains, and writes
-`public/resume/resume.pdf` (visitors' downloads are still named after you). **Open the PDF and look at it** before publishing, since
-LibreOffice can draw fonts slightly differently from Word.
+The result is `public/resume/resume.pdf` (visitors' downloads are still named after you). **Open it
+and look at it** before publishing, since LibreOffice can draw fonts slightly differently from Word.
 
 ## 5. Check your changes before publishing
 

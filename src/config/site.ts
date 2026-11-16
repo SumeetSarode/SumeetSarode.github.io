@@ -3,8 +3,8 @@
  * and checks them, and adds what isn't content: where the résumé PDF lives and whether it's there.
  */
 import { existsSync } from 'node:fs';
-import { join } from 'node:path';
 import { loadContent } from '../content-files/load';
+import { RESUME_OUTPUT, RESUME_URL } from '../content-files/paths.mjs';
 import { profileFile } from '../content-files/schemas';
 
 const profile = loadContent('profile.yaml', profileFile);
@@ -29,9 +29,6 @@ const initials = (name: string): string => {
   return (first(words[0]) + (words.length > 1 ? first(words.at(-1)) : '')).toUpperCase();
 };
 
-/** The Portfolio Preview app (and `npm run resume`) writes the cleaned résumé here. */
-export const RESUME_PATH = '/resume/resume.pdf';
-
 export const site = {
   ...profile,
   /** Shown in the header badge and the browser-tab icon. */
@@ -44,8 +41,9 @@ export const site = {
   jobTitle: profile.title?.split('\u00b7')[0]?.trim(),
   /** "Principal Data Scientist & Agentic AI Architect", for the home page's browser tab. */
   titleInWords: profile.title?.replaceAll(' \u00b7 ', ' & '),
-  resume: existsSync(join(process.cwd(), 'public', RESUME_PATH))
-    ? { href: RESUME_PATH, fileName: `${fileSlug(profile.name)}-resume.pdf` }
+  // The Portfolio Preview app (and `npm run resume`) makes this PDF from content/resume/.
+  resume: existsSync(RESUME_OUTPUT)
+    ? { href: RESUME_URL, fileName: `${fileSlug(profile.name)}-resume.pdf` }
     : undefined,
   handles: {
     github: profile.github && handle(profile.github, 1),

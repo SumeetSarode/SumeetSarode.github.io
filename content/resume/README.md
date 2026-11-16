@@ -1,20 +1,18 @@
 # Résumé
 
-Drop your Word résumé (a `.docx` file) in this folder, then run:
+Put **one** résumé in this folder: a Word file (`.docx`, `.doc`), an OpenDocument or RTF file, or a
+PDF. The Portfolio Preview app turns it into the PDF visitors download, by itself, whenever the file
+changes. (Without the app, run `npm run resume`.)
 
-```bash
-npm run resume
-```
+- **Your phone number is removed**, and the result is checked again. If anything phone-like is left,
+  or the file can't be checked (a scan, or a password-protected PDF), it isn't used and the preview
+  says why.
+- **Your file is never changed.** Everything in this folder stays on your computer: git ignores it,
+  so the original (with your phone number) is never committed or published.
+- Word files give the cleanest result. From a PDF, the number is removed where it stands, so a small
+  gap is left in its place.
+- Word and the other non-PDF formats need **LibreOffice** (free, libreoffice.org). PDFs don't.
+- To take the résumé off the site, empty this folder.
 
-That builds the PDF people download from the site, at `public/resume/resume.pdf`:
-
-- It works on a copy, so your Word file is never changed.
-- It **removes your phone number** and stops if any phone-like number is left.
-- It needs **Python 3** and **LibreOffice** (both free).
-
-**Open the PDF and look at it** before publishing, because LibreOffice can draw fonts slightly
-differently from Word.
-
-Git ignores Word files, so your original (which has your phone number in it) is never committed or
-published. Keep only one `.docx` here. You can also point at a file anywhere:
-`npm run resume -- "/path/to/resume.docx"`.
+**Open the PDF and look at it** before publishing (the preview's status bar links to it), since
+LibreOffice can draw fonts slightly differently from Word.

@@ -18,7 +18,7 @@
     "test:e2e": "playwright test",
     "photo": "node tools/photo-studio/main.mjs",
     "check:dist": "node scripts/check-dist.mjs",
-    "resume": "python3 scripts/build_public_resume.py"
+    "resume": "node tools/resume/main.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.12",
@@ -38,7 +38,9 @@
     "@playwright/test": "^1.65.0",
     "eslint": "^10.14.0",
     "eslint-plugin-astro": "^1.7.0",
+    "fflate": "^0.8.3",
     "heic-convert": "^2.1.0",
+    "mupdf": "^1.28.6",
     "prettier": "^3.9.10",
     "prettier-plugin-astro": "^1.1.2",
     "sharp": "^0.35.5",

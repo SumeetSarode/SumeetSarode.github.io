@@ -12,6 +12,11 @@ test-results/
 .DS_Store
 
 # Résumé originals have a phone number in them. Only the cleaned PDF in public/ is published.
+# Everything dropped into content/resume/ stays on this computer, whatever its format.
+content/resume/*
+!content/resume/README.md
 *.docx
 *.doc
-__pycache__/
+*.odt
+*.rtf
+public/resume/*.partial
