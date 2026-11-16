@@ -61,6 +61,7 @@ previews, and the saved picture all follow. Nothing else needs touching.
 | Degrees                                                                                                   | `content/education.yaml`                              |
 | Certifications (the guide at the top of the file lists every field)                                       | `content/certifications.yaml`                         |
 | The short "More on GitHub" list                                                                           | `content/more-projects.yaml`                          |
+| Each page's title and intro line, the home-page tile descriptions, and the closing "Let's talk" band      | `content/pages.yaml`                                  |
 | The photo's description for screen readers                                                                | `src/config/profile-photo.json` (or use Photo Studio) |
 | A case study                                                                                              | `src/content/projects/<name>.yaml`                    |
 

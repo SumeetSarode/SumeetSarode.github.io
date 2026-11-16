@@ -1,0 +1,65 @@
+# Pages: the title and intro line at the top of each page, the one-line description on each
+# home-page tile, and the "Let's talk" band above the footer.
+#
+# A line whose text contains a colon followed by a space (like "Note: this") must be written
+# with ">-" after the field name and the text on the next line, indented two more spaces,
+# or wrapped in double quotes.
+#
+# Every line here is optional. Leave one out (or delete it) and the site uses plain default
+# wording, so you only need to write the lines you want to change.
+#
+# For each page (experience, projects, research, education, contact):
+#   title             The big headline at the top of the page.
+#   lead              One or two sentences under it.
+#   metaDescription   What search engines show under the link. 155 characters at most.
+#                     In research, write {publications} where the count goes, and the site
+#                     fills it in ("Four research publications") as papers are added.
+#
+# experience also has:
+#   careerHeadline    The heading above your list of jobs. Be careful with claims that go
+#                     out of date, like "in four years".
+#
+# tiles: one line for each home-page tile (experience, projects, research, education,
+#        contact).
+#
+# closing: the band above the footer. The headline is "before" + a colourful "highlight"
+#          word, then "lead" underneath.
+
+experience:
+  title: From models to production AI at national scale.
+  lead: A progression from hands-on modeling to leading enterprise ML workstreams and architecting multi-agent AI systems.
+  metaDescription: Sumeet Sarode's experience building production AI and machine learning, from Data Scientist to Principal Data Scientist at Walmart.
+  careerHeadline: Data Scientist to Principal in just over four years.
+
+projects:
+  title: Built to learn. Engineered to work.
+  lead: Three personal projects that put the ideas into practice. Each case study covers the problem, the architecture, the trade-offs, and what the project is not.
+  metaDescription: Personal engineering projects in agentic AI, resilient market-data software, and computer vision. Explore the decisions behind each build.
+
+research:
+  title: Questions worth exploring.
+  lead: Published work across machine learning, connected systems, and assistive technology. Open a publication for the problem, the approach, and the full record.
+  metaDescription: '{publications} by Sumeet Sarode, covering machine learning, IoT-based automation, irrigation control, and accessible language learning.'
+
+education:
+  title: Education and certifications
+  lead: A master's in data science, a bachelor's in computer science engineering, and certifications in deep learning, machine learning, and data engineering.
+  metaDescription: >-
+    Sumeet Sarode's education: an M.S. in Data Science, a B.E. in Computer Science Engineering, and certifications in deep learning.
+
+contact:
+  title: Let's compare notes.
+  lead: Production AI, reliable agents, or an engineering problem worth solving. I'm always glad to talk.
+  metaDescription: Get in touch with Sumeet Sarode about production AI, agent reliability, machine learning, and personal engineering projects.
+
+tiles:
+  experience: From hands-on data science to architecting production multi-agent AI, with measurable impact at every step.
+  projects: Personal builds in agent reliability, resilient software, and computer vision.
+  research: Peer-reviewed work across machine learning, IoT, and assistive technology.
+  education: A master's in data science, and certifications in deep learning and machine learning.
+  contact: Production AI, reliable agents, or an engineering problem worth solving.
+
+closing:
+  before: Building AI that has to be
+  highlight: right?
+  lead: I'm glad to compare notes on production AI, agent reliability, and turning models into systems people trust.

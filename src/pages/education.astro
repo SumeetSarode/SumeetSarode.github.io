@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { pages, tabTitle } from '../data/pages';
 import PageHero from '../components/PageHero.astro';
 import Icon from '../components/Icon.astro';
 import Tag from '../components/Tag.astro';
@@ -7,15 +8,8 @@ import { certifications, degrees } from '../data/education';
 import { formatMonth, formatRange } from '../lib/months';
 ---
 
-<BaseLayout
-  title="Education | Sumeet Sarode"
-  description="Sumeet Sarode's education: an M.S. in Data Science, a B.E. in Computer Science Engineering, and certifications in deep learning."
->
-  <PageHero
-    eyebrow="04 / Education"
-    title="Education and certifications"
-    lead="A master's in data science, a bachelor's in computer science engineering, and certifications in deep learning, machine learning, and data engineering."
-  />
+<BaseLayout title={tabTitle('Education')} description={pages.education.metaDescription}>
+  <PageHero eyebrow="04 / Education" title={pages.education.title} lead={pages.education.lead} />
 
   <section class="section" aria-labelledby="degrees-title">
     <div class="container">

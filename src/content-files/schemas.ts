@@ -140,3 +140,32 @@ export const profileFile = z.strictObject({
     .strictObject({ email: text.optional(), linkedin: text.optional(), github: text.optional() })
     .default({}),
 });
+
+/** content/pages.yaml: the title and intro line of each page. Everything here is optional. */
+const pageText = z.strictObject({
+  title: text.optional(),
+  lead: text.optional(),
+  /** What search engines show under the link; they cut off around 155 characters. */
+  metaDescription: text.max(155).optional(),
+});
+export const pagesFile = z.strictObject({
+  experience: pageText.extend({ careerHeadline: text.optional() }).default({}),
+  projects: pageText.default({}),
+  research: pageText.default({}),
+  education: pageText.default({}),
+  contact: pageText.default({}),
+  /** The one-line description on each home-page tile. */
+  tiles: z
+    .strictObject({
+      experience: text.optional(),
+      projects: text.optional(),
+      research: text.optional(),
+      education: text.optional(),
+      contact: text.optional(),
+    })
+    .default({}),
+  /** The "Let's talk" band above the footer. */
+  closing: z
+    .strictObject({ before: text.optional(), highlight: text.optional(), lead: text.optional() })
+    .default({}),
+});

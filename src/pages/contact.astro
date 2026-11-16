@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { pages, tabTitle } from '../data/pages';
 import PageHero from '../components/PageHero.astro';
 import { site } from '../config/site';
 
@@ -29,16 +30,8 @@ const channels = [
 ].filter((channel): channel is Exclude<typeof channel, '' | undefined> => Boolean(channel));
 ---
 
-<BaseLayout
-  title="Contact | Sumeet Sarode"
-  description="Get in touch with Sumeet Sarode about production AI, agent reliability, machine learning, and personal engineering projects."
-  closing={false}
->
-  <PageHero
-    eyebrow="05 / Contact"
-    title="Let's compare notes."
-    lead="Production AI, reliable agents, or an engineering problem worth solving. I'm always glad to talk."
-  />
+<BaseLayout title={tabTitle('Contact')} description={pages.contact.metaDescription} closing={false}>
+  <PageHero eyebrow="05 / Contact" title={pages.contact.title} lead={pages.contact.lead} />
 
   <section class="section" aria-labelledby="channels-title">
     <div class="container">

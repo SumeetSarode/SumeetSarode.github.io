@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { pages, tabTitle } from '../../data/pages';
 import Emblem from '../../components/Emblem.astro';
 import PageHero from '../../components/PageHero.astro';
 import { countPhrase } from '../../lib/count';
@@ -10,14 +11,13 @@ const researchPublications = countPhrase(publications.length, 'research publicat
 ---
 
 <BaseLayout
-  title="Research | Sumeet Sarode"
-  description={`${researchPublications} by Sumeet Sarode, covering machine learning, IoT-based automation, irrigation control, and accessible language learning.`}
+  title={tabTitle('Research')}
+  description={(pages.research.metaDescription ?? '').replace(
+    '{publications}',
+    researchPublications,
+  )}
 >
-  <PageHero
-    eyebrow="03 / Research"
-    title="Questions worth exploring."
-    lead="Published work across machine learning, connected systems, and assistive technology. Open a publication for the problem, the approach, and the full record."
-  >
+  <PageHero eyebrow="03 / Research" title={pages.research.title} lead={pages.research.lead}>
     <ul class="venues" aria-label="Publication venues">
       {publications.map((paper) => (
         <li>

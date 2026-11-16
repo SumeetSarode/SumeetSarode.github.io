@@ -1,18 +1,16 @@
 ---
 import { site } from '../config/site';
 import Button from './Button.astro';
+import { closing } from '../data/pages';
 ---
 
 <section class="ink closing" aria-labelledby="closing-title">
   <div class="container inner">
     <p class="eyebrow">Let's talk</p>
     <h2 id="closing-title">
-      Building AI that has to be <span class="gradient-text">right?</span>
+      {closing.before} <span class="gradient-text">{closing.highlight}</span>
     </h2>
-    <p class="lead">
-      I'm glad to compare notes on production AI, agent reliability, and turning models into systems
-      people trust.
-    </p>
+    <p class="lead">{closing.lead}</p>
     <ul class="actions">
       <li>
         <Button href={`mailto:${site.email}`}>

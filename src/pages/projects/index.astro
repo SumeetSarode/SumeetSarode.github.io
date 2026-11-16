@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { pages, tabTitle } from '../../data/pages';
 import PageHero from '../../components/PageHero.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
 import { moreProjects } from '../../data/more-projects';
@@ -8,15 +9,8 @@ import { moreProjects } from '../../data/more-projects';
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 ---
 
-<BaseLayout
-  title="Projects | Sumeet Sarode"
-  description="Personal engineering projects in agentic AI, resilient market-data software, and computer vision. Explore the decisions behind each build."
->
-  <PageHero
-    eyebrow="02 / Projects"
-    title="Built to learn. Engineered to work."
-    lead="Three personal projects that put the ideas into practice. Each case study covers the problem, the architecture, the trade-offs, and what the project is not."
-  />
+<BaseLayout title={tabTitle('Projects')} description={pages.projects.metaDescription}>
+  <PageHero eyebrow="02 / Projects" title={pages.projects.title} lead={pages.projects.lead} />
 
   <section id="work" class="section" aria-labelledby="work-title">
     <div class="container">

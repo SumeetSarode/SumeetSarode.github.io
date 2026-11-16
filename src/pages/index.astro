@@ -8,6 +8,7 @@ import Icon from '../components/Icon.astro';
 import { site } from '../config/site';
 import { certifications, degrees } from '../data/education';
 import { employers } from '../data/experience';
+import { tiles } from '../data/pages';
 import { publications, shortVenue } from '../data/publications';
 import { formatRange } from '../lib/months';
 
@@ -44,7 +45,7 @@ const jsonLd = {
             number="01"
             label="Experience"
             title="Experience"
-            description="From hands-on data science to architecting production multi-agent AI, with measurable impact at every step."
+            description={tiles.experience}
             href="/experience/"
             cta="Explore the career"
             tone="indigo"
@@ -73,7 +74,7 @@ const jsonLd = {
             number="02"
             label="Projects"
             title="Projects"
-            description="Personal builds in agent reliability, resilient software, and computer vision."
+            description={tiles.projects}
             href="/projects/"
             cta="See the case studies"
             tone="violet"
@@ -99,7 +100,7 @@ const jsonLd = {
             number="03"
             label="Research"
             title="Research"
-            description="Peer-reviewed work across machine learning, IoT, and assistive technology."
+            description={tiles.research}
             href="/research/"
             cta="Read the research"
             tone="cyan"
@@ -128,7 +129,7 @@ const jsonLd = {
             number="04"
             label="Education"
             title="Education"
-            description="A master's in data science, and certifications in deep learning and machine learning."
+            description={tiles.education}
             href="/education/"
             cta="See education"
             tone="indigo"
@@ -159,7 +160,7 @@ const jsonLd = {
             number="05"
             label="Contact"
             title="Let's talk"
-            description="Production AI, reliable agents, or an engineering problem worth solving."
+            description={tiles.contact}
             href="/contact/"
             cta="Get in touch"
             tone="ink"

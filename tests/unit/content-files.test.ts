@@ -7,6 +7,7 @@ import {
   educationFile,
   experienceFile,
   moreProjectsFile,
+  pagesFile,
   profileFile,
   researchFile,
 } from '../../src/content-files/schemas';
@@ -245,5 +246,24 @@ describe('profile.yaml', () => {
   it('allows at most three signature highlights, which is what the layout holds', () => {
     const four = '    - { title: A, description: B }\n'.repeat(3);
     expect(() => parseContent('profile.yaml', profile(four), profileFile)).toThrow(/highlights/);
+  });
+});
+
+describe('pages.yaml', () => {
+  it('may be completely empty, so every page falls back to its default wording', () => {
+    const data = parseContent('pages.yaml', '{}\n', pagesFile);
+    expect(data.experience).toEqual({});
+    expect(data.tiles).toEqual({});
+  });
+
+  it('catches a misspelled page name', () => {
+    expect(() => parseContent('pages.yaml', 'experiance:\n  title: X\n', pagesFile)).toThrow(
+      /unknown field "experiance"/,
+    );
+  });
+
+  it('keeps search descriptions short enough to show in full', () => {
+    const long = `contact:\n  metaDescription: ${'x'.repeat(156)}\n`;
+    expect(() => parseContent('pages.yaml', long, pagesFile)).toThrow(/contact › metaDescription/);
   });
 });

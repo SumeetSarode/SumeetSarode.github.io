@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { pages, tabTitle } from '../data/pages';
 import PageHero from '../components/PageHero.astro';
 import ImpactStats from '../components/ImpactStats.astro';
 import MetricText from '../components/MetricText.astro';
@@ -8,15 +9,8 @@ import { earlierRoles, employers } from '../data/experience';
 import { formatRange } from '../lib/months';
 ---
 
-<BaseLayout
-  title="Experience | Sumeet Sarode"
-  description="Sumeet Sarode's experience building production AI and machine learning, from Data Scientist to Principal Data Scientist at Walmart."
->
-  <PageHero
-    eyebrow="01 / Experience"
-    title="From models to production AI at national scale."
-    lead="A progression from hands-on modeling to leading enterprise ML workstreams and architecting multi-agent AI systems."
-  >
+<BaseLayout title={tabTitle('Experience')} description={pages.experience.metaDescription}>
+  <PageHero eyebrow="01 / Experience" title={pages.experience.title} lead={pages.experience.lead}>
     <ImpactStats label="Impact highlights" />
   </PageHero>
 
@@ -25,7 +19,7 @@ import { formatRange } from '../lib/months';
       <div class="section-head">
         <div>
           <p class="eyebrow">Career</p>
-          <h2 id="career-title">Data Scientist to Principal in just over four years.</h2>
+          <h2 id="career-title">{pages.experience.careerHeadline}</h2>
         </div>
       </div>
 
