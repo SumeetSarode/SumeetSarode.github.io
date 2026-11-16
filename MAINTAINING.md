@@ -102,9 +102,10 @@ terminal, `npm run portfolio-preview` does the same and prints any problem. Logs
 LinkedIn can send you a copy of your own profile data. The preview app can read it and offer to add
 what's missing from your site, with you checking everything first.
 
-1. On LinkedIn: **Settings → Data privacy → Get a copy of your data**. Choose **"Want something in
-   particular?"**, tick only **Profile**, and request the archive. LinkedIn emails you when it's ready
-   (usually within minutes, sometimes up to a day).
+1. On LinkedIn: **Settings → Data privacy → Get a copy of your data**. Choose **"Download larger data
+   archive"** (the first option) and request it. LinkedIn emails you when it's ready (it can take up to
+   a day). The smaller "Profile" option only contains your headline, address and birth date, not your
+   jobs or degrees, so it can't be used for this.
 2. Put the downloaded `.zip` (as it came, don't unzip it) in `content/linkedin/`.
 3. Open Portfolio Preview. An **Import from LinkedIn** box lists jobs, degrees and certificates
    that LinkedIn has and your site doesn't. Tick the ones you want and click **Add selected**.
@@ -117,11 +118,12 @@ What to expect:
   need checking, and LinkedIn often has only a year instead of a month. These are listed as notes.
 - **A new job gets its bullet points from your LinkedIn description.** The home-page summary line is
   made from the first bullet, so read it afterwards and polish the wording.
-- **Your private data is never read.** Only the headline, jobs, degrees, certificates and publications
-  are used, not your address, birth date, contacts or phone numbers.
+- **Your private data is never read.** The larger archive also holds your contacts, messages, phone
+  numbers, address and birth date. Only the headline, jobs, degrees, certificates and publications
+  files are opened; everything else in the `.zip` is skipped without being decompressed.
 - **Backups.** Before each save, the old version of the file goes into `content/linkedin/backup/`.
-- **It stays on your computer.** Git ignores everything in `content/linkedin/`. Delete the download when
-  you're done.
+- **It stays on your computer.** Git ignores everything in `content/linkedin/`. Because the larger
+  archive holds so much personal data, delete the download when you're done.
 
 **Four things that trip people up**
 
