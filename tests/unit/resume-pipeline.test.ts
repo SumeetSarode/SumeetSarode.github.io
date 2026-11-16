@@ -106,7 +106,7 @@ describe('finding phone numbers', () => {
   });
 
   it('masks all but the last four digits', () => {
-    expect(mask('(555) 123-4567')).toBe('•••-•••-4567');
+    expect(mask('(555) 123-4567')).toBe('•••\u2011•••\u20114567');
   });
 
   it('removes a number with its separator or label, keeping the line tidy', () => {
@@ -124,7 +124,7 @@ describe('cleaning a Word file', () => {
       makeDocx([['Jane Doe'], ['jane@doe.dev | 555-123-4567 | github.com/jane'], [BODY]]),
     );
     expect(docxText(bytes)).toBe(`Jane Doejane@doe.dev | github.com/jane${BODY}`);
-    expect(removed).toEqual(['•••-•••-4567']);
+    expect(removed).toEqual(['•••\u2011•••\u20114567']);
   });
 
   it('refuses something that is not a Word file', () => {
@@ -147,7 +147,7 @@ describe('cleaning a PDF', () => {
     expect(text).toContain('1,744 unit tests');
     expect(Buffer.from(bytes).includes('4567')).toBe(false);
     expect(pages).toBe(1);
-    expect(removed).toEqual(['•••-•••-4567']);
+    expect(removed).toEqual(['•••\u2011•••\u20114567']);
     const document = mupdf.Document.openDocument(bytes, 'application/pdf');
     expect(document.loadPage(0).getLinks()).toHaveLength(0);
     expect(document.getMetaData('info:Title')).toBe('Jane Doe — Résumé');
@@ -169,12 +169,12 @@ describe('cleaning a PDF', () => {
     const source = makePdf(['Jane Doe | 555 123', '4567 | github.com/jane', BODY]);
     const { bytes, removed } = cleanPdf(source, metadata);
     expect(textOf(bytes)).not.toMatch(/555|4567/);
-    expect(removed).toEqual(['•••-•••-4567']);
+    expect(removed).toEqual(['•••\u2011•••\u20114567']);
   });
 
   it('has a final check that refuses any file still holding a number or tel: link', () => {
     expect(() => assertNoPhones(makePdf(['Jane Doe | 555-123-4567', BODY]))).toThrow(
-      /still in the PDF.*•••-•••-4567/,
+      /still in the PDF.*•••\u2011•••\u20114567/,
     );
     expect(() => assertNoPhones(makePdf(['Jane Doe', BODY], 'tel:5551234567'))).toThrow(/tel:/);
     expect(() => assertNoPhones(makePdf(['Jane Doe', BODY]))).not.toThrow();
@@ -212,7 +212,7 @@ describe('building the site’s résumé from content/resume/', () => {
     const { options, inputDir } = setup({ 'my résumé.pdf': original, 'README.md': 'guide' });
     const status = await buildResume(options);
     expect(status.state, status.message).toBe('ready');
-    expect(status.message).toContain('Removed 1 phone number (•••-•••-4567)');
+    expect(status.message).toContain('Removed 1 phone number (•••\u2011•••\u20114567)');
     expect(status.message).toContain('small gap');
     expect(textOf(readFileSync(options.output))).not.toMatch(/4567/);
     // The original is only read.

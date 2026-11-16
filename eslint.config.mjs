@@ -25,6 +25,7 @@ export default [
         setInterval: 'readonly',
         navigator: 'readonly',
         AbortSignal: 'readonly',
+        EventSource: 'readonly',
       },
     },
   },

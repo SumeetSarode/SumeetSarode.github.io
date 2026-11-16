@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Same tile as Photo Studio, so the two apps read as a pair. A browser window with a refresh arrow. -->
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="#2346d8" />
+  <rect x="236" y="276" width="552" height="472" rx="48" fill="none" stroke="#ffffff" stroke-width="30" />
+  <line x1="236" y1="376" x2="788" y2="376" stroke="#ffffff" stroke-width="30" />
+  <circle cx="300" cy="326" r="16" fill="#ffffff" />
+  <circle cx="350" cy="326" r="16" fill="#ffffff" />
+  <path d="M600 562a88 88 0 1 1-26-62" fill="none" stroke="#ffffff" stroke-width="30" stroke-linecap="round" />
+  <path d="M604 448v62h-62" fill="none" stroke="#ffffff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

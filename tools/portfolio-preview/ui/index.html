@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Portfolio Preview</title>
+    <link rel="stylesheet" href="/__preview/preview.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <p class="status" role="status" aria-live="polite">
+        <span class="dot" id="dot" data-state="building" aria-hidden="true"></span>
+        <strong id="site-state">Building…</strong>
+        <span id="site-message">Building your site for the first time…</span>
+      </p>
+      <p class="resume" id="resume" aria-live="polite"></p>
+      <div class="actions">
+        <div class="widths" role="group" aria-label="Preview width">
+          <button type="button" data-width="full" aria-pressed="true">Desktop</button>
+          <button type="button" data-width="390" aria-pressed="false">Phone</button>
+        </div>
+        <a href="/" target="_blank" rel="noopener"
+          >Open in a new tab<span class="visually-hidden"> (opens a new tab)</span></a
+        >
+        <button type="button" id="quit">Quit</button>
+      </div>
+    </header>
+
+    <section class="panel problem" id="problem" aria-labelledby="problem-title" hidden>
+      <h2 id="problem-title">Fix this, save, and the preview updates</h2>
+      <pre id="problem-text"></pre>
+      <p>Below is the last version that worked. Nothing is published until you publish it.</p>
+    </section>
+
+    <section class="panel warnings" id="warnings" aria-labelledby="warnings-title" hidden>
+      <h2 id="warnings-title">The publish check found something</h2>
+      <ul id="warning-list"></ul>
+    </section>
+
+    <main class="stage" id="stage">
+      <p class="waiting" id="waiting">
+        Building your site. This takes a few seconds the first time.
+      </p>
+      <iframe id="site" title="Your portfolio, as visitors will see it" hidden></iframe>
+    </main>
+
+    <p class="stopped" id="stopped" hidden>
+      Portfolio Preview has stopped. You can close this tab, and open the app again any time.
+    </p>
+    <script type="module" src="/__preview/preview.js"></script>
+  </body>
+</html>

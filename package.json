@@ -17,6 +17,7 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "photo": "node tools/photo-studio/main.mjs",
+    "portfolio-preview": "node tools/portfolio-preview/main.mjs",
     "check:dist": "node scripts/check-dist.mjs",
     "resume": "node tools/resume/main.mjs"
   },

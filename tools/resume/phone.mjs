@@ -24,10 +24,13 @@ export const phonePattern = () => new RegExp(PHONE_SOURCE, 'g');
 export const findPhones = (text) =>
   [...text.replace(/\s+/g, ' ').matchAll(phonePattern())].map(([match]) => match.trim());
 
-/** "•••-•••-4567": enough for the owner to recognise it, without repeating the number. */
+/**
+ * "•••‑•••‑4567": enough for the owner to recognise it, without repeating the number. The
+ * hyphens are non-breaking (U+2011), so it never splits across two lines.
+ */
 export const mask = (phone) => {
   const digits = phone.replace(/\D/g, '');
-  return `•••-•••-${digits.slice(-4)}`;
+  return `•••\u2011•••\u2011${digits.slice(-4)}`;
 };
 
 // A phone number between separators, as in: email | phone | linkedin

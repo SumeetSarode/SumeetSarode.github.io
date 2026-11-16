@@ -23,7 +23,7 @@ import { cleanPdf } from './pdf.mjs';
 
 export const SUPPORTED = ['.docx', '.pdf', '.doc', '.odt', '.rtf'];
 /** Bump when the pipeline changes, so every résumé is rebuilt once with the new rules. */
-const PIPELINE_VERSION = 1;
+const PIPELINE_VERSION = 2;
 const DEFAULT_STAMP = join(process.cwd(), 'node_modules', '.cache', 'portfolio-resume.json');
 
 const plural = (count, word) => `${count} ${word}${count === 1 ? '' : 's'}`;

@@ -74,7 +74,27 @@ one file per section, and each starts with a short guide that lists every field.
 1. Open it in any text editor.
 2. To add something (a job, a certificate, a paper), **copy a whole existing entry**, paste it below,
    and change the words. Entries start with a dash (`-`).
-3. Save, and run `npm run dev` to see the result on your computer straight away.
+3. Save. If Portfolio Preview is open (below), the page updates by itself a few seconds later.
+
+**See your changes: Portfolio Preview**
+
+You don't need a terminal for this either. **Double-click** `Portfolio Preview.app` (Mac) or
+`Portfolio Preview.vbs` (Windows). Your browser opens with your site, built exactly as it will be
+published, under a slim status bar.
+
+- **Edit, save, look.** Every time you save a file in `content/`, change your résumé, or confirm a new
+  photo in Photo Studio, the preview rebuilds and reloads by itself, staying on the page you were
+  looking at.
+- **Mistakes are explained, not fatal.** If a change breaks a rule, a red box names the file, the line,
+  and what to fix, while the last version that worked stays on screen.
+- **The status bar** also shows what happened to your résumé (with a link to open the PDF), and any
+  problem the publish check would find. **Phone** and **Desktop** switch the preview's width.
+- **Nothing is published.** It all happens on your computer, until you publish (section 7).
+- Click **Quit** when you're done, or just close the tab: it stops by itself shortly after.
+
+If your computer refuses to open it, the fixes are the same as for Photo Studio (section 1). In a
+terminal, `npm run portfolio-preview` does the same and prints any problem. Logs are kept in
+`~/Library/Logs/PortfolioPreview.log` (Mac) or `%TEMP%\PortfolioPreview.log` (Windows).
 
 **Four things that trip people up**
 
@@ -172,11 +192,7 @@ and look at it** before publishing, since LibreOffice can draw fonts slightly di
 
 ## 5. Check your changes before publishing
 
-```bash
-npm run dev        # opens a live preview of the site on your computer
-```
-
-Then, before you publish, run the checks. GitHub runs them again, but it's faster to find problems here:
+Look at your changes in Portfolio Preview (section 2). Then, before you publish, run the checks. GitHub runs them again, but it's faster to find problems here:
 
 ```bash
 npm test                 # the unit tests
