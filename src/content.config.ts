@@ -36,7 +36,7 @@ const highlight = z.strictObject({
  * instead of shipping half-finished.
  */
 const projects = defineCollection({
-  loader: glob({ pattern: '*.yaml', base: './src/content/projects' }),
+  loader: glob({ pattern: '*.yaml', base: './content/projects' }),
   schema: z.strictObject({
     title: text,
     /** One-line angle shown under the title. */

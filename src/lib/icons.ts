@@ -1,5 +1,5 @@
 /**
- * The icons the site uses, in one place. Content files (src/content/projects, publications)
+ * The icons the site uses, in one place. Content files (content/projects, publications)
  * name icons as strings; this registry turns a name into a component, and the content schema
  * only accepts names that exist here, so a typo fails the build instead of showing an empty box.
  *

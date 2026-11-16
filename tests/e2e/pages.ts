@@ -2,7 +2,7 @@ import { publications } from '../../src/data/publications';
 import { readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-const projectsDir = fileURLToPath(new URL('../../src/content/projects/', import.meta.url));
+const projectsDir = fileURLToPath(new URL('../../content/projects/', import.meta.url));
 
 /** One slug per case study file, so a new case study is tested automatically. */
 export const projectSlugs = readdirSync(projectsDir)

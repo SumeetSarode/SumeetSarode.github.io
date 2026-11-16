@@ -63,7 +63,7 @@ previews, and the saved picture all follow. Nothing else needs touching.
 | The short "More on GitHub" list                                                                           | `content/more-projects.yaml`                          |
 | Each page's title and intro line, the home-page tile descriptions, and the closing "Let's talk" band      | `content/pages.yaml`                                  |
 | The photo's description for screen readers                                                                | `src/config/profile-photo.json` (or use Photo Studio) |
-| A case study                                                                                              | `src/content/projects/<name>.yaml`                    |
+| A case study                                                                                              | `content/projects/<name>.yaml`                        |
 
 Open a file in any text editor, change the words between the quotes, and save. Don't change the
 punctuation around them.
@@ -77,7 +77,7 @@ punctuation around them.
 
 ## 3. Add a project
 
-1. In `src/content/projects/`, copy an existing `.yaml` file and rename it (for example `my-new-project.yaml`).
+1. In `content/projects/`, copy an existing `.yaml` file and rename it (for example `my-new-project.yaml`).
 2. Change the words in it. Each part of the file is one part of the page:
    - `emblem`: the project's picture. `main` is a big symbol for what it is, `badge` is a small one for what
      makes it special, and `tone` is its colour (`indigo`, `violet`, or `cyan`). The allowed symbol names are
