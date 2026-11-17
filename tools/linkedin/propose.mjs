@@ -131,11 +131,15 @@ function roleChanges(records, current, out) {
     const end = toMonth(record.end);
     const employer = current.experience.employers.find((item) => sameName(item.name, company));
     const known = (role) => (start && role.start === start) || sameName(role.title, title);
+    // LinkedIn and the site often name an employer differently ("Walmart Global Tech" and
+    // "Walmart Inc."), so the same title starting the same month counts as the same job anywhere.
+    const sameJob = (role) => start && role.start === start && sameName(role.title, title);
     const exists =
       employer?.roles.some(known) ||
       current.experience.earlierRoles.some(
-        (role) => sameName(role.organization, company) && known(role),
-      );
+        (role) => (sameName(role.organization, company) && known(role)) || sameJob(role),
+      ) ||
+      current.experience.employers.some((item) => item.roles.some(sameJob));
     if (exists) {
       out.already.push(`${title} at ${company}`);
       continue;

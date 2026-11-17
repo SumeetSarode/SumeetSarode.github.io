@@ -185,6 +185,20 @@ describe('importing', () => {
     expect(notes).not.toContain('Stock price prediction'); // already on the Research page
   });
 
+  it('knows a job is already there even when the employer is named differently', async () => {
+    const paths = setup(
+      zipSync({
+        'Positions.csv': strToU8(
+          'Company Name,Title,Description,Started On,Finished On\nWalmart Global Tech,Principal Data Scientist,"Did things.",Oct 2025,\n',
+        ),
+      }),
+    );
+    expect(await changesOf(paths)).toEqual([]);
+    expect((await review(paths)).already).toContain(
+      'Principal Data Scientist at Walmart Global Tech',
+    );
+  });
+
   it('never reads or shows private data: address, birth date, contacts, phone numbers', async () => {
     const { linkedinDir } = setup();
     const everything = JSON.stringify(
