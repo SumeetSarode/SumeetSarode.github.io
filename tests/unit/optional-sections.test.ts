@@ -83,8 +83,13 @@ describe('a site with sections left out', () => {
       expect(site.tiles()).toEqual(['01 Contact']);
       expect(site.read('index.html')).toContain('One chapter.</h2>');
       expect(site.read('contact/index.html')).toContain('01 / Contact');
-      // Initials come from the name, in the header and the browser-tab icon.
-      expect(site.read('index.html')).toMatch(/class="monogram"[^>]*>JD</);
+      // The header shows the profile photo, as decoration (the name beside it names the link).
+      // The browser-tab icon is drawn from the name's initials.
+      const header = site.read('index.html').match(/<a class="identity".*?<\/a>/s)?.[0] ?? '';
+      expect(header).toMatch(/class="avatar"[^>]*><img/);
+      expect(header).toMatch(/<img[^>]*\salt[\s>]/); // an empty description, as decoration
+      expect(header).not.toMatch(/\salt="[^"]+"/);
+      expect(header).toContain('Jane Doe');
       expect(site.read('favicon.svg')).toContain('>JD</text>');
       // No address yet: no canonical link, no sitemap, and robots.txt doesn't name one.
       expect(site.read('index.html')).not.toContain('rel="canonical"');
